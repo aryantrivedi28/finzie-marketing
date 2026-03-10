@@ -1,30 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../lib/SupabaseAuthClient';
 import { syncToGoogleSheets } from '../../../lib/googleSheetSync';
-import { sendAdminEmail } from '../../../lib/mailer';
+// app/api/client-requests/route.ts
+
+import { sendEmail } from '../../../lib/client-request/brevoService';
+import { generateAIPost } from '../../../lib/client-request/aiPostSevice';
+
+import { sendClientEmail, sendAdminEmail } from '../../../lib/mailer';
 
 export async function POST(request: NextRequest) {
   try {
+    // Parse request body
     const body = await request.json();
-    const { fullName, email, phone, company, requirement } = body;
+    const {
+      fullName,
+      email,
+      whatsappNumber,
+      serviceCategory,
+      subCategory,
+      requirement
+    } = body;
 
     // Validate required fields
-    if (!fullName || !email || !phone || !requirement) {
+    if (!fullName || !email || !whatsappNumber || !serviceCategory || !subCategory || !requirement) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
+    // Generate unique request ID
+    const requestId = `REQ_${Date.now()}_${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+
+    // Generate AI community post
+    const aiPost = await generateAIPost({
+      fullName,
+      serviceCategory,
+      subCategory,
+      requirement,
+      requestId
+    });
+
     // 1. Save to Supabase
     const { data: inserted, error: insertError } = await supabase
       .from('client_requests')
       .insert([{
+        request_id: requestId,
         full_name: fullName,
-        email,
-        phone,
-        company: company || '',
-        requirement,
+        email: email,
+        phone: whatsappNumber,
+        service_category: serviceCategory,
+        sub_category: subCategory,
+        requirement: requirement,
+        ai_post_generated: true,
+        ai_post_content: aiPost,
+        ai_post_generated_at: new Date().toISOString(),
         status: 'pending',
         created_at: new Date().toISOString()
       }])
@@ -32,35 +62,92 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error('Supabase error:', insertError);
+      console.error('Supabase insertion failed:', insertError);
       throw insertError;
     }
 
-    // 2. Sync to Google Sheets (server-side)
-    await syncToGoogleSheets({
-      timestamp: new Date().toISOString(),
-      fullName,
-      email,
-      phone,
-      company: company || 'N/A',
-      requirement,
-      status: 'pending'
-    });
+    // Track email statuses
+    let clientEmailSent = false;
+    let adminEmailSent = false;
 
-    // 3. Send email notification
-    await sendAdminEmail({
-      fullName,
-      email,
-      phone,
-      company: company || 'N/A',
-      requirement,
-      timestamp: new Date().toISOString()
-    });
+    // 2. Send thank you email to client
+    try {
+      const clientEmailResult = await sendClientEmail(
+        email,
+        fullName,
+        requestId,
+        serviceCategory,
+        subCategory
+      );
 
+      clientEmailSent = clientEmailResult.success;
+
+      // Update email status in database
+      await supabase
+        .from('client_requests')
+        .update({
+          instant_email_sent: true,
+          instant_email_sent_at: new Date().toISOString()
+        })
+        .eq('id', inserted.id);
+
+    } catch (emailError) {
+      console.error('Client email failed:', emailError);
+      // Continue - don't throw
+    }
+
+    // 3. Send admin email with client details AND AI post
+    try {
+      const adminEmailResult = await sendAdminEmail({
+        fullName,
+        email,
+        whatsappNumber,
+        serviceCategory,
+        subCategory,
+        requirement,
+        requestId,
+        aiPost,
+        timestamp: new Date().toISOString()
+      });
+
+      adminEmailSent = adminEmailResult.success;
+
+    } catch (adminEmailError) {
+      console.error('Admin email failed:', adminEmailError);
+      // Continue - don't throw
+    }
+
+    // 4. Sync to Google Sheets (optional)
+    try {
+      await syncToGoogleSheets({
+        requestId,
+        timestamp: new Date().toISOString(),
+        fullName,
+        email,
+        whatsappNumber,
+        serviceCategory,
+        subCategory,
+        requirement,
+        aiPost,
+        status: 'pending'
+      });
+    } catch (sheetsError) {
+      console.error('Google Sheets sync failed:', sheetsError);
+      // Non-critical - continue
+    }
+
+    // Return success response
     return NextResponse.json({
       success: true,
-      message: 'Request submitted and processed',
-      data: inserted
+      message: 'Request submitted successfully',
+      requestId,
+      data: {
+        id: inserted.id,
+        requestId,
+        clientEmailSent,
+        adminEmailSent,
+        aiPostGenerated: true
+      }
     });
 
   } catch (error) {
@@ -72,15 +159,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Optional: Add other methods if needed
 export async function GET() {
-  return NextResponse.json(
-    { error: 'Method not allowed' },
-    { status: 405 }
-  );
-}
-
-export async function PUT() {
   return NextResponse.json(
     { error: 'Method not allowed' },
     { status: 405 }

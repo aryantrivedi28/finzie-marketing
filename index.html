@@ -1,0 +1,2638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finzie — Revenue Growth Partner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Outfit:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ─── TOKENS — Sunnyside warm dark editorial ─── */
+        :root {
+            --ink: #0D0B08;
+            --ink2: #141008;
+            --ink3: #1C1610;
+            --ink4: #231A0C;
+            --cream: #F5EFE0;
+            --cream2: #C8BEAA;
+            --muted: #8A7F6A;
+            --muted2: #58503E;
+            --gold: #E8B84B;
+            --gold2: #F5CC72;
+            --gdim: rgba(232, 184, 75, .10);
+            --gglo: rgba(232, 184, 75, .22);
+            --terra: #C4633A;
+            --tdim: rgba(196, 99, 58, .12);
+            --line: rgba(245, 239, 224, .08);
+            --line2: rgba(245, 239, 224, .15);
+            --serif: 'Playfair Display', Georgia, serif;
+            --sans: 'Outfit', system-ui, sans-serif;
+            --mw: 1200px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background: var(--ink);
+            color: var(--cream);
+            font-family: var(--sans);
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        .w {
+            max-width: var(--mw);
+            margin: 0 auto;
+            padding: 0 44px
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px
+        }
+
+        .tag::before {
+            content: '— ';
+            opacity: .4
+        }
+
+        /* ─── REVEAL ─── */
+        .r {
+            opacity: 0;
+            transform: translateY(26px);
+            transition: opacity .75s cubic-bezier(.22, 1, .36, 1), transform .75s cubic-bezier(.22, 1, .36, 1)
+        }
+
+        .r.on {
+            opacity: 1;
+            transform: none
+        }
+
+        .d1 {
+            transition-delay: .1s
+        }
+
+        .d2 {
+            transition-delay: .2s
+        }
+
+        .d3 {
+            transition-delay: .3s
+        }
+
+        .d4 {
+            transition-delay: .4s
+        }
+
+        .d5 {
+            transition-delay: .5s
+        }
+
+        .d6 {
+            transition-delay: .6s
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        @keyframes slideRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: .25
+            }
+
+            50% {
+                opacity: .9
+            }
+        }
+
+        @keyframes mq {
+            from {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        /* ─── BUTTONS ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--sans);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 5px;
+            transition: all .26s;
+            cursor: pointer;
+            letter-spacing: .01em
+        }
+
+        .btn.gold {
+            background: var(--gold);
+            color: var(--ink)
+        }
+
+        .btn.gold:hover {
+            background: var(--gold2);
+            box-shadow: 0 8px 28px var(--gglo);
+            transform: translateY(-2px)
+        }
+
+        .btn.outline {
+            background: transparent;
+            color: var(--cream);
+            border: 1px solid var(--line2)
+        }
+
+        .btn.outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-2px)
+        }
+
+        .btn.terra {
+            background: transparent;
+            border: 1px solid var(--terra);
+            color: var(--terra)
+        }
+
+        .btn.terra:hover {
+            background: var(--terra);
+            color: var(--cream);
+            transform: translateY(-2px)
+        }
+
+        /* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 900;
+            padding: 0 44px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background .4s, border-color .4s
+        }
+
+        nav.solid {
+            background: rgba(13, 11, 8, .96);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--line)
+        }
+
+        .logo {
+            font-family: var(--serif);
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--cream);
+            letter-spacing: -.02em
+        }
+
+        .logo em {
+            color: var(--gold);
+            font-style: normal
+        }
+
+        .nav-c {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%)
+        }
+
+        .nav-c a {
+            font-size: 13.5px;
+            color: var(--cream2);
+            padding: 6px 16px;
+            border-radius: 6px;
+            transition: color .2s
+        }
+
+        .nav-c a:hover {
+            color: var(--cream)
+        }
+
+        .nav-r {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .nav-pill {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--cream2);
+            padding: 7px 14px;
+            border: 1px solid var(--line2);
+            border-radius: 5px;
+            transition: all .2s
+        }
+
+        .nav-pill:hover {
+            border-color: var(--gold);
+            color: var(--gold)
+        }
+
+        .nav-btn {
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--gold);
+            color: var(--ink);
+            padding: 9px 20px;
+            border-radius: 5px;
+            transition: all .25s
+        }
+
+        .nav-btn:hover {
+            background: var(--gold2);
+            box-shadow: 0 4px 16px var(--gglo)
+        }
+
+        /* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 80px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .hbg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 110% 70% at 62% 28%, rgba(232, 184, 75, .075) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 55% at 12% 82%, rgba(196, 99, 58, .065) 0%, transparent 55%),
+                linear-gradient(175deg, #1E1508 0%, #0D0B08 50%, #120E06 100%);
+        }
+
+        .hbg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
+            background-size: 180px;
+            opacity: .5;
+            pointer-events: none
+        }
+
+        .h-rule {
+            position: absolute;
+            top: 57%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--line2) 18%, var(--line2) 82%, transparent)
+        }
+
+        .h-inner {
+            position: relative;
+            z-index: 2
+        }
+
+        .h-kicker {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            animation: slideRight 1s .3s both
+        }
+
+        .h-kicker::after {
+            content: '';
+            width: 48px;
+            height: 1px;
+            background: var(--gold);
+            opacity: .5
+        }
+
+        .h1 {
+            font-family: var(--serif);
+            font-size: clamp(54px, 8vw, 110px);
+            font-weight: 900;
+            line-height: .96;
+            letter-spacing: -.03em;
+            color: var(--cream);
+            margin-bottom: 40px;
+            animation: fadeUp 1s .4s both
+        }
+
+        .h1 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .h1 .l2 {
+            display: block;
+            padding-left: clamp(40px, 8vw, 130px)
+        }
+
+        .h-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: end;
+            animation: fadeUp 1s .6s both
+        }
+
+        .h-sub {
+            font-size: 18px;
+            color: var(--cream2);
+            line-height: 1.7;
+            font-weight: 300;
+            max-width: 460px
+        }
+
+        .h-sub strong {
+            color: var(--cream);
+            font-weight: 500
+        }
+
+        .h-acts {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 36px
+        }
+
+        .h-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .h-trust {
+            display: flex;
+            align-items: center;
+            gap: 0
+        }
+
+        .faces {
+            display: flex
+        }
+
+        .face {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2.5px solid var(--ink);
+            margin-right: -7px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--sans)
+        }
+
+        .face:nth-child(1) {
+            background: #2E1F08;
+            color: var(--gold)
+        }
+
+        .face:nth-child(2) {
+            background: #0E1E10;
+            color: #7EC88A
+        }
+
+        .face:nth-child(3) {
+            background: #1A100A;
+            color: var(--terra)
+        }
+
+        .h-trustlbl {
+            font-size: 13px;
+            color: var(--muted);
+            margin-left: 16px
+        }
+
+        .h-trustlbl strong {
+            color: var(--cream2);
+            font-weight: 500
+        }
+
+        .h-pq {
+            border-left: 2px solid var(--gold);
+            padding-left: 28px
+        }
+
+        .pqt {
+            font-family: var(--serif);
+            font-size: 22px;
+            font-weight: 700;
+            font-style: italic;
+            color: var(--cream2);
+            line-height: 1.55;
+            margin-bottom: 18px
+        }
+
+        .pqa {
+            font-size: 11px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--muted)
+        }
+
+        .scroll-cue {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--muted2);
+            z-index: 2;
+            animation: fadeUp 1s 2s both
+        }
+
+        .sline {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--muted2), transparent);
+            animation: pulse 2.5s 2s infinite
+        }
+
+        /* ══════════════════════════════════════
+   MARQUEE
+══════════════════════════════════════ */
+        .mq-wrap {
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: var(--ink2);
+            padding: 15px 0;
+            overflow: hidden
+        }
+
+        .mq-track {
+            display: flex;
+            width: max-content;
+            animation: mq 35s linear infinite
+        }
+
+        .mi {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 36px;
+            font-size: 12px;
+            letter-spacing: .06em;
+            color: var(--muted);
+            white-space: nowrap;
+            border-right: 1px solid var(--line);
+            text-transform: uppercase;
+            font-weight: 400
+        }
+
+        .mi .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--gold);
+            flex-shrink: 0
+        }
+
+        /* ══════════════════════════════════════
+   STATS
+══════════════════════════════════════ */
+        #stats {
+            padding: 80px 0;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr)
+        }
+
+        .stat {
+            padding: 30px 44px;
+            border-right: 1px solid var(--line)
+        }
+
+        .stat:last-child {
+            border-right: none
+        }
+
+        .sn {
+            font-family: var(--serif);
+            font-size: clamp(42px, 5.5vw, 66px);
+            font-weight: 900;
+            line-height: 1;
+            color: var(--cream);
+            margin-bottom: 8px;
+            letter-spacing: -.03em
+        }
+
+        .sn .g {
+            color: var(--gold)
+        }
+
+        .sl {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--muted)
+        }
+
+        .snote {
+            font-size: 12px;
+            color: var(--muted2);
+            margin-top: 5px;
+            font-style: italic
+        }
+
+        /* ══════════════════════════════════════
+   BRAND VIDEO  (NEW)
+══════════════════════════════════════ */
+        #brand-video {
+            padding: 100px 0;
+            border-bottom: 1px solid var(--line);
+            background: var(--ink2)
+        }
+
+        .bv-header {
+            text-align: center;
+            margin-bottom: 52px
+        }
+
+        .bv-h2 {
+            font-family: var(--serif);
+            font-size: clamp(34px, 4.5vw, 56px);
+            font-weight: 900;
+            letter-spacing: -.03em;
+            line-height: 1.05;
+            color: var(--cream);
+            margin-bottom: 14px
+        }
+
+        .bv-h2 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .bv-sub {
+            font-size: 17px;
+            color: var(--cream2);
+            font-weight: 300;
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.7
+        }
+
+        /* Video wrapper — 16:9 with play button overlay */
+        .video-outer {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--ink3);
+            border: 1px solid var(--line2);
+            cursor: pointer;
+            max-width: 900px;
+            margin: 0 auto
+        }
+
+        .video-outer::before {
+            content: '';
+            display: block;
+            padding-top: 56.25%
+        }
+
+        /* 16:9 ratio */
+        .video-thumb {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1E1508 0%, #2A1C0A 40%, #1A1208 100%)
+        }
+
+        .video-thumb-grain {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+            background-size: 160px;
+            pointer-events: none
+        }
+
+        /* Text inside the placeholder */
+        .video-placeholder-text {
+            position: absolute;
+            bottom: 36px;
+            left: 44px;
+            right: 44px;
+            text-align: left
+        }
+
+        .vpt-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: .7;
+            margin-bottom: 10px
+        }
+
+        .vpt-title {
+            font-family: var(--serif);
+            font-size: clamp(22px, 3vw, 38px);
+            font-weight: 900;
+            color: var(--cream);
+            line-height: 1.15
+        }
+
+        /* Play button */
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .3s;
+            z-index: 2;
+            flex-shrink: 0
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 60px var(--gglo)
+        }
+
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-top: 16px solid transparent;
+            border-bottom: 16px solid transparent;
+            border-left: 26px solid var(--ink);
+            margin-left: 6px
+        }
+
+        .video-dev-note {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 12px;
+            color: #E8783A;
+            font-style: italic
+        }
+
+        /* ══════════════════════════════════════
+   TESTIMONIALS  (moved up — 2nd scroll)
+══════════════════════════════════════ */
+        #testimonials {
+            padding: 100px 0;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .tl {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 88px;
+            align-items: start
+        }
+
+        .t-sticky {
+            position: sticky;
+            top: 100px
+        }
+
+        .t-h2 {
+            font-family: var(--serif);
+            font-size: clamp(32px, 4vw, 50px);
+            font-weight: 900;
+            letter-spacing: -.03em;
+            line-height: 1.05;
+            color: var(--cream);
+            margin-bottom: 16px
+        }
+
+        .t-h2 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .t-intro {
+            font-size: 15px;
+            color: var(--muted);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 20px
+        }
+
+        .t-note {
+            font-size: 12px;
+            color: #E8783A;
+            background: rgba(232, 120, 58, .07);
+            border: 1px dashed rgba(232, 120, 58, .3);
+            padding: 12px 16px;
+            border-radius: 5px;
+            line-height: 1.5
+        }
+
+        .t-stack {
+            display: flex;
+            flex-direction: column
+        }
+
+        .t-item {
+            border-top: 1px solid var(--line);
+            padding: 40px 0
+        }
+
+        .t-item:last-child {
+            border-bottom: 1px solid var(--line)
+        }
+
+        /* VIDEO TESTIMONIAL CARD */
+        .t-video {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--ink3);
+            border: 1px solid var(--line2);
+            cursor: pointer;
+            margin-bottom: 24px;
+            aspect-ratio: 16/9
+        }
+
+        .t-video-inner {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1E1508, #2A1C0A)
+        }
+
+        .t-play {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .3s
+        }
+
+        .t-play:hover {
+            transform: scale(1.12);
+            box-shadow: 0 0 40px var(--gglo)
+        }
+
+        .t-play-icon {
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 18px solid var(--ink);
+            margin-left: 4px
+        }
+
+        .t-video-label {
+            position: absolute;
+            top: 14px;
+            left: 16px;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: .8
+        }
+
+        .t-video-name {
+            position: absolute;
+            bottom: 14px;
+            left: 16px;
+            font-family: var(--serif);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--cream)
+        }
+
+        .t-video-role {
+            font-size: 11px;
+            color: var(--cream2);
+            margin-top: 2px;
+            display: block;
+            font-family: var(--sans);
+            font-weight: 300
+        }
+
+        /* Written testimonial (fallback / additional) */
+        .t-q {
+            font-family: var(--serif);
+            font-size: clamp(17px, 2vw, 22px);
+            font-weight: 700;
+            line-height: 1.5;
+            color: var(--cream);
+            font-style: italic;
+            margin-bottom: 24px
+        }
+
+        .t-by {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .t-av {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--sans);
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0
+        }
+
+        .t-item:nth-child(1) .t-av {
+            background: #2E1F08;
+            color: var(--gold)
+        }
+
+        .t-item:nth-child(2) .t-av {
+            background: #1A0E0A;
+            color: var(--terra)
+        }
+
+        .t-item:nth-child(3) .t-av {
+            background: #0E1A10;
+            color: #7EC88A
+        }
+
+        .t-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--cream);
+            margin-bottom: 2px
+        }
+
+        .t-role {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .t-badge {
+            margin-left: auto;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 4px
+        }
+
+        .t-item:nth-child(1) .t-badge {
+            background: var(--gdim);
+            color: var(--gold)
+        }
+
+        .t-item:nth-child(2) .t-badge {
+            background: var(--tdim);
+            color: var(--terra)
+        }
+
+        .t-item:nth-child(3) .t-badge {
+            background: rgba(126, 200, 138, .12);
+            color: #7EC88A
+        }
+
+        /* ══════════════════════════════════════
+   WHO WE SERVE
+══════════════════════════════════════ */
+        #serve {
+            padding: 120px 0;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .sv-hdr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+            margin-bottom: 80px;
+            padding-bottom: 60px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .sv-h2 {
+            font-family: var(--serif);
+            font-size: clamp(38px, 5vw, 62px);
+            font-weight: 900;
+            line-height: 1.0;
+            letter-spacing: -.03em;
+            color: var(--cream)
+        }
+
+        .sv-h2 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .sv-intro {
+            font-size: 18px;
+            color: var(--cream2);
+            font-weight: 300;
+            line-height: 1.7;
+            padding-top: 12px
+        }
+
+        .paths-duo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            background: var(--line)
+        }
+
+        .pp {
+            background: var(--ink2);
+            padding: 56px 52px;
+            position: relative;
+            overflow: hidden;
+            transition: background .4s
+        }
+
+        .pp:hover {
+            background: var(--ink3)
+        }
+
+        .pp::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px
+        }
+
+        .pp.biz::before {
+            background: linear-gradient(90deg, var(--gold), transparent)
+        }
+
+        .pp.ag::before {
+            background: linear-gradient(90deg, var(--terra), transparent)
+        }
+
+        .pp-bgnum {
+            position: absolute;
+            top: -20px;
+            right: -10px;
+            font-family: var(--serif);
+            font-size: 220px;
+            font-weight: 900;
+            line-height: 1;
+            opacity: .032;
+            pointer-events: none;
+            color: var(--cream);
+            user-select: none
+        }
+
+        .pp-eye {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .ag .pp-eye {
+            color: var(--terra)
+        }
+
+        .pp-eye::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 1px;
+            background: currentColor
+        }
+
+        .pp-h3 {
+            font-family: var(--serif);
+            font-size: clamp(26px, 3vw, 38px);
+            font-weight: 900;
+            line-height: 1.1;
+            color: var(--cream);
+            margin-bottom: 16px;
+            letter-spacing: -.02em
+        }
+
+        .pp-h3 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .ag .pp-h3 em {
+            color: var(--terra)
+        }
+
+        .pp-desc {
+            font-size: 15px;
+            color: var(--cream2);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 420px
+        }
+
+        .pp-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 40px
+        }
+
+        .pp-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--cream2);
+            font-weight: 300;
+            line-height: 1.45
+        }
+
+        .pp-list li::before {
+            content: '→';
+            color: var(--gold);
+            font-size: 13px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .ag .pp-list li::before {
+            color: var(--terra)
+        }
+
+        .pp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--sans);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 13px 26px;
+            border-radius: 5px;
+            transition: all .26s;
+            cursor: pointer
+        }
+
+        .biz .pp-btn {
+            background: var(--gold);
+            color: var(--ink)
+        }
+
+        .biz .pp-btn:hover {
+            background: var(--gold2);
+            box-shadow: 0 8px 28px var(--gglo);
+            transform: translateY(-2px)
+        }
+
+        .ag .pp-btn {
+            background: transparent;
+            border: 1px solid var(--terra);
+            color: var(--terra)
+        }
+
+        .ag .pp-btn:hover {
+            background: var(--terra);
+            color: var(--cream);
+            transform: translateY(-2px)
+        }
+
+        /* ══════════════════════════════════════
+   SERVICES  (broadened — end-to-end framing)
+══════════════════════════════════════ */
+        #services {
+            padding: 100px 0;
+            background: var(--ink2);
+            border-bottom: 1px solid var(--line)
+        }
+
+        .svc-layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 80px;
+            align-items: start
+        }
+
+        .svc-sticky {
+            position: sticky;
+            top: 100px
+        }
+
+        .svc-h2 {
+            font-family: var(--serif);
+            font-size: clamp(32px, 4vw, 52px);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -.03em;
+            color: var(--cream);
+            margin-bottom: 20px
+        }
+
+        .svc-h2 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .svc-sub {
+            font-size: 15px;
+            color: var(--cream2);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 32px
+        }
+
+        .svc-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gold);
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 2px;
+            transition: gap .2s, opacity .2s
+        }
+
+        .svc-all:hover {
+            gap: 14px;
+            opacity: .75
+        }
+
+        .svc-rows {
+            display: flex;
+            flex-direction: column
+        }
+
+        .svc-row {
+            border-top: 1px solid var(--line);
+            padding: 28px 0;
+            display: grid;
+            grid-template-columns: 32px 1fr 24px;
+            gap: 20px;
+            align-items: start;
+            cursor: pointer;
+            transition: padding-left .3s
+        }
+
+        .svc-row:last-child {
+            border-bottom: 1px solid var(--line)
+        }
+
+        .svc-row:hover {
+            padding-left: 8px
+        }
+
+        .svc-num {
+            font-family: var(--serif);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--muted);
+            margin-top: 4px
+        }
+
+        .svc-name {
+            font-family: var(--serif);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: 8px;
+            transition: color .2s
+        }
+
+        .svc-row:hover .svc-name {
+            color: var(--gold)
+        }
+
+        .svc-desc {
+            font-size: 13.5px;
+            color: var(--muted);
+            font-weight: 300;
+            line-height: 1.6;
+            margin-bottom: 12px
+        }
+
+        /* Outcome pills — no tool names at top level */
+        .svc-outcomes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px
+        }
+
+        .svc-out {
+            font-size: 11px;
+            color: var(--muted2);
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid var(--line);
+            padding: 3px 10px;
+            border-radius: 4px
+        }
+
+        .svc-arr {
+            font-size: 18px;
+            color: var(--muted2);
+            margin-top: 4px;
+            transition: color .2s, transform .2s
+        }
+
+        .svc-row:hover .svc-arr {
+            color: var(--gold);
+            transform: translateX(4px)
+        }
+
+        /* ══════════════════════════════════════
+   INDUSTRIES
+══════════════════════════════════════ */
+        #industries {
+            padding: 100px 0;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .ind-hdr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: end;
+            margin-bottom: 56px
+        }
+
+        .ind-h2 {
+            font-family: var(--serif);
+            font-size: clamp(34px, 4.5vw, 56px);
+            font-weight: 900;
+            line-height: 1.0;
+            letter-spacing: -.03em;
+            color: var(--cream)
+        }
+
+        .ind-h2 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .ind-sub {
+            font-size: 16px;
+            color: var(--cream2);
+            font-weight: 300;
+            line-height: 1.7
+        }
+
+        .ind-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            background: var(--line)
+        }
+
+        .ind-card {
+            background: var(--ink2);
+            padding: 36px 28px;
+            cursor: pointer;
+            transition: background .3s;
+            position: relative
+        }
+
+        .ind-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .3s
+        }
+
+        .ind-card:hover {
+            background: var(--ink3)
+        }
+
+        .ind-card:hover::after {
+            transform: scaleX(1)
+        }
+
+        .ind-g {
+            font-size: 28px;
+            margin-bottom: 14px;
+            display: block
+        }
+
+        .ind-name {
+            font-family: var(--serif);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: 7px;
+            transition: color .2s
+        }
+
+        .ind-card:hover .ind-name {
+            color: var(--gold)
+        }
+
+        .ind-line {
+            font-size: 12.5px;
+            color: var(--muted);
+            font-weight: 300;
+            line-height: 1.55
+        }
+
+        /* ══════════════════════════════════════
+   PROCESS
+══════════════════════════════════════ */
+        #process {
+            padding: 100px 0;
+            background: var(--ink2);
+            border-bottom: 1px solid var(--line);
+            position: relative;
+            overflow: hidden
+        }
+
+        .proc-deco {
+            position: absolute;
+            bottom: -60px;
+            right: -20px;
+            font-family: var(--serif);
+            font-size: 320px;
+            font-weight: 900;
+            color: var(--cream);
+            opacity: .02;
+            user-select: none;
+            pointer-events: none;
+            line-height: 1
+        }
+
+        .proc-hdr {
+            text-align: center;
+            margin-bottom: 72px
+        }
+
+        .proc-h2 {
+            font-family: var(--serif);
+            font-size: clamp(34px, 5vw, 58px);
+            font-weight: 900;
+            letter-spacing: -.03em;
+            color: var(--cream);
+            margin-bottom: 14px;
+            line-height: 1.05
+        }
+
+        .proc-h2 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .proc-sub {
+            font-size: 17px;
+            color: var(--cream2);
+            font-weight: 300;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.7
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: var(--line);
+            position: relative;
+            z-index: 1
+        }
+
+        .step {
+            background: var(--ink2);
+            padding: 52px 44px;
+            transition: background .3s
+        }
+
+        .step:hover {
+            background: var(--ink3)
+        }
+
+        .step-num {
+            font-family: var(--serif);
+            font-size: 80px;
+            font-weight: 900;
+            color: var(--gold);
+            opacity: .2;
+            line-height: 1;
+            margin-bottom: 20px;
+            transition: opacity .3s
+        }
+
+        .step:hover .step-num {
+            opacity: .4
+        }
+
+        .step-title {
+            font-family: var(--serif);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: 12px;
+            line-height: 1.2
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: var(--cream2);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 20px
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: .65
+        }
+
+        .step-badge::before {
+            content: '◆';
+            font-size: 7px
+        }
+
+        /* ══════════════════════════════════════
+   CASE STUDIES
+══════════════════════════════════════ */
+        #cases {
+            padding: 100px 0;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .c-hdr {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 56px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .c-h2 {
+            font-family: var(--serif);
+            font-size: clamp(34px, 4.5vw, 54px);
+            font-weight: 900;
+            letter-spacing: -.03em;
+            line-height: 1.05
+        }
+
+        .c-h2 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .c-all {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 2px;
+            transition: gap .2s;
+            white-space: nowrap
+        }
+
+        .c-all:hover {
+            gap: 14px
+        }
+
+        .c-list {
+            display: flex;
+            flex-direction: column
+        }
+
+        .c-row {
+            display: grid;
+            grid-template-columns: 72px 1fr 1fr 180px;
+            gap: 0;
+            align-items: center;
+            border-top: 1px solid var(--line);
+            padding: 36px 0;
+            cursor: pointer;
+            transition: background .3s
+        }
+
+        .c-row:last-child {
+            border-bottom: 1px solid var(--line)
+        }
+
+        .c-row:hover {
+            background: rgba(255, 255, 255, .014)
+        }
+
+        .c-idx {
+            font-family: var(--serif);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--muted2);
+            padding-left: 4px
+        }
+
+        .c-type {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 8px
+        }
+
+        .c-title {
+            font-family: var(--serif);
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--cream);
+            line-height: 1.25;
+            transition: color .2s
+        }
+
+        .c-row:hover .c-title {
+            color: var(--gold)
+        }
+
+        .c-result {
+            font-size: 14px;
+            color: var(--cream2);
+            font-weight: 300;
+            line-height: 1.6;
+            padding: 0 36px
+        }
+
+        .c-metric {
+            text-align: right
+        }
+
+        .c-num {
+            font-family: var(--serif);
+            font-size: 38px;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+            letter-spacing: -.03em
+        }
+
+        .c-lbl {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-top: 4px
+        }
+
+        .c-note {
+            font-size: 12px;
+            color: #E8783A;
+            background: rgba(232, 120, 58, .06);
+            border: 1px dashed rgba(232, 120, 58, .3);
+            padding: 14px 20px;
+            border-radius: 5px;
+            margin-top: 20px
+        }
+
+        /* ══════════════════════════════════════
+   FINAL CTA
+══════════════════════════════════════ */
+        #cta {
+            padding: 140px 0;
+            position: relative;
+            overflow: hidden;
+            text-align: center
+        }
+
+        .cta-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 90% 90% at 50% 50%, rgba(232, 184, 75, .075) 0%, transparent 65%)
+        }
+
+        .cta-deco {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--serif);
+            font-size: 320px;
+            font-weight: 900;
+            color: var(--gold);
+            opacity: .028;
+            line-height: 1;
+            user-select: none;
+            pointer-events: none
+        }
+
+        .cta-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto
+        }
+
+        .cta-h2 {
+            font-family: var(--serif);
+            font-size: clamp(42px, 6.5vw, 80px);
+            font-weight: 900;
+            line-height: .97;
+            letter-spacing: -.04em;
+            color: var(--cream);
+            margin-bottom: 28px
+        }
+
+        .cta-h2 em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .cta-sub {
+            font-size: 18px;
+            color: var(--cream2);
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 48px
+        }
+
+        .cta-btns {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap
+        }
+
+        .cta-note {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--muted2);
+            letter-spacing: .04em
+        }
+
+        /* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+        footer {
+            background: var(--ink);
+            border-top: 1px solid var(--line);
+            padding: 64px 0 36px
+        }
+
+        .ft {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 28px
+        }
+
+        .f-logo {
+            font-family: var(--serif);
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--cream);
+            margin-bottom: 12px;
+            letter-spacing: -.02em
+        }
+
+        .f-logo em {
+            font-style: normal;
+            color: var(--gold)
+        }
+
+        .f-tagline {
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 300;
+            line-height: 1.65;
+            max-width: 280px;
+            margin-bottom: 24px
+        }
+
+        .f-col-h {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--muted2);
+            margin-bottom: 18px
+        }
+
+        .f-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 11px
+        }
+
+        .f-links a {
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 300;
+            transition: color .2s
+        }
+
+        .f-links a:hover {
+            color: var(--cream)
+        }
+
+        .f-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--muted2)
+        }
+
+        /* ══════════════════════════════════════
+   VIDEO BRIEF  (anchor section for brand video strategy)
+══════════════════════════════════════ */
+        #video-brief {
+            display: none
+        }
+
+        /* hidden — just an anchor */
+
+        /* ══════════════════════════════════════
+   DEV LABELS
+══════════════════════════════════════ */
+        .sw {
+            position: relative
+        }
+
+        .devlbl {
+            position: absolute;
+            top: 14px;
+            left: 44px;
+            font-family: monospace;
+            font-size: 10px;
+            background: #E8783A;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 3px;
+            z-index: 50;
+            pointer-events: none;
+            font-weight: 600;
+            letter-spacing: .05em
+        }
+
+        .dev-pnl {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(10, 8, 5, .96);
+            border: 1px solid rgba(232, 120, 58, .4);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 11px;
+            color: var(--muted);
+            z-index: 999;
+            max-width: 240px;
+            line-height: 1.6
+        }
+
+        .dev-pnl strong {
+            color: #E8783A;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px
+        }
+
+        /* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+        @media(max-width:980px) {
+
+            .h-row,
+            .sv-hdr,
+            .ind-hdr {
+                grid-template-columns: 1fr;
+                gap: 32px
+            }
+
+            .paths-duo {
+                grid-template-columns: 1fr;
+                gap: 0
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .stat {
+                border-bottom: 1px solid var(--line)
+            }
+
+            .svc-layout {
+                grid-template-columns: 1fr;
+                gap: 40px
+            }
+
+            .svc-sticky {
+                position: static
+            }
+
+            .ind-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .steps {
+                grid-template-columns: 1fr
+            }
+
+            .c-row {
+                grid-template-columns: 50px 1fr
+            }
+
+            .c-result,
+            .c-metric {
+                display: none
+            }
+
+            .tl {
+                grid-template-columns: 1fr;
+                gap: 32px
+            }
+
+            .t-sticky {
+                position: static
+            }
+
+            .ft {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .f-bottom {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center
+            }
+
+            .nav-c {
+                display: none
+            }
+
+            .dev-pnl {
+                display: none
+            }
+
+            .devlbl {
+                display: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- DEV PANEL -->
+    <div class="dev-pnl">
+        <strong>🛠 Tech Lead Reference</strong>
+        Heading font: <b>Playfair Display</b><br>
+        Body font: <b>Outfit</b><br>
+        Background: <b>#0D0B08</b> (warm black)<br>
+        Gold: <b style="color:#E8B84B">#E8B84B</b><br>
+        Terracotta: <b style="color:#C4633A">#C4633A</b><br>
+        Orange labels = section notes<br>
+        ⚠️ = replace with real content
+    </div>
+
+    <!-- ─── NAV ─── -->
+    <nav id="nav">
+        <a href="#" class="logo">fin<em>zie</em></a>
+        <div class="nav-c">
+            <a href="/for-businesses">For Businesses</a>
+            <a href="/for-agencies">For Agencies</a>
+            <a href="/services">Services</a>
+            <a href="/work">Work</a>
+            <a href="/resources">Resources</a>
+        </div>
+        <div class="nav-r">
+            <a href="/contact" class="nav-pill">Contact Us</a>
+            <a href="#cta" class="nav-btn">Book a Free Call</a>
+        </div>
+    </nav>
+
+    <!-- ─── HERO ─── -->
+    <section id="hero" class="sw">
+        <div class="devlbl">S1 · HERO</div>
+        <div class="hbg"></div>
+        <div class="h-rule"></div>
+        <div class="h-inner w">
+            <div class="h-kicker">Revenue Growth Partner &nbsp;·&nbsp; White-Label Execution</div>
+            <h1 class="h1">Your Digital<br><span class="l2"><em>Growth</em> Team.</span></h1>
+            <div class="h-row">
+                <div>
+                    <p class="h-sub">From <strong>web development and GHL</strong> to <strong>SEO, paid ads, content and
+                            video</strong> — Finzie runs your entire digital operation so your business or agency grows
+                        without the chaos.<br><br>Long-term partners. Fixed scopes. One team that actually shows up.</p>
+                    <div class="h-acts">
+                        <div class="h-btns">
+                            <a href="#serve" class="btn gold">I'm a Business &nbsp;→</a>
+                            <a href="#serve" class="btn outline">I'm an Agency &nbsp;→</a>
+                        </div>
+                        <div class="h-trust">
+                            <div class="faces">
+                                <div class="face">JK</div>
+                                <div class="face">RM</div>
+                                <div class="face">AS</div>
+                            </div>
+                            <span class="h-trustlbl">Trusted by <strong>28+ businesses & agencies</strong>
+                                worldwide</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-pq">
+                    <p class="pqt">"We don't just build things for you. We become the team that grows your revenue —
+                        month after month."</p>
+                    <p class="pqa">Finzie — Revenue Growth Partner</p>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-cue"><span>Scroll</span>
+            <div class="sline"></div>
+        </div>
+    </section>
+
+    <!-- ─── MARQUEE ─── -->
+    <div class="mq-wrap">
+        <div class="mq-track">
+            <div class="mi"><span class="dot"></span>Web Development & Design</div>
+            <div class="mi"><span class="dot"></span>eCommerce & Shopify</div>
+            <div class="mi"><span class="dot"></span>GoHighLevel & CRM Automation</div>
+            <div class="mi"><span class="dot"></span>SEO & Content Strategy</div>
+            <div class="mi"><span class="dot"></span>Google & Meta Advertising</div>
+            <div class="mi"><span class="dot"></span>Video Editing & Production</div>
+            <div class="mi"><span class="dot"></span>Social Media Management</div>
+            <div class="mi"><span class="dot"></span>White-Label Execution</div>
+            <div class="mi"><span class="dot"></span>Sales Funnel & Automation</div>
+            <div class="mi"><span class="dot"></span>Brand Strategy & Identity</div>
+            <div class="mi"><span class="dot"></span>Web Development & Design</div>
+            <div class="mi"><span class="dot"></span>eCommerce & Shopify</div>
+            <div class="mi"><span class="dot"></span>GoHighLevel & CRM Automation</div>
+            <div class="mi"><span class="dot"></span>SEO & Content Strategy</div>
+            <div class="mi"><span class="dot"></span>Google & Meta Advertising</div>
+            <div class="mi"><span class="dot"></span>Video Editing & Production</div>
+            <div class="mi"><span class="dot"></span>Social Media Management</div>
+            <div class="mi"><span class="dot"></span>White-Label Execution</div>
+            <div class="mi"><span class="dot"></span>Sales Funnel & Automation</div>
+            <div class="mi"><span class="dot"></span>Brand Strategy & Identity</div>
+        </div>
+    </div>
+
+    <!-- ─── STATS ─── -->
+    <section id="stats" class="sw">
+        <div class="devlbl">S2 · STATS — Replace with real numbers</div>
+        <div class="w">
+            <div class="stats-row">
+                <div class="stat r">
+                    <div class="sn">28<span class="g">+</span></div>
+                    <div class="sl">Clients Served</div>
+                    <div class="snote">Businesses & agencies worldwide</div>
+                </div>
+                <div class="stat r d1">
+                    <div class="sn">120<span class="g">+</span></div>
+                    <div class="sl">Projects Delivered</div>
+                    <div class="snote">On time, fixed scope, every time</div>
+                </div>
+                <div class="stat r d2">
+                    <div class="sn">12<span class="g">+</span></div>
+                    <div class="sl">Industries Served</div>
+                    <div class="snote">eComm, Real Estate, Coaching & more</div>
+                </div>
+                <div class="stat r d3">
+                    <div class="sn"><span class="g">$</span>2M<span class="g">+</span></div>
+                    <div class="sl">Revenue Generated</div>
+                    <div class="snote">For our clients, combined</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── BRAND VIDEO ─── -->
+    <section id="brand-video" class="sw">
+        <div class="devlbl">S3 · BRAND VIDEO — Replace placeholder with actual Finzie brand video when ready</div>
+        <div class="w">
+            <div class="bv-header r">
+                <div class="tag">Who We Are</div>
+                <h2 class="bv-h2">We're not a vendor.<br>We're your <em>growth team.</em></h2>
+                <p class="bv-sub">See how Finzie works as a long-term revenue growth partner for businesses and agencies
+                    — and what makes us different from every agency you've tried before.</p>
+            </div>
+            <div class="video-outer r d1">
+                <div class="video-thumb">
+                    <div class="video-thumb-grain"></div>
+                    <!-- Play button in center -->
+                    <div class="play-btn">
+                        <div class="play-icon"></div>
+                    </div>
+                    <!-- Text overlay bottom-left -->
+                    <div class="video-placeholder-text">
+                        <div class="vpt-label">Finzie Brand Video</div>
+                        <div class="vpt-title">Your Revenue Growth Partner<br>— the full story.</div>
+                    </div>
+                </div>
+            </div>
+            <p class="video-dev-note">⚠️ TECH NOTE: Replace this placeholder with the actual Finzie brand video embed
+                (YouTube, Vimeo, or native mp4). See Video Brief section below for what the video should contain.</p>
+        </div>
+    </section>
+
+    <!-- ─── TESTIMONIALS (moved up — 2nd scroll after video) ─── -->
+    <section id="testimonials" class="sw">
+        <div class="devlbl">S4 · TESTIMONIALS — Moved up for early social proof. Video testimonials shown first.</div>
+        <div class="w">
+            <div class="tl">
+                <div class="t-sticky">
+                    <div class="tag r">What Clients Say</div>
+                    <h2 class="t-h2 r d1">Don't take<br>our <em>word for it.</em></h2>
+                    <p class="t-intro r d2">Real results from real clients — businesses, agencies, and eCommerce brands
+                        that chose Finzie as their long-term growth partner.</p>
+                    <p class="t-note r d3">⚠️ Replace all placeholders with real testimonials. Video testimonials
+                        preferred. Full name, role, company. One from each audience type (business, agency, eCommerce).
+                    </p>
+                </div>
+
+                <div class="t-stack">
+                    <!-- Testimonial 1 — Video + Written -->
+                    <div class="t-item r">
+                        <!-- Video testimonial placeholder -->
+                        <div class="t-video">
+                            <div class="t-video-inner">
+                                <div class="t-play">
+                                    <div class="t-play-icon"></div>
+                                </div>
+                                <div class="t-video-label">Video Testimonial — Business Client</div>
+                                <div class="t-video-name">Sarah K. <span class="t-video-role">Founder, Skincare
+                                        eCommerce Brand</span></div>
+                            </div>
+                        </div>
+                        <!-- Written quote as fallback / supplement -->
+                        <div class="t-q">"Before Finzie, I was paying three different vendors and nothing talked to each
+                            other. Now I have one team handling everything — revenue is up 40% in 4 months."</div>
+                        <div class="t-by">
+                            <div class="t-av">SK</div>
+                            <div>
+                                <div class="t-name">Sarah K.</div>
+                                <div class="t-role">Founder, Skincare eCommerce Brand</div>
+                            </div>
+                            <span class="t-badge">Business Client</span>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 2 — Video + Written -->
+                    <div class="t-item r d1">
+                        <div class="t-video">
+                            <div class="t-video-inner">
+                                <div class="t-play">
+                                    <div class="t-play-icon"></div>
+                                </div>
+                                <div class="t-video-label">Video Testimonial — Agency Client</div>
+                                <div class="t-video-name">Marcus R. <span class="t-video-role">CEO, Digital Marketing
+                                        Agency (US)</span></div>
+                            </div>
+                        </div>
+                        <div class="t-q">"We were turning down projects because we couldn't hire fast enough. Finzie
+                            became our backend team overnight. Three months in, we've delivered for 8 new clients — and
+                            they have no idea."</div>
+                        <div class="t-by">
+                            <div class="t-av">MR</div>
+                            <div>
+                                <div class="t-name">Marcus R.</div>
+                                <div class="t-role">CEO, Digital Marketing Agency (US)</div>
+                            </div>
+                            <span class="t-badge">Agency Client</span>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 3 — Written only (video optional) -->
+                    <div class="t-item r d2">
+                        <div class="t-q">"They understood our brand better than we explained it, delivered on time, and
+                            the results were immediate. Our conversion rate went from 1.2% to 3.1% in 6 weeks."</div>
+                        <div class="t-by">
+                            <div class="t-av">AT</div>
+                            <div>
+                                <div class="t-name">Anika T.</div>
+                                <div class="t-role">Co-Founder, Fashion eCommerce (UK)</div>
+                            </div>
+                            <span class="t-badge">eCommerce</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── WHO WE SERVE ─── -->
+    <section id="serve" class="sw">
+        <div class="devlbl">S5 · WHO WE SERVE — Core dual-audience split. Most important conversion section.</div>
+        <div class="w">
+            <div class="sv-hdr">
+                <div class="r">
+                    <div class="tag">Who We Work With</div>
+                    <h2 class="sv-h2">One team.<br><em>Two paths.</em><br>Both built to last.</h2>
+                </div>
+                <p class="sv-intro r d1">Whether you're a business that needs a complete digital growth team, or an
+                    agency that needs a reliable execution partner — Finzie has a dedicated lane built for you.</p>
+            </div>
+            <div class="paths-duo">
+                <!-- BUSINESS -->
+                <div class="pp biz r">
+                    <span class="pp-bgnum">B</span>
+                    <div class="pp-eye">For Businesses, Brands & eCommerce</div>
+                    <h3 class="pp-h3">Your <em>Revenue Growth</em><br>Partner</h3>
+                    <p class="pp-desc">Your business needs a full digital team — not five different vendors to manage.
+                        Finzie becomes your end-to-end digital department on a monthly retainer. You focus on your
+                        product. We grow your revenue.</p>
+                    <ul class="pp-list">
+                        <li>Your entire digital presence — built and managed</li>
+                        <li>Every marketing channel handled under one roof</li>
+                        <li>Customer acquisition systems that run on autopilot</li>
+                        <li>Content, creative, and brand that makes you stand out</li>
+                        <li>One team. One invoice. Zero coordination headaches.</li>
+                    </ul>
+                    <a href="#cta" class="pp-btn">Grow My Business →</a>
+                </div>
+                <!-- AGENCY -->
+                <div class="pp ag r d2">
+                    <span class="pp-bgnum">A</span>
+                    <div class="pp-eye">For Digital Agencies & GHL Partners</div>
+                    <h3 class="pp-h3">Your White-Label<br><em>Execution Partner</em></h3>
+                    <p class="pp-desc">You close the deals. We build the work — under your brand, at a fixed scope, with
+                        a dedicated team. Your clients never know we exist. You keep 100% of the relationship and all
+                        the margin.</p>
+                    <ul class="pp-list">
+                        <li>Every service your clients need — fulfilled silently</li>
+                        <li>Fixed scope every time — no surprises, no hourly billing</li>
+                        <li>NDA signed — your clients are yours, always</li>
+                        <li>Dedicated team, not a marketplace or random freelancers</li>
+                        <li>Scale to any capacity without making a single hire</li>
+                    </ul>
+                    <a href="#cta" class="pp-btn">Scale My Agency →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── SERVICES (end-to-end, outcome-framed) ─── -->
+    <section id="services" class="sw">
+        <div class="devlbl">S6 · SERVICES — End-to-end framing. Outcome-based. No single-tool specificity at heading
+            level.</div>
+        <div class="w">
+            <div class="svc-layout">
+                <div class="svc-sticky">
+                    <div class="tag r">What We Do</div>
+                    <h2 class="svc-h2 r d1">Everything your<br>business needs<br>to <em>grow online.</em></h2>
+                    <p class="svc-sub r d2">We're not a tool. We're not a niche agency. We're the one team that covers
+                        every aspect of your digital growth — from the first impression to the closed deal.</p>
+                    <a href="#" class="svc-all r d3">Explore all services →</a>
+                </div>
+                <div class="svc-rows">
+
+                    <div class="svc-row r">
+                        <div class="svc-num">01</div>
+                        <div>
+                            <div class="svc-name">Web Presence & Development</div>
+                            <div class="svc-desc">Your website is your most valuable sales asset. We design, build, and
+                                continuously optimize your entire web presence — from your homepage to your store to
+                                your landing pages — to turn visitors into paying customers.</div>
+                            <div class="svc-outcomes"><span class="svc-out">Websites</span><span
+                                    class="svc-out">eCommerce Stores</span><span class="svc-out">Landing
+                                    Pages</span><span class="svc-out">Web Apps</span><span
+                                    class="svc-out">Maintenance</span></div>
+                        </div>
+                        <div class="svc-arr">→</div>
+                    </div>
+
+                    <div class="svc-row r d1">
+                        <div class="svc-num">02</div>
+                        <div>
+                            <div class="svc-name">Marketing & Customer Acquisition</div>
+                            <div class="svc-desc">From search to social to paid — we run the full marketing stack that
+                                brings the right customers to your business consistently. No more guessing which channel
+                                works. We test, optimize, and scale what gets results.</div>
+                            <div class="svc-outcomes"><span class="svc-out">SEO</span><span class="svc-out">Google
+                                    Ads</span><span class="svc-out">Meta Ads</span><span class="svc-out">Social
+                                    Media</span><span class="svc-out">Lead Generation</span></div>
+                        </div>
+                        <div class="svc-arr">→</div>
+                    </div>
+
+                    <div class="svc-row r d2">
+                        <div class="svc-num">03</div>
+                        <div>
+                            <div class="svc-name">CRM, Automation & Systems</div>
+                            <div class="svc-desc">Every lead that comes in deserves to be followed up with — instantly,
+                                automatically, and intelligently. We build the backend systems that turn your pipeline
+                                into a machine that never sleeps and never lets a deal fall through.</div>
+                            <div class="svc-outcomes"><span class="svc-out">CRM Setup</span><span class="svc-out">Sales
+                                    Funnels</span><span class="svc-out">Email Automation</span><span
+                                    class="svc-out">Lead Workflows</span><span class="svc-out">Integrations</span></div>
+                        </div>
+                        <div class="svc-arr">→</div>
+                    </div>
+
+                    <div class="svc-row r d3">
+                        <div class="svc-num">04</div>
+                        <div>
+                            <div class="svc-name">Content, Creative & Brand</div>
+                            <div class="svc-desc">Great execution needs great content. We produce the writing, video,
+                                graphics, and brand assets that make your business look and sound credible at every
+                                touchpoint — from your website to your ad creative to your social feed.</div>
+                            <div class="svc-outcomes"><span class="svc-out">Content Writing</span><span
+                                    class="svc-out">Video Editing</span><span class="svc-out">Graphic Design</span><span
+                                    class="svc-out">Ad Creative</span><span class="svc-out">Brand Identity</span></div>
+                        </div>
+                        <div class="svc-arr">→</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── INDUSTRIES ─── -->
+    <section id="industries" class="sw">
+        <div class="devlbl">S7 · INDUSTRIES — 'They know my world' trust builder</div>
+        <div class="w">
+            <div class="ind-hdr">
+                <div class="r">
+                    <div class="tag">Industries We Know</div>
+                    <h2 class="ind-h2">We've been in<br>your world <em>before.</em></h2>
+                </div>
+                <p class="ind-sub r d1">Every industry has different buyer behavior and competitive dynamics. We don't
+                    start from zero — we come in already knowing what works in your market.</p>
+            </div>
+            <div class="ind-grid">
+                <div class="ind-card r"><span class="ind-g">🛒</span>
+                    <div class="ind-name">eCommerce & Retail</div>
+                    <div class="ind-line">Stores, ad campaigns, email flows, and retention systems that scale revenue.
+                    </div>
+                </div>
+                <div class="ind-card r d1"><span class="ind-g">🏠</span>
+                    <div class="ind-name">Real Estate</div>
+                    <div class="ind-line">Lead funnels, CRM automation, and follow-up sequences that convert inquiries.
+                    </div>
+                </div>
+                <div class="ind-card r d2"><span class="ind-g">📚</span>
+                    <div class="ind-name">Coaches & Educators</div>
+                    <div class="ind-line">Course funnels, community platforms, and content that sells your expertise.
+                    </div>
+                </div>
+                <div class="ind-card r d3"><span class="ind-g">⚖️</span>
+                    <div class="ind-name">Professional Services</div>
+                    <div class="ind-line">Authority content and lead systems for law firms, consultants, and advisors.
+                    </div>
+                </div>
+                <div class="ind-card r"><span class="ind-g">🏥</span>
+                    <div class="ind-name">Health & Wellness</div>
+                    <div class="ind-line">Compliant, conversion-focused digital presence for clinics and health brands.
+                    </div>
+                </div>
+                <div class="ind-card r d1"><span class="ind-g">💻</span>
+                    <div class="ind-name">SaaS & Tech</div>
+                    <div class="ind-line">Product pages, trial funnels, and content that converts both developers and
+                        buyers.</div>
+                </div>
+                <div class="ind-card r d2"><span class="ind-g">🍽️</span>
+                    <div class="ind-name">Food & Hospitality</div>
+                    <div class="ind-line">Local SEO, social content, and ad campaigns for restaurants and hospitality.
+                    </div>
+                </div>
+                <div class="ind-card r d3"><span class="ind-g">🤝</span>
+                    <div class="ind-name">Digital Agencies</div>
+                    <div class="ind-line">White-label fulfillment so agencies scale their client work without any new
+                        hires.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── PROCESS ─── -->
+    <section id="process" class="sw">
+        <div class="devlbl">S8 · HOW IT WORKS — Removes 'what happens after I reach out' anxiety</div>
+        <div class="proc-deco">3</div>
+        <div class="w">
+            <div class="proc-hdr">
+                <div class="tag r">The Process</div>
+                <h2 class="proc-h2 r d1">From first call to<br>first <em>results.</em></h2>
+                <p class="proc-sub r d2">No mystery, no ambiguity. A clear three-step process that gets results every
+                    single time.</p>
+            </div>
+            <div class="steps">
+                <div class="step r">
+                    <div class="step-num">01</div>
+                    <div class="step-title">Book a Free Growth Call</div>
+                    <div class="step-desc">30 minutes. We talk through your business, your goals, and exactly where
+                        you're stuck. No pitch deck, no pressure — just a straight conversation about what growth looks
+                        like for you.</div>
+                    <span class="step-badge">30 minutes · completely free</span>
+                </div>
+                <div class="step r d2">
+                    <div class="step-num">02</div>
+                    <div class="step-title">We Scope & Plan</div>
+                    <div class="step-desc">We build a fixed-scope proposal — exactly what we'll do, what it costs, and
+                        what you'll see as a result. You know everything before we start. No hourly billing. No scope
+                        creep. No surprises.</div>
+                    <span class="step-badge">2–3 business days turnaround</span>
+                </div>
+                <div class="step r d4">
+                    <div class="step-num">03</div>
+                    <div class="step-title">Execution & Growth</div>
+                    <div class="step-desc">Your dedicated Finzie team gets to work. Monthly check-ins, clear reporting,
+                        and a team that genuinely cares about your long-term growth — because we're not here for a
+                        project. We're here to be your partner.</div>
+                    <span class="step-badge">Month-to-month retainer</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── CASE STUDIES ─── -->
+    <section id="cases" class="sw">
+        <div class="devlbl">S9 · CASE STUDIES — Replace placeholders with real results immediately</div>
+        <div class="w">
+            <div class="c-hdr">
+                <div>
+                    <div class="tag r">Real Results</div>
+                    <h2 class="c-h2 r d1">What growth<br><em>actually looks like.</em></h2>
+                </div>
+                <a href="#" class="c-all r d2">View all results →</a>
+            </div>
+            <div class="c-list">
+                <div class="c-row r">
+                    <div class="c-idx">01</div>
+                    <div>
+                        <div class="c-type">eCommerce · Web & Marketing</div>
+                        <div class="c-title">Fashion brand doubles revenue with a full digital rebuild and content
+                            strategy</div>
+                    </div>
+                    <div class="c-result">Slow, poorly converting website and zero organic presence. Complete digital
+                        rebuild — new store, SEO content strategy, and social campaigns launched together.</div>
+                    <div class="c-metric">
+                        <div class="c-num">+67%</div>
+                        <div class="c-lbl">Revenue Growth</div>
+                    </div>
+                </div>
+                <div class="c-row r d1">
+                    <div class="c-idx">02</div>
+                    <div>
+                        <div class="c-type">Real Estate · Automation & Paid Ads</div>
+                        <div class="c-title">Real estate agency triples lead volume with automation and paid campaigns
+                        </div>
+                    </div>
+                    <div class="c-result">Losing leads due to slow follow-up. Built full CRM automation with instant
+                        follow-up sequences alongside a targeted paid ad campaign.</div>
+                    <div class="c-metric">
+                        <div class="c-num">3×</div>
+                        <div class="c-lbl">Lead Volume</div>
+                    </div>
+                </div>
+                <div class="c-row r d2">
+                    <div class="c-idx">03</div>
+                    <div>
+                        <div class="c-type">Digital Agency · White-Label Partner</div>
+                        <div class="c-title">US marketing agency scales to 12 new clients without making a single hire
+                        </div>
+                    </div>
+                    <div class="c-result">Dev team at capacity. Finzie became the silent execution partner — fulfilling
+                        all client deliverables under the agency's brand.</div>
+                    <div class="c-metric">
+                        <div class="c-num">+40%</div>
+                        <div class="c-lbl">Agency Revenue</div>
+                    </div>
+                </div>
+            </div>
+            <p class="c-note">⚠️ TECH NOTE: These are placeholder case studies. Replace with real client results as soon
+                as available. Each row links to a full case study page with more detail.</p>
+        </div>
+    </section>
+
+    <!-- ─── FINAL CTA ─── -->
+    <section id="cta" class="sw">
+        <div class="devlbl">S10 · FINAL CTA — Warm, low-pressure close</div>
+        <div class="cta-bg"></div>
+        <div class="cta-deco">"</div>
+        <div class="w">
+            <div class="cta-inner">
+                <div class="tag r" style="display:block;text-align:center">Ready When You Are</div>
+                <h2 class="cta-h2 r d1">Let's build something<br>that <em>actually grows.</em></h2>
+                <p class="cta-sub r d2">Book a free 30-minute call. We'll talk through your business and what Finzie can
+                    do — no pressure, no pitch deck, no obligation.</p>
+                <div class="cta-btns r d3">
+                    <a href="#" class="btn gold" style="font-size:15px;padding:16px 32px">Book a Free Growth Call →</a>
+                    <a href="#services" class="btn outline" style="font-size:15px;padding:16px 32px">Explore Our
+                        Services</a>
+                </div>
+                <p class="cta-note r d4">30 minutes &nbsp;·&nbsp; No commitment &nbsp;·&nbsp; We reply within 4 hours
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── FOOTER ─── -->
+    <footer>
+        <div class="w">
+            <div class="ft">
+                <div>
+                    <div class="f-logo">fin<em>zie</em></div>
+                    <div class="f-tagline">Revenue Growth Partner for businesses. White-Label Execution Partner for
+                        agencies. Everything you need to grow — in one team.</div>
+                    <a href="#cta" class="btn gold" style="font-size:13px;padding:11px 22px">Book a Free Call →</a>
+                </div>
+                <div>
+                    <div class="f-col-h">For Businesses</div>
+                    <ul class="f-links">
+                        <li><a href="#">Web & eCommerce</a></li>
+                        <li><a href="#">Marketing & Ads</a></li>
+                        <li><a href="#">CRM & Automation</a></li>
+                        <li><a href="#">Content & Creative</a></li>
+                        <li><a href="#">View All Services</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="f-col-h">For Agencies</div>
+                    <ul class="f-links">
+                        <li><a href="#">White-Label Development</a></li>
+                        <li><a href="#">White-Label Marketing</a></li>
+                        <li><a href="#">White-Label Automation</a></li>
+                        <li><a href="#">White-Label Creative</a></li>
+                        <li><a href="#">Agency Partnership</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="f-col-h">Company</div>
+                    <ul class="f-links">
+                        <li><a href="#">About Finzie</a></li>
+                        <li><a href="#">Case Studies</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="f-bottom">
+                <span>© 2026 Finzie. All rights reserved.</span>
+                <span>Privacy Policy &nbsp;·&nbsp; Terms of Service</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ─── VIDEO BRIEF (hidden anchor — for reference) ─── -->
+    <div id="video-brief" style="display:none">
+        <!--
+  FINZIE BRAND VIDEO BRIEF
+  ========================
+  Duration: 60–90 seconds
+  Tone: Confident, warm, human — NOT corporate. Think Sunnyside energy.
+  
+  SCRIPT STRUCTURE:
+  
+  0:00–0:10  HOOK
+  "Most businesses are stuck juggling five different vendors who never talk to each other.
+   Most agencies are turning down work because their team can't keep up."
+  
+  0:10–0:25  THE PROBLEM
+  "The result? Chaos. Missed leads. Inconsistent results. And zero clarity on what's working."
+  
+  0:25–0:40  THE SOLUTION
+  "Finzie changes that. We become your dedicated digital team — your one partner
+   for web, marketing, automation, content, and everything in between."
+  
+  0:40–0:60  THE PROOF + POSITIONING
+  "For businesses, we're your revenue growth partner — we build and run
+   your entire digital operation so you can focus on your product.
+   For agencies, we're your white-label execution team — you sell the work,
+   we build it, under your brand, every time."
+  
+  0:60–0:80  CTA
+  "Fixed scopes. Dedicated experts. Long-term partnership. 
+   Book a free 30-minute call — let's talk about what growth looks like for you."
+  
+  VISUAL STYLE:
+  - Warm, cinematic — no stock footage
+  - Real team shots if possible
+  - Text overlays with Playfair Display headings
+  - Color grade: warm, golden tones — not cold blue
+  - Background music: calm, confident, editorial
+  
+  RATIO: 16:9 landscape for homepage embed
+  -->
+    </div>
+
+    <script>
+        // Nav
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => nav.classList.toggle('solid', window.scrollY > 60), { passive: true });
+
+        // Reveal
+        const io = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('on'); }), { threshold: .08, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.r').forEach(el => io.observe(el));
+
+        // Play button hover pulse
+        document.querySelectorAll('.play-btn, .t-play').forEach(btn => {
+            btn.addEventListener('mouseenter', () => btn.style.transform = 'scale(1.12)');
+            btn.addEventListener('mouseleave', () => btn.style.transform = '');
+        });
+    </script>
+</body>
+
+</html>
