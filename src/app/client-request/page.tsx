@@ -134,7 +134,7 @@ export default function ClientRequestForm() {
   // Update subcategories when service category changes
   useEffect(() => {
     if (form.serviceCategory) {
-      setAvailableSubCategories(SERVICE_CATEGORIES[form.serviceCategory as ServiceCategory]);
+      setAvailableSubCategories([...SERVICE_CATEGORIES[form.serviceCategory as ServiceCategory]]);
       // Reset subcategory when category changes
       setForm(prev => ({ ...prev, subCategory: '' }));
       // Clear error for subCategory if it exists
@@ -271,8 +271,8 @@ export default function ClientRequestForm() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className={`mb-6 p-4 rounded-xl ${submitStatus.type === 'success'
-                ? 'bg-green-500/10 border border-green-500/20 text-green-700'
-                : 'bg-red-500/10 border border-red-500/20 text-red-700'
+              ? 'bg-green-500/10 border border-green-500/20 text-green-700'
+              : 'bg-red-500/10 border border-red-500/20 text-red-700'
               }`}
           >
             <div className="flex items-center gap-3">
@@ -304,10 +304,10 @@ export default function ClientRequestForm() {
                 onBlur={handleBlur}
                 placeholder="Enter your full name"
                 className={`w-full px-4 py-3 bg-[#faf4e5] border rounded-xl text-[#050504] placeholder-[#31302f]/50 focus:outline-none focus:border-[#f7af00] transition-colors ${getFieldStatus('fullName').hasError
-                    ? 'border-red-500'
-                    : getFieldStatus('fullName').isValid
-                      ? 'border-green-500'
-                      : 'border-[#050504]/20'
+                  ? 'border-red-500'
+                  : getFieldStatus('fullName').isValid
+                    ? 'border-green-500'
+                    : 'border-[#050504]/20'
                   }`}
                 aria-invalid={getFieldStatus('fullName').hasError}
                 aria-describedby={errors.fullName ? 'fullName-error' : undefined}
@@ -333,10 +333,10 @@ export default function ClientRequestForm() {
                 onBlur={handleBlur}
                 placeholder="Enter your email"
                 className={`w-full px-4 py-3 bg-[#faf4e5] border rounded-xl text-[#050504] placeholder-[#31302f]/50 focus:outline-none focus:border-[#f7af00] transition-colors ${getFieldStatus('email').hasError
-                    ? 'border-red-500'
-                    : getFieldStatus('email').isValid
-                      ? 'border-green-500'
-                      : 'border-[#050504]/20'
+                  ? 'border-red-500'
+                  : getFieldStatus('email').isValid
+                    ? 'border-green-500'
+                    : 'border-[#050504]/20'
                   }`}
                 aria-invalid={getFieldStatus('email').hasError}
                 aria-describedby={errors.email ? 'email-error' : undefined}
@@ -362,10 +362,10 @@ export default function ClientRequestForm() {
                 onBlur={handleBlur}
                 placeholder="Enter your WhatsApp number"
                 className={`w-full px-4 py-3 bg-[#faf4e5] border rounded-xl text-[#050504] placeholder-[#31302f]/50 focus:outline-none focus:border-[#f7af00] transition-colors ${getFieldStatus('whatsappNumber').hasError
-                    ? 'border-red-500'
-                    : getFieldStatus('whatsappNumber').isValid
-                      ? 'border-green-500'
-                      : 'border-[#050504]/20'
+                  ? 'border-red-500'
+                  : getFieldStatus('whatsappNumber').isValid
+                    ? 'border-green-500'
+                    : 'border-[#050504]/20'
                   }`}
                 aria-invalid={getFieldStatus('whatsappNumber').hasError}
                 aria-describedby={errors.whatsappNumber ? 'whatsapp-error' : undefined}
@@ -390,10 +390,10 @@ export default function ClientRequestForm() {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   className={`w-full px-4 py-3 bg-[#faf4e5] border rounded-xl text-[#050504] appearance-none focus:outline-none focus:border-[#f7af00] transition-colors cursor-pointer ${getFieldStatus('serviceCategory').hasError
-                      ? 'border-red-500'
-                      : getFieldStatus('serviceCategory').isValid
-                        ? 'border-green-500'
-                        : 'border-[#050504]/20'
+                    ? 'border-red-500'
+                    : getFieldStatus('serviceCategory').isValid
+                      ? 'border-green-500'
+                      : 'border-[#050504]/20'
                     }`}
                   aria-invalid={getFieldStatus('serviceCategory').hasError}
                   aria-describedby={errors.serviceCategory ? 'category-error' : undefined}
@@ -428,10 +428,10 @@ export default function ClientRequestForm() {
                   onBlur={handleBlur}
                   disabled={!form.serviceCategory}
                   className={`w-full px-4 py-3 bg-[#faf4e5] border rounded-xl text-[#050504] appearance-none focus:outline-none focus:border-[#f7af00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${getFieldStatus('subCategory').hasError
-                      ? 'border-red-500'
-                      : getFieldStatus('subCategory').isValid
-                        ? 'border-green-500'
-                        : 'border-[#050504]/20'
+                    ? 'border-red-500'
+                    : getFieldStatus('subCategory').isValid
+                      ? 'border-green-500'
+                      : 'border-[#050504]/20'
                     }`}
                   aria-invalid={getFieldStatus('subCategory').hasError}
                   aria-describedby={errors.subCategory ? 'subcategory-error' : undefined}
@@ -468,10 +468,10 @@ export default function ClientRequestForm() {
                 placeholder="Please describe your project in detail..."
                 rows={5}
                 className={`w-full px-4 py-3 bg-[#faf4e5] border rounded-xl text-[#050504] placeholder-[#31302f]/50 focus:outline-none focus:border-[#f7af00] transition-colors resize-none ${getFieldStatus('requirement').hasError
-                    ? 'border-red-500'
-                    : getFieldStatus('requirement').isValid
-                      ? 'border-green-500'
-                      : 'border-[#050504]/20'
+                  ? 'border-red-500'
+                  : getFieldStatus('requirement').isValid
+                    ? 'border-green-500'
+                    : 'border-[#050504]/20'
                   }`}
                 aria-invalid={getFieldStatus('requirement').hasError}
                 aria-describedby={errors.requirement ? 'requirement-error' : undefined}
