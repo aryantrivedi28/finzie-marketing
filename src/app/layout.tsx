@@ -59,10 +59,7 @@ export default function RootLayout({
           ></iframe>
         </noscript>
         {/* <GoogleAnalytics /> */}
-        <Header />
         <main className="flex-grow">{children}</main>
-        <Toaster />
-        <Footer />
       </body>
     </html>
   );

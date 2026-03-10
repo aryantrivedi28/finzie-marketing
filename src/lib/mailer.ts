@@ -1,4 +1,4 @@
-// lib/services/emailService.ts
+// lib/mailer.ts
 import nodemailer from "nodemailer";
 
 // Create transporter (reusable)
@@ -12,7 +12,7 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-// Send email to client (thank you)
+// Send thank you email to client
 export const sendClientEmail = async (
   to: string,
   fullName: string,
@@ -92,7 +92,7 @@ export const sendClientEmail = async (
             
             <!-- CTA Button -->
             <div style="text-align: center; margin: 32px 0 24px;">
-              <a href="https://yourdomain.com/status/${requestId}" style="background: #f7af00; color: #050504; padding: 14px 36px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; border: none; box-shadow: 0 2px 8px rgba(247, 175, 0, 0.3);">Track Your Request</a>
+              <a href="https://finzie.in/status/${requestId}" style="background: #f7af00; color: #050504; padding: 14px 36px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; border: none; box-shadow: 0 2px 8px rgba(247, 175, 0, 0.3);">Track Your Request</a>
             </div>
             
             <!-- Note -->
@@ -239,7 +239,7 @@ export const sendAdminEmail = async (data: {
             
             <!-- Action Buttons -->
             <div style="display: flex; gap: 12px; justify-content: center; margin: 32px 0;">
-              <a href="https://yourdomain.com/admin/requests/${data.requestId}" class="button">View in Dashboard</a>
+              <a href="https://finzie.in/admin/requests/${data.requestId}" class="button">View in Dashboard</a>
               <a href="mailto:${data.email}" class="button" style="background: #4caf50;">Reply to Client</a>
             </div>
             
@@ -292,7 +292,7 @@ export const sendAdminEmail = async (data: {
       - AI post generated
       - Thank you email sent to client
       
-      View in dashboard: https://yourdomain.com/admin/requests/${data.requestId}
+      View in dashboard: https://finzie.in/admin/requests/${data.requestId}
     `;
 
     await transporter.sendMail({
@@ -312,7 +312,7 @@ export const sendAdminEmail = async (data: {
   }
 };
 
-// Generic email sender (if needed for other purposes)
+// Generic email sender (if needed)
 export const sendEmail = async (
   to: string,
   subject: string,

@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../lib/SupabaseAuthClient';
 import { syncToGoogleSheets } from '../../../lib/googleSheetSync';
-// app/api/client-requests/route.ts
-
-// import { sendEmail } from '../../../lib/client-request/brevoService';
 import { generateAIPost } from '../../../lib/client-request/aiPostSevice';
-
 import { sendClientEmail, sendAdminEmail } from '../../../lib/mailer';
 
 export async function POST(request: NextRequest) {
   try {
 
+    console.log("🚀 API /client-requests triggered");
+
     // Parse request body
     const body = await request.json();
+    console.log("📥 Request body:", body);
+
     const {
       fullName,
       email,
@@ -24,16 +24,23 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!fullName || !email || !whatsappNumber || !serviceCategory || !subCategory || !requirement) {
+      console.log("❌ Validation failed: Missing required fields");
+
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
+    console.log("✅ Validation passed");
+
     // Generate unique request ID
     const requestId = `REQ_${Date.now()}_${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
 
+    console.log("🆔 Generated request ID:", requestId);
+
     // Generate AI community post
+    console.log("🤖 Generating AI community post...");
     const aiPost = await generateAIPost({
       fullName,
       serviceCategory,
@@ -42,7 +49,11 @@ export async function POST(request: NextRequest) {
       requestId
     });
 
+    console.log("✅ AI post generated");
+
     // 1. Save to Supabase
+    console.log("💾 Inserting request into Supabase...");
+
     const { data: inserted, error: insertError } = await supabase
       .from('client_requests')
       .insert([{
@@ -63,16 +74,19 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error('Supabase insertion failed:', insertError);
+      console.error("❌ Supabase insertion failed:", insertError);
       throw insertError;
     }
 
-    // Track email statuses
+    console.log("✅ Data inserted into Supabase:", inserted);
+
     let clientEmailSent = false;
     let adminEmailSent = false;
 
-    // 2. Send thank you email to client
+    // 2. Send client email
     try {
+      console.log("📧 Sending client email...");
+
       const clientEmailResult = await sendClientEmail(
         email,
         fullName,
@@ -83,7 +97,8 @@ export async function POST(request: NextRequest) {
 
       clientEmailSent = clientEmailResult.success;
 
-      // Update email status in database
+      console.log("✅ Client email sent:", clientEmailResult);
+
       await supabase
         .from('client_requests')
         .update({
@@ -92,13 +107,16 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', inserted.id);
 
+      console.log("📊 Updated email status in DB");
+
     } catch (emailError) {
-      console.error('Client email failed:', emailError);
-      // Continue - don't throw
+      console.error("❌ Client email failed:", emailError);
     }
 
-    // 3. Send admin email with client details AND AI post
+    // 3. Send admin email
     try {
+      console.log("📧 Sending admin email...");
+
       const adminEmailResult = await sendAdminEmail({
         fullName,
         email,
@@ -113,13 +131,16 @@ export async function POST(request: NextRequest) {
 
       adminEmailSent = adminEmailResult.success;
 
+      console.log("✅ Admin email sent:", adminEmailResult);
+
     } catch (adminEmailError) {
-      console.error('Admin email failed:', adminEmailError);
-      // Continue - don't throw
+      console.error("❌ Admin email failed:", adminEmailError);
     }
 
-    // 4. Sync to Google Sheets (optional)
+    // 4. Sync Google Sheets
     try {
+      console.log("📊 Syncing with Google Sheets...");
+
       await syncToGoogleSheets({
         requestId,
         timestamp: new Date().toISOString(),
@@ -132,12 +153,15 @@ export async function POST(request: NextRequest) {
         aiPost,
         status: 'pending'
       });
+
+      console.log("✅ Google Sheets synced");
+
     } catch (sheetsError) {
-      console.error('Google Sheets sync failed:', sheetsError);
-      // Non-critical - continue
+      console.error("❌ Google Sheets sync failed:", sheetsError);
     }
 
-    // Return success response
+    console.log("🎉 Request processing completed");
+
     return NextResponse.json({
       success: true,
       message: 'Request submitted successfully',
@@ -152,7 +176,9 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('API error:', error);
+
+    console.error("🔥 API fatal error:", error);
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -161,6 +187,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
+
+  console.log("⚠️ GET method not allowed for /api/client-requests");
+
   return NextResponse.json(
     { error: 'Method not allowed' },
     { status: 405 }

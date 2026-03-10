@@ -1,4 +1,4 @@
-// lib/services/aiPostService.ts
+// lib/client-request/aiPostService.ts
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -13,8 +13,10 @@ export async function generateAIPost({
     requestId
 }: any): Promise<string> {
     try {
+        console.log("Generating AI post for:", serviceCategory, subCategory);
+
         const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo", // Using cheaper model for cost efficiency
+            model: "gpt-3.5-turbo",
             messages: [
                 {
                     role: "system",
@@ -60,7 +62,6 @@ Format nicely with emojis and line breaks. Make it engaging for specialists.`
     }
 }
 
-// Fallback post if AI fails
 function generateFallbackPost(serviceCategory: string, subCategory: string, requestId: string): string {
     const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 

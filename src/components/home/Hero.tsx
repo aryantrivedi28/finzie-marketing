@@ -111,7 +111,7 @@ const Hero = () => {
                 onClick={handleSeeHowItWorks}
                 className="inline-flex items-center justify-center gap-2 bg-[#f7af00] text-black rounded-xl px-6 py-4 font-medium hover:scale-[1.04] transition-transform hover:bg-[#e69f00]"
               >
-                Get started now 
+                Get started now
                 <ArrowRight className="w-5 h-5" />
               </button>
 
@@ -128,9 +128,9 @@ const Hero = () => {
       </section>
 
       {/* ---------- CONTACT FORM MODAL ---------- */}
-      <FormModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <FormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </>
   );
