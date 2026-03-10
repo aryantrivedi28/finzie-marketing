@@ -3,13 +3,14 @@ import { supabase } from '../../../lib/SupabaseAuthClient';
 import { syncToGoogleSheets } from '../../../lib/googleSheetSync';
 // app/api/client-requests/route.ts
 
-import { sendEmail } from '../../../lib/client-request/brevoService';
+// import { sendEmail } from '../../../lib/client-request/brevoService';
 import { generateAIPost } from '../../../lib/client-request/aiPostSevice';
 
 import { sendClientEmail, sendAdminEmail } from '../../../lib/mailer';
 
 export async function POST(request: NextRequest) {
   try {
+
     // Parse request body
     const body = await request.json();
     const {
