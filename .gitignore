@@ -8,3 +8,12 @@ node_modules/
 .next/
 .env*.local
 .DS_Store
+
+# .gitignore
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+service-account*.json
+*.key
+credentials.json
