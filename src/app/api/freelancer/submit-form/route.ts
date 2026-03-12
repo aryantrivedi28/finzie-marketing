@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
+import { supabase } from "../../../../lib/SupabaseAuthClient"
 import { cookies } from "next/headers"
 
 // Helper function to parse JSON fields
@@ -28,7 +28,6 @@ const generateSlug = (title: string) => {
 // GET: Fetch complete profile
 export async function GET() {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -89,7 +88,6 @@ export async function GET() {
 // PUT/PATCH: Update profile or specific sections
 export async function PUT(request: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -385,7 +383,6 @@ export async function PUT(request: Request) {
 // DELETE: Remove specific items or entire profile (with caution)
 export async function DELETE(request: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
