@@ -16,7 +16,7 @@ const HomePage = () => {
         </div>
 
         {/* Chat Container */}
-        <div className="flex-1 flex flex-col max-w-full w-full mx-auto px-6 md:px-12 pb-8">
+        <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto px-6 md:px-12 pb-8">
           {/* <ChatInterface /> */}
           <ClientRequestForm />
         </div>
