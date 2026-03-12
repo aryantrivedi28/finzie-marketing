@@ -56,7 +56,7 @@ export default function RootLayout({
       } as React.CSSProperties}
       suppressHydrationWarning={true}  // Add this line
     >
-      <body className="font-body antialiased bg-cream text-night max-w-7xl">
+      <body className="font-body antialiased bg-cream text-night">
         {children}
         <Analytics />
       </body>
