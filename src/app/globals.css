@@ -76,3 +76,21 @@
     /* 8 in Tailwind spacing scale = 2rem */
   }
 }
+
+@keyframes dotGlow {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(68,161,148,0.2); }
+  50% { box-shadow: 0 0 0 5px rgba(68,161,148,0.08); }
+}
+
+@keyframes tdp {
+  0%,60%,100% { transform: scale(1); opacity: 0.4; }
+  30% { transform: scale(1.4); opacity: 1; }
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}

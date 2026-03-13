@@ -19,7 +19,6 @@ const jost = Jost({
 export const metadata: Metadata = {
   title: 'ExecuMarketing - AI Matching for Marketing Talent',
   description: 'AI-powered matching platform connecting businesses with verified marketing specialists. Brief your project, get matched instantly, start within 24 hours.',
-  generator: 'app',
   openGraph: {
     title: 'ExecuMarketing',
     description: 'AI-powered matching for marketing specialists',

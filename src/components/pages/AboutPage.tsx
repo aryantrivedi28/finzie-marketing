@@ -13,190 +13,212 @@ const AboutPage = () => {
   return (
     <main className="flex-1">
       {/* Hero Section */}
-      <Section className="text-center py-20 md:py-32">
-        <div className="max-w-4xl mx-auto">
-          <SectionEyebrow>About Us</SectionEyebrow>
-          <SectionTitle className="mb-8 text-5xl md:text-6xl">
-            We're solving the <span className="text-teal italic">wrong-hire problem</span>.
-          </SectionTitle>
-          <SectionDescription className="text-lg md:text-xl">
-            Founded in 2020, ExecuMarketing exists because we saw talented freelancers wasting time on bad projects, and businesses wasting money hiring the wrong people.
-          </SectionDescription>
-        </div>
-      </Section>
-
-      {/* Mission Section */}
-      <Section columns={2} className="gap-20 items-center">
+      <Section className="grid grid-cols-1 md:grid-cols-2 gap-[60px] items-center min-h-[78vh] px-[60px] py-20">
         <div>
-          <SectionTitle>Our Mission</SectionTitle>
-          <SectionDescription className="mb-6">
-            To build the most trusted AI-powered matching platform for marketing talent. We believe great work happens when skills meet opportunity, and AI is the only way to make that connection truly reliable.
-          </SectionDescription>
-          <SectionDescription>
-            Every day, we process portfolios, performance data, and project requirements through our proprietary matching algorithm. The result: higher quality matches, better outcomes, and less time wasted.
-          </SectionDescription>
+          <div className="flex items-center gap-2.5 text-[10px] tracking-[0.3em] uppercase text-[#EC8F8D] mb-5">
+            <span className="w-6 h-[1px] bg-[#EC8F8D] inline-block"></span>
+            Our Story
+          </div>
+          <h1 className="font-['Cormorant_Garamond',serif] text-[clamp(32px,4vw,54px)] font-light leading-[1.12] tracking-[-0.01em] mb-5">
+            Built because the<br />market was too <em className="italic text-[#EC8F8D] not-italic">noisy</em><br />to trust.
+          </h1>
+          <p className="text-sm text-[#8a8a82] leading-[1.9] max-w-[440px] mb-4">
+            ExecuMarketing started inside Finzie when clients kept running into the same problem — they needed to hire marketing talent, but the market was impossible to navigate. Too many options. No way to tell who was actually good. No reliable process to hire quickly.
+          </p>
+          <p className="text-sm text-[#8a8a82] leading-[1.9] max-w-[440px] mb-4">
+            So we built the answer. A talent arm with real vetting, real relationships, and a process that worked. Four years later, that answer has become a platform of 10,000+ specialists — and AI that makes every match smarter than the last.
+          </p>
+          <p className="text-sm text-[#8a8a82] leading-[1.9] max-w-[440px] mb-4">
+            We're not a job board. We're not an agency. We're the infrastructure that makes great project delivery possible.
+          </p>
+          <div className="flex gap-3 mt-9">
+            <button className="bg-[#44A194] text-white border-none px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-colors duration-300 hover:bg-[#38857a]">
+              Work With Us
+            </button>
+          </div>
         </div>
-        <div className="bg-gradient-to-br from-teal/10 to-coral/10 rounded-lg p-8 min-h-80 flex items-center justify-center">
-          <div className="text-center">
-            <div className="font-display text-5xl font-300 text-teal mb-2">
-              10K+
+        <div className="flex flex-col gap-0.5">
+          <div className="bg-white border border-[rgba(28,35,33,0.08)] p-6 md:p-8 flex items-center gap-5 transition-transform duration-300 hover:translate-x-1.5 hover:shadow-[-3px_0_0_#EC8F8D]">
+            <div className="font-['Cormorant_Garamond',serif] text-[42px] font-light leading-[1] text-[#1C2321] whitespace-nowrap">
+              10K<em className="not-italic text-[#EC8F8D]">+</em>
             </div>
-            <p className="text-stone">Specialists verified and matched</p>
+            <div>
+              <div className="text-sm font-medium text-[#1C2321] mb-1">Registered Specialists</div>
+              <div className="text-[11px] text-[#8a8a82]">Across five marketing disciplines</div>
+            </div>
           </div>
-        </div>
-      </Section>
-
-      {/* Values Section */}
-      <Section className="bg-cream-dark">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <SectionEyebrow>Our Values</SectionEyebrow>
-            <SectionTitle>Built on trust, powered by AI</SectionTitle>
+          <div className="bg-white border border-[rgba(28,35,33,0.08)] p-6 md:p-8 flex items-center gap-5 transition-transform duration-300 hover:translate-x-1.5 hover:shadow-[-3px_0_0_#EC8F8D]">
+            <div className="font-['Cormorant_Garamond',serif] text-[42px] font-light leading-[1] text-[#1C2321] whitespace-nowrap">
+              4<em className="not-italic text-[#EC8F8D]">+</em>
+            </div>
+            <div>
+              <div className="text-sm font-medium text-[#1C2321] mb-1">Years in Market</div>
+              <div className="text-[11px] text-[#8a8a82]">Consistent, proven, growing</div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Accuracy',
-                desc: 'We obsess over match quality. Good enough doesn\'t exist in our vocabulary.'
-              },
-              {
-                title: 'Transparency',
-                desc: 'No hidden fees. No shortlists of mediocre options. You see exactly why we made a match.'
-              },
-              {
-                title: 'Speed',
-                desc: 'Time is money. Verified specialists are matched and ready within 24 hours.'
-              }
-            ].map((value, idx) => (
-              <Card key={idx} className="hover:shadow-lg transition-all">
-                <CardContent>
-                  <h3 className="font-display text-2xl font-300 text-teal mb-3">
-                    {value.title}
-                  </h3>
-                  <p className="text-sm text-carbon leading-relaxed">
-                    {value.desc}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="bg-white border border-[rgba(28,35,33,0.08)] p-6 md:p-8 flex items-center gap-5 transition-transform duration-300 hover:translate-x-1.5 hover:shadow-[-3px_0_0_#EC8F8D]">
+            <div className="font-['Cormorant_Garamond',serif] text-[42px] font-light leading-[1] text-[#1C2321] whitespace-nowrap">
+              1<em className="not-italic text-[#EC8F8D]">st</em>
+            </div>
+            <div>
+              <div className="text-sm font-medium text-[#1C2321] mb-1">AI + Human Delivery Model</div>
+              <div className="text-[11px] text-[#8a8a82]">In our category, nothing comes close</div>
+            </div>
           </div>
         </div>
       </Section>
 
       {/* Timeline Section */}
-      <Section>
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <SectionEyebrow>Our Journey</SectionEyebrow>
-            <SectionTitle>Growing fast, staying focused</SectionTitle>
+      <Section className="px-[60px] py-20 border-t border-[rgba(28,35,33,0.08)]">
+        <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-20">
+          <div className="md:sticky md:top-20 self-start">
+            <span className="text-[10px] tracking-[0.28em] uppercase text-[#44A194] mb-4 block">The Journey</span>
+            <h3 className="font-['Cormorant_Garamond',serif] text-[32px] font-light leading-[1.2]">
+              From a client<br />problem to a<br /><em className="italic text-[#EC8F8D] not-italic">real platform.</em>
+            </h3>
           </div>
-          <div className="space-y-12">
-            {[
-              {
-                year: '2020',
-                title: 'Founded',
-                desc: 'ExecuMarketing launches with AI matching algorithm for marketing specialists.'
-              },
-              {
-                year: '2021',
-                title: 'First 1,000 Specialists',
-                desc: 'We hit our first major milestone with over 1,000 verified marketing professionals on the platform.'
-              },
-              {
-                year: '2022',
-                title: 'Series A Funding',
-                desc: 'Raised $5M to expand team and scale platform capabilities across new industries.'
-              },
-              {
-                year: '2023',
-                title: 'Now: 10K+ Specialists',
-                desc: 'Today, we\'ve matched over 2,000 projects and continue growing with industry-leading accuracy.'
-              }
-            ].map((item, idx) => (
-              <div key={idx} className="flex gap-8">
-                <div className="flex-shrink-0">
-                  <div className="w-24 h-24 rounded-full bg-teal/10 flex items-center justify-center">
-                    <span className="font-display text-2xl font-300 text-teal">
-                      {item.year}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex-1 pt-2">
-                  <h3 className="font-display text-xl font-300 text-night mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-carbon leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
+          <div className="flex flex-col">
+            <div className="flex gap-5.5 py-8 border-b border-[rgba(28,35,33,0.08)] first:pt-0 last:border-b-0 last:pb-0">
+              <div className="font-['Cormorant_Garamond',serif] text-[11px] font-medium text-[#44A194] tracking-[0.15em] whitespace-nowrap min-w-[48px] mt-1">
+                The Start
               </div>
-            ))}
+              <div className="w-[7px] h-[7px] rounded-full bg-[#EC8F8D] flex-shrink-0 mt-1.5"></div>
+              <div>
+                <h4 className="text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em]">
+                  A problem Finzie clients kept hitting
+                </h4>
+                <p className="text-sm text-[#8a8a82] leading-[1.85]">
+                  Again and again, clients at Finzie were asking the same thing: "We need a good marketing hire — fast. Who do we trust?" The market had plenty of options. It had no good signal. Too much noise, not enough quality, no reliable way to move quickly. That gap became ExecuMarketing.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-5.5 py-8 border-b border-[rgba(28,35,33,0.08)]">
+              <div className="font-['Cormorant_Garamond',serif] text-[11px] font-medium text-[#44A194] tracking-[0.15em] whitespace-nowrap min-w-[48px] mt-1">
+                Early Days
+              </div>
+              <div className="w-[7px] h-[7px] rounded-full bg-[#EC8F8D] flex-shrink-0 mt-1.5"></div>
+              <div>
+                <h4 className="text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em]">
+                  Built on relationships, not algorithms — at first
+                </h4>
+                <p className="text-sm text-[#8a8a82] leading-[1.85]">
+                  The first matches were made manually. Real conversations with freelancers, real briefings with clients. It was slow by today's standards — but every placement worked. That track record became the foundation everything else was built on.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-5.5 py-8 border-b border-[rgba(28,35,33,0.08)]">
+              <div className="font-['Cormorant_Garamond',serif] text-[11px] font-medium text-[#44A194] tracking-[0.15em] whitespace-nowrap min-w-[48px] mt-1">
+                Growth
+              </div>
+              <div className="w-[7px] h-[7px] rounded-full bg-[#EC8F8D] flex-shrink-0 mt-1.5"></div>
+              <div>
+                <h4 className="text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em]">
+                  5,000 freelancers, then 10,000
+                </h4>
+                <p className="text-sm text-[#8a8a82] leading-[1.85]">
+                  Word spread. The network grew. And as it grew, the need for intelligence became clear — you can't maintain quality across 10,000 specialists manually. That's when AI entered the picture. Not to replace the human judgment. To scale it.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-5.5 py-8">
+              <div className="font-['Cormorant_Garamond',serif] text-[11px] font-medium text-[#44A194] tracking-[0.15em] whitespace-nowrap min-w-[48px] mt-1">
+                Now
+              </div>
+              <div className="w-[7px] h-[7px] rounded-full bg-[#EC8F8D] flex-shrink-0 mt-1.5"></div>
+              <div>
+                <h4 className="text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em]">
+                  The best version of what we always wanted to be
+                </h4>
+                <p className="text-sm text-[#8a8a82] leading-[1.85]">
+                  AI that vets, matches, and gets smarter with every project. Humans who care about the outcome, follow up when something's off, and take responsibility for the result. Finzie's infrastructure behind it. Four years of trust in front of it. That's ExecuMarketing today.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </Section>
 
-      {/* Team Section */}
-      <Section className="bg-cream-dark">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <SectionEyebrow>The Team</SectionEyebrow>
-            <SectionTitle>Experts in matching and marketing</SectionTitle>
+      {/* Values Section */}
+      <Section className="px-[60px] py-20 border-t border-[rgba(28,35,33,0.08)]">
+        <div className="text-center max-w-[520px] mx-auto mb-13">
+          <div className="inline-flex items-center gap-2.5 text-[10px] tracking-[0.28em] uppercase text-[#44A194] mb-4">
+            <span className="w-6 h-[1px] bg-[#44A194]"></span>
+            What We Stand For
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                name: 'Alex Morrison',
-                role: 'Founder & CEO',
-                bio: 'Former VP of Marketing at Scale. 15 years building marketing teams.'
-              },
-              {
-                name: 'Jamie Chen',
-                role: 'CTO',
-                bio: 'ML expert from Stanford. Built recommendation algorithms for top tech companies.'
-              },
-              {
-                name: 'Marcus Williams',
-                role: 'VP of Talent',
-                bio: 'Recruiter and talent strategist. Helped build teams at 10+ startups.'
-              }
-            ].map((member, idx) => (
-              <Card key={idx}>
-                <CardContent className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-teal/20 mx-auto mb-4 flex items-center justify-center">
-                    <span className="font-display text-2xl font-bold text-teal">
-                      {member.name.charAt(0)}
-                    </span>
-                  </div>
-                  <h3 className="font-display text-lg font-300 text-night mb-1">
-                    {member.name}
-                  </h3>
-                  <p className="text-xs font-body letter-spacing-16 text-uppercase text-teal mb-3">
-                    {member.role}
-                  </p>
-                  <p className="text-sm text-carbon">
-                    {member.bio}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+          <h2 className="font-['Cormorant_Garamond',serif] text-[clamp(32px,4vw,54px)] font-light leading-[1.12] tracking-[-0.01em] mb-5">
+            The three things<br />we don't <em className="italic text-[#EC8F8D] not-italic">compromise on.</em>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0.5 bg-[rgba(28,35,33,0.08)]">
+          <div className="bg-[#F4F0E4] p-9 md:p-8 relative overflow-hidden transition-colors duration-300 hover:bg-white before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-0.5 before:bg-[#44A194] before:scale-x-0 before:transition-transform before:duration-300 hover:before:scale-x-100">
+            <div className="text-[10px] tracking-[0.2em] uppercase text-[#44A194] mb-4">Signal over Noise</div>
+            <div className="text-sm font-medium text-[#1C2321] mb-2.5">We only surface talent we'd stake our name on</div>
+            <div className="text-xs text-[#8a8a82] leading-[1.75]">Every freelancer in our pool has been evaluated and tracked. We don't list people — we vouch for them.</div>
+          </div>
+          <div className="bg-[#F4F0E4] p-9 md:p-8 relative overflow-hidden transition-colors duration-300 hover:bg-white before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-0.5 before:bg-[#44A194] before:scale-x-0 before:transition-transform before:duration-300 hover:before:scale-x-100">
+            <div className="text-[10px] tracking-[0.2em] uppercase text-[#44A194] mb-4">Delivery Over Activity</div>
+            <div className="text-sm font-medium text-[#1C2321] mb-2.5">We measure what actually ships</div>
+            <div className="text-xs text-[#8a8a82] leading-[1.75]">Not profiles viewed, not proposals sent. Work delivered, on brief, on time. That's the only number we care about.</div>
+          </div>
+          <div className="bg-[#F4F0E4] p-9 md:p-8 relative overflow-hidden transition-colors duration-300 hover:bg-white before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-0.5 before:bg-[#44A194] before:scale-x-0 before:transition-transform before:duration-300 hover:before:scale-x-100">
+            <div className="text-[10px] tracking-[0.2em] uppercase text-[#44A194] mb-4">Aligned Incentives</div>
+            <div className="text-sm font-medium text-[#1C2321] mb-2.5">We win when our clients and freelancers do</div>
+            <div className="text-xs text-[#8a8a82] leading-[1.75]">That's not a value statement — it's how the business works. When projects succeed, everyone comes back.</div>
           </div>
         </div>
       </Section>
 
-      {/* Contact Section */}
-      <Section className="text-center">
-        <div className="max-w-2xl mx-auto">
-          <SectionTitle className="mb-6">
-            Get in touch
-          </SectionTitle>
-          <SectionDescription className="mb-8">
-            Have questions? We'd love to hear from you.
-          </SectionDescription>
-          <p className="text-lg font-body text-teal hover:text-teal-dark transition-colors cursor-pointer">
-            hello@execumarketing.com
+      {/* Leadership Section */}
+      <Section className="px-[60px] py-20 border-t border-[rgba(28,35,33,0.08)]">
+        <div className="inline-flex items-center gap-2.5 text-[10px] tracking-[0.28em] uppercase text-[#44A194] mb-4">
+          <span className="w-6 h-[1px] bg-[#44A194]"></span>
+          Leadership
+        </div>
+        <h2 className="font-['Cormorant_Garamond',serif] text-[clamp(32px,4vw,54px)] font-light leading-[1.12] tracking-[-0.01em] mb-12">
+          The people who<br />built this and <em className="italic text-[#EC8F8D] not-italic">stand behind it.</em>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0.5 bg-[rgba(28,35,33,0.08)] mt-12">
+          <div className="bg-[#F4F0E4] p-9">
+            <div className="w-12 h-12 rounded-full mb-4 flex items-center justify-center font-['Cormorant_Garamond',serif] text-xl text-white" style={{background: 'linear-gradient(135deg, #44A194, #537D96)'}}>
+              A
+            </div>
+            <div className="text-sm font-medium text-[#1C2321] mb-1">Founder & CEO</div>
+            <div className="text-[10px] text-[#44A194] tracking-[0.15em] uppercase mb-3">Visionary Leadership</div>
+            <div className="text-xs text-[#8a8a82] leading-[1.75]">Saw the noise problem first-hand inside Finzie and decided to solve it. Built ExecuMarketing from the ground up — starting with relationships, ending with AI, never losing sight of the delivery that matters.</div>
+          </div>
+          <div className="bg-[#F4F0E4] p-9">
+            <div className="w-12 h-12 rounded-full mb-4 flex items-center justify-center font-['Cormorant_Garamond',serif] text-xl text-white" style={{background: 'linear-gradient(135deg, #537D96, #3d6b82)'}}>
+              T
+            </div>
+            <div className="text-sm font-medium text-[#1C2321] mb-1">Head of Technology</div>
+            <div className="text-[10px] text-[#44A194] tracking-[0.15em] uppercase mb-3">AI & Platform</div>
+            <div className="text-xs text-[#8a8a82] leading-[1.75]">Built the AI matching layer that makes scale possible without sacrificing quality. Believes the best technology is the kind you don't notice — it just works.</div>
+          </div>
+          <div className="bg-[#F4F0E4] p-9">
+            <div className="w-12 h-12 rounded-full mb-4 flex items-center justify-center font-['Cormorant_Garamond',serif] text-xl text-white" style={{background: 'linear-gradient(135deg, #EC8F8D, #d4706e)'}}>
+              S
+            </div>
+            <div className="text-sm font-medium text-[#1C2321] mb-1">Head of Talent</div>
+            <div className="text-[10px] text-[#44A194] tracking-[0.15em] uppercase mb-3">Freelancer Success</div>
+            <div className="text-xs text-[#8a8a82] leading-[1.75]">Has been on both sides — as a freelancer trying to get good work, and as the person building systems to surface it. Brings that perspective to every decision made about the talent pool.</div>
+          </div>
+        </div>
+      </Section>
+
+      {/* Finzie Relationship */}
+      <div className="bg-[#1C2321] py-16 px-[60px] flex justify-between items-center gap-10">
+        <div>
+          <h2 className="font-['Cormorant_Garamond',serif] text-[clamp(26px,3.5vw,42px)] font-light text-white leading-[1.2]">
+            ExecuMarketing is<br />the talent arm of <em className="italic text-[#EC8F8D] not-italic">Finzie.</em>
+          </h2>
+          <p className="text-sm text-white/45 mt-2">
+            Finzie is the parent. We're their answer to the question every growing company asks — "where do I find people I can actually trust to deliver?"
           </p>
         </div>
-      </Section>
+        <button className="bg-[#EC8F8D] text-white border-none px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#e07a78] hover:-translate-y-0.5">
+          Explore Finzie →
+        </button>
+      </div>
     </main>
   )
 }
