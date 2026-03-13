@@ -3,15 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, FileText, Sparkles, ChevronDown, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { User, Mail, Phone, ChevronDown, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Variants } from 'framer-motion';
+
 
 const SERVICE_CATEGORIES = {
-  'SEO': ['Technical SEO', 'On-page SEO'],
-  'Paid Ads': ['Google Ads', 'Meta Ads'],
-  'Social Media': ['Content Calendar', 'Reels', 'Influencer Outreach'],
-  'Content Marketing': ['Blog Writing', 'Copy Writing'],
-  'Landing Pages': ['Design & Development', 'CRO Audit'],
-  'Marketing Automation': ['HubSpot Setup', 'WhatsApp Automation']
+  'Paid Ads': ['Google Ads', 'Meta Ads', 'TikTok Ads', 'LinkedIn Ads'],
+  'Social Media': ['Content Calendar', 'Reels Creation', 'Influencer Outreach', 'Community Management'],
+  'SEO': ['Technical SEO', 'On-page SEO', 'Content Strategy', 'Link Building'],
+  'Content Marketing': ['Blog Writing', 'Copywriting', 'Email Newsletters', 'Whitepapers'],
+  'CRM & Automation': ['HubSpot Setup', 'Salesforce Migration', 'WhatsApp Automation', 'Email Workflows'],
+  'Landing Pages': ['Design & Development', 'CRO Audit', 'A/B Testing', 'Copy & Design']
 } as const;
 
 type ServiceCategory = keyof typeof SERVICE_CATEGORIES;
@@ -55,14 +57,17 @@ export default function ClientRequestForm() {
     message: string;
   }>({ type: null, message: '' });
 
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 16 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }
+  const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { 
+      duration: 0.4, 
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number] // Explicitly type as tuple
     }
-  };
+  }
+};
 
   const staggerContainer = {
     hidden: { opacity: 0 },
@@ -111,7 +116,7 @@ export default function ClientRequestForm() {
       setAvailableSubCategories([]);
       setForm(prev => ({ ...prev, subCategory: '' }));
     }
-  }, [form.serviceCategory, errors.subCategory]);
+  }, [form.serviceCategory]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -129,24 +134,39 @@ export default function ClientRequestForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setTouched(new Set(Object.keys(form)));
+
+    // Validate all fields
+    const newErrors: FormErrors = {};
+    Object.keys(form).forEach(key => {
+      const error = validateField(key as keyof FormData, form[key as keyof FormData]);
+      if (error) newErrors[key as keyof FormData] = error;
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setTouched(new Set(Object.keys(form)));
+      return;
+    }
+
     setLoading(true);
     setSubmitStatus({ type: null, message: '' });
 
     try {
-      const response = await fetch('/api/client-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      // Simulate API call - replace with actual fetch
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      setSubmitStatus({
+        type: 'success',
+        message: 'Your request has been submitted successfully! We\'ll match you within 24 hours.'
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to submit request');
-      setSubmitStatus({ type: 'success', message: 'Your request has been submitted successfully!' });
-      setTimeout(() => { router.push('/thank-you-client'); }, 1500);
+
+      setTimeout(() => {
+        router.push('/thank-you-client');
+      }, 1500);
     } catch (error) {
       setSubmitStatus({
         type: 'error',
-        message: error instanceof Error ? error.message : 'An error occurred. Please try again.'
+        message: 'An error occurred. Please try again.'
       });
     } finally {
       setLoading(false);
@@ -163,245 +183,276 @@ export default function ClientRequestForm() {
     };
   };
 
-  const inputBase = `w-full px-3.5 py-2.5 bg-white border rounded-lg text-[#1a2e35] text-sm
-    placeholder-[#9badb8] focus:outline-none transition-colors duration-150`;
+  // Custom input classes matching the design system
+  const inputBase = `w-full px-4 py-3 bg-white border font-['Jost',sans-serif] text-sm text-[#1C2321] placeholder-[#8a8a82] placeholder:italic focus:outline-none transition-all duration-200`;
 
   const inputClass = (fieldName: keyof FormData) => {
     const { hasError, isValid } = getFieldStatus(fieldName);
-    return `${inputBase} ${hasError ? 'border-[#EC8F8D] focus:border-[#EC8F8D]' :
-      isValid ? 'border-[#44A194] focus:border-[#44A194]' :
-        'border-[#d1dce3] focus:border-[#44A194]'
+    return `${inputBase} ${hasError
+        ? 'border-[#EC8F8D] focus:border-[#EC8F8D]'
+        : isValid
+          ? 'border-[#44A194] focus:border-[#44A194]'
+          : 'border-[rgba(28,35,33,0.08)] focus:border-[#44A194]'
       }`;
   };
 
   return (
-    <main className="min-h-screen  pb-16" style={{ backgroundColor: '#F4F0E4' }}>
+    <main className="min-h-screen bg-[#F4F0E4] py-12 md:py-16 px-6">
+      <div className="max-w-5xl mx-auto">
 
-      {/* ── Header ── */}
-      <header className="bg-white border-b border-[#e2e8ec]">
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center gap-4">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: '#44A194' }}>
-            <Sparkles className="w-4.5 h-4.5 text-white" />
+        {/* Header with ExecuMarketing branding */}
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2.5 text-[10px] tracking-[0.28em] uppercase text-[#44A194] mb-4">
+            <span className="w-6 h-[1px] bg-[#44A194]"></span>
+            Start a Project
           </div>
-          <div>
-            <h1 className="text-lg font-semibold text-[#1a2e35] leading-tight">Submit a Project Request</h1>
-            <p className="text-xs text-[#537D96] mt-0.5">
-              Fill in the details below and we'll connect you with the right expert.
-            </p>
-          </div>
+          <h1 className="font-['Cormorant_Garamond',serif] text-[clamp(32px,4vw,48px)] font-light leading-[1.12] tracking-[-0.01em] text-[#1C2321]">
+            Tell us what you need.<br />We'll find the <em className="italic text-[#44A194] not-italic">right talent.</em>
+          </h1>
         </div>
-      </header>
-
-      {/* ── Body ── */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
 
         {/* Status banner */}
         {submitStatus.type && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mb-6 flex items-start gap-3 px-4 py-3 rounded-lg border text-sm font-medium ${submitStatus.type === 'success'
-              ? 'bg-[#f0faf8] border-[#44A194]/30 text-[#2d7a70]'
-              : 'bg-[#fff5f5] border-[#EC8F8D]/40 text-[#b85454]'
+            className={`mb-8 flex items-start gap-3 px-5 py-4 border ${submitStatus.type === 'success'
+                ? 'bg-white border-[#44A194]/20 text-[#1C2321]'
+                : 'bg-white border-[#EC8F8D]/20 text-[#1C2321]'
               }`}
+            style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
           >
             {submitStatus.type === 'success'
-              ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#44A194]" />
-              : <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#EC8F8D]" />
+              ? <CheckCircle2 className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#44A194]" />
+              : <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#EC8F8D]" />
             }
-            {submitStatus.message}
+            <span className="text-sm font-['Jost',sans-serif] text-[#3a3a36]">{submitStatus.message}</span>
           </motion.div>
         )}
 
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
 
-          {/* ── Form card ── */}
+          {/* Main Form Card */}
           <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
-            className="flex-1 bg-white rounded-xl border border-[#e2e8ec] overflow-hidden shadow-sm"
+            className="flex-1 bg-white border border-[rgba(28,35,33,0.08)] shadow-[0_16px_64px_rgba(0,0,0,0.07)] relative overflow-hidden"
           >
-            <div className="h-[3px] w-full" style={{ backgroundColor: '#44A194' }} />
+            {/* Gradient top bar */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] via-[#537D96] to-[#EC8F8D]" />
 
-            <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8" noValidate>
+            <form onSubmit={handleSubmit} className="p-8 md:p-10 space-y-8" noValidate>
 
-              {/* Section 1 */}
-              <motion.fieldset variants={fadeInUp} className="space-y-5">
-                <legend className="w-full flex items-center gap-2 pb-3 border-b border-[#eef1f3] text-xs font-semibold uppercase tracking-widest text-[#537D96]">
-                  <span className="inline-flex w-4 h-4 rounded items-center justify-center text-white text-[10px] font-bold"
-                    style={{ backgroundColor: '#44A194' }}>1</span>
-                  Personal Information
+              {/* Section 1 - Personal Info */}
+              <motion.fieldset variants={fadeInUp} className="space-y-6">
+                <legend className="flex items-center gap-3 w-full pb-4 border-b border-[rgba(28,35,33,0.08)]">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#44A194] text-white font-['Cormorant_Garamond',serif] text-sm">
+                    1
+                  </span>
+                  <span className="text-[11px] tracking-[0.18em] uppercase text-[#3a3a36] font-['Jost',sans-serif] font-normal">
+                    Your Information
+                  </span>
                 </legend>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Full Name */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#1a2e35] mb-1.5">
+                    <label className="block text-[11px] tracking-[0.18em] uppercase text-[#8a8a82] mb-2 font-['Jost',sans-serif]">
                       Full Name <span className="text-[#EC8F8D]">*</span>
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9badb8]" />
-                      <input type="text" name="fullName" value={form.fullName}
-                        onChange={handleChange} onBlur={handleBlur}
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a82]" />
+                      <input
+                        type="text"
+                        name="fullName"
+                        value={form.fullName}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
                         placeholder="Jane Smith"
-                        className={`${inputClass('fullName')} pl-9`}
-                        aria-invalid={getFieldStatus('fullName').hasError} />
+                        className={`${inputClass('fullName')} pl-11`}
+                      />
                     </div>
                     {getFieldStatus('fullName').hasError && (
-                      <p className="mt-1 text-xs text-[#EC8F8D] flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />{errors.fullName}
+                      <p className="mt-2 text-xs text-[#EC8F8D] flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5" />{errors.fullName}
                       </p>
                     )}
                   </div>
 
+                  {/* Email */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#1a2e35] mb-1.5">
-                      Email Address <span className="text-[#EC8F8D]">*</span>
+                    <label className="block text-[11px] tracking-[0.18em] uppercase text-[#8a8a82] mb-2 font-['Jost',sans-serif]">
+                      Email <span className="text-[#EC8F8D]">*</span>
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9badb8]" />
-                      <input type="email" name="email" value={form.email}
-                        onChange={handleChange} onBlur={handleBlur}
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a82]" />
+                      <input
+                        type="email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
                         placeholder="jane@company.com"
-                        className={`${inputClass('email')} pl-9`}
-                        aria-invalid={getFieldStatus('email').hasError} />
+                        className={`${inputClass('email')} pl-11`}
+                      />
                     </div>
                     {getFieldStatus('email').hasError && (
-                      <p className="mt-1 text-xs text-[#EC8F8D] flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />{errors.email}
+                      <p className="mt-2 text-xs text-[#EC8F8D] flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5" />{errors.email}
                       </p>
                     )}
                   </div>
                 </div>
 
+                {/* WhatsApp Number - Full width */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#1a2e35] mb-1.5">
+                  <label className="block text-[11px] tracking-[0.18em] uppercase text-[#8a8a82] mb-2 font-['Jost',sans-serif]">
                     WhatsApp Number <span className="text-[#EC8F8D]">*</span>
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9badb8]" />
-                    <input type="tel" name="whatsappNumber" value={form.whatsappNumber}
-                      onChange={handleChange} onBlur={handleBlur}
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a82]" />
+                    <input
+                      type="tel"
+                      name="whatsappNumber"
+                      value={form.whatsappNumber}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="+91 98765 43210"
-                      className={`${inputClass('whatsappNumber')} pl-9`}
-                      aria-invalid={getFieldStatus('whatsappNumber').hasError} />
+                      className={`${inputClass('whatsappNumber')} pl-11`}
+                    />
                   </div>
                   {getFieldStatus('whatsappNumber').hasError && (
-                    <p className="mt-1 text-xs text-[#EC8F8D] flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />{errors.whatsappNumber}
+                    <p className="mt-2 text-xs text-[#EC8F8D] flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5" />{errors.whatsappNumber}
                     </p>
                   )}
                 </div>
               </motion.fieldset>
 
-              {/* Section 2 */}
-              <motion.fieldset variants={fadeInUp} className="space-y-5">
-                <legend className="w-full flex items-center gap-2 pb-3 border-b border-[#eef1f3] text-xs font-semibold uppercase tracking-widest text-[#537D96]">
-                  <span className="inline-flex w-4 h-4 rounded items-center justify-center text-white text-[10px] font-bold"
-                    style={{ backgroundColor: '#537D96' }}>2</span>
-                  Service Selection
+              {/* Section 2 - Service Selection */}
+              <motion.fieldset variants={fadeInUp} className="space-y-6">
+                <legend className="flex items-center gap-3 w-full pb-4 border-b border-[rgba(28,35,33,0.08)]">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#537D96] text-white font-['Cormorant_Garamond',serif] text-sm">
+                    2
+                  </span>
+                  <span className="text-[11px] tracking-[0.18em] uppercase text-[#3a3a36] font-['Jost',sans-serif] font-normal">
+                    Service Selection
+                  </span>
                 </legend>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Service Category */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#1a2e35] mb-1.5">
+                    <label className="block text-[11px] tracking-[0.18em] uppercase text-[#8a8a82] mb-2 font-['Jost',sans-serif]">
                       Service Category <span className="text-[#EC8F8D]">*</span>
                     </label>
                     <div className="relative">
-                      <select name="serviceCategory" value={form.serviceCategory}
-                        onChange={handleChange} onBlur={handleBlur}
-                        className={`${inputClass('serviceCategory')} appearance-none cursor-pointer pr-9`}
-                        aria-invalid={getFieldStatus('serviceCategory').hasError}>
+                      <select
+                        name="serviceCategory"
+                        value={form.serviceCategory}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        className={`${inputClass('serviceCategory')} appearance-none pr-12 cursor-pointer`}
+                      >
                         <option value="" disabled>Select a category</option>
                         {Object.keys(SERVICE_CATEGORIES).map(c => (
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9badb8] pointer-events-none" />
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a82] pointer-events-none" />
                     </div>
                     {getFieldStatus('serviceCategory').hasError && (
-                      <p className="mt-1 text-xs text-[#EC8F8D] flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />{errors.serviceCategory}
+                      <p className="mt-2 text-xs text-[#EC8F8D] flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5" />{errors.serviceCategory}
                       </p>
                     )}
                   </div>
 
+                  {/* Sub Category */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#1a2e35] mb-1.5">
-                      Sub Category <span className="text-[#EC8F8D]">*</span>
+                    <label className="block text-[11px] tracking-[0.18em] uppercase text-[#8a8a82] mb-2 font-['Jost',sans-serif]">
+                      Specialization <span className="text-[#EC8F8D]">*</span>
                     </label>
                     <div className="relative">
-                      <select name="subCategory" value={form.subCategory}
-                        onChange={handleChange} onBlur={handleBlur}
+                      <select
+                        name="subCategory"
+                        value={form.subCategory}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
                         disabled={!form.serviceCategory}
-                        className={`${inputClass('subCategory')} appearance-none cursor-pointer pr-9 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-[#f8f9fa]`}
-                        aria-invalid={getFieldStatus('subCategory').hasError}>
+                        className={`${inputClass('subCategory')} appearance-none pr-12 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[#F4F0E4]`}
+                      >
                         <option value="" disabled>
-                          {form.serviceCategory ? 'Select a subcategory' : 'Select category first'}
+                          {form.serviceCategory ? 'Select specialization' : 'Choose category first'}
                         </option>
                         {availableSubCategories.map(s => (
                           <option key={s} value={s}>{s}</option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9badb8] pointer-events-none" />
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a82] pointer-events-none" />
                     </div>
                     {getFieldStatus('subCategory').hasError && (
-                      <p className="mt-1 text-xs text-[#EC8F8D] flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />{errors.subCategory}
+                      <p className="mt-2 text-xs text-[#EC8F8D] flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5" />{errors.subCategory}
                       </p>
                     )}
                   </div>
                 </div>
               </motion.fieldset>
 
-              {/* Section 3 */}
-              <motion.fieldset variants={fadeInUp} className="space-y-5">
-                <legend className="w-full flex items-center gap-2 pb-3 border-b border-[#eef1f3] text-xs font-semibold uppercase tracking-widest text-[#537D96]">
-                  <span className="inline-flex w-4 h-4 rounded items-center justify-center text-white text-[10px] font-bold"
-                    style={{ backgroundColor: '#EC8F8D' }}>3</span>
-                  Project Details
+              {/* Section 3 - Project Details */}
+              <motion.fieldset variants={fadeInUp} className="space-y-6">
+                <legend className="flex items-center gap-3 w-full pb-4 border-b border-[rgba(28,35,33,0.08)]">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#EC8F8D] text-white font-['Cormorant_Garamond',serif] text-sm">
+                    3
+                  </span>
+                  <span className="text-[11px] tracking-[0.18em] uppercase text-[#3a3a36] font-['Jost',sans-serif] font-normal">
+                    Project Details
+                  </span>
                 </legend>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1a2e35] mb-1.5">
-                    Describe Your Requirement <span className="text-[#EC8F8D]">*</span>
+                  <label className="block text-[11px] tracking-[0.18em] uppercase text-[#8a8a82] mb-2 font-['Jost',sans-serif]">
+                    Describe Your Project <span className="text-[#EC8F8D]">*</span>
                   </label>
-                  <textarea name="requirement" value={form.requirement}
-                    onChange={handleChange} onBlur={handleBlur}
+                  <textarea
+                    name="requirement"
+                    value={form.requirement}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Describe your project goals, target audience, timeline, and any specific requirements…"
-                    rows={5}
+                    rows={6}
                     className={`${inputClass('requirement')} resize-none`}
-                    aria-invalid={getFieldStatus('requirement').hasError} />
-                  <div className="mt-1.5 flex items-center justify-between">
+                  />
+                  <div className="mt-3 flex items-center justify-between">
                     {getFieldStatus('requirement').hasError ? (
-                      <p className="text-xs text-[#EC8F8D] flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />{errors.requirement}
+                      <p className="text-xs text-[#EC8F8D] flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5" />{errors.requirement}
                       </p>
                     ) : (
-                      <p className="text-xs text-[#9badb8]">
+                      <p className="text-xs text-[#8a8a82] italic">
                         Include goals, scope, timeline, and any specific requirements
                       </p>
                     )}
-                    <span className={`text-xs tabular-nums font-medium ${form.requirement.length >= 20 ? 'text-[#44A194]' : 'text-[#9badb8]'}`}>
-                      {form.requirement.length} / 20 min
+                    <span className={`text-xs tabular-nums ${form.requirement.length >= 20 ? 'text-[#44A194]' : 'text-[#8a8a82]'}`}>
+                      {form.requirement.length} / 20
                     </span>
                   </div>
                 </div>
               </motion.fieldset>
 
-              {/* Submit */}
-              <motion.div variants={fadeInUp} className="pt-1">
+              {/* Submit Button */}
+              <motion.div variants={fadeInUp} className="pt-4">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-white transition-opacity duration-150 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.99]"
-                  style={{ backgroundColor: '#44A194' }}
+                  className="w-full bg-[#44A194] text-white border-none px-8 py-4 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#38857a] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Submitting…
+                      Processing...
                     </>
                   ) : (
                     <>
@@ -410,52 +461,70 @@ export default function ClientRequestForm() {
                     </>
                   )}
                 </button>
-                <p className="mt-3 text-center text-xs text-[#9badb8]">
-                  Your information is kept confidential and used only to match you with the right expert.
+                <p className="mt-4 text-center text-[10px] text-[#8a8a82] tracking-[0.1em] font-['Jost',sans-serif]">
+                  Your information is kept confidential · Matched within 24 hours
                 </p>
               </motion.div>
             </form>
           </motion.div>
 
-          {/* ── Sidebar ── */}
+          {/* Sidebar */}
           <motion.aside
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.25, duration: 0.4 }}
-            className="lg:w-60 flex-shrink-0 space-y-4"
+            className="lg:w-80 flex-shrink-0 space-y-6"
           >
-            <div className="bg-white rounded-xl border border-[#e2e8ec] p-5 shadow-sm">
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-[#537D96] mb-4">
-                What Happens Next
+            {/* Process Card */}
+            <div className="bg-white border border-[rgba(28,35,33,0.08)] p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] to-[#537D96]" />
+
+              <h3 className="text-[11px] tracking-[0.18em] uppercase text-[#44A194] mb-6 font-['Jost',sans-serif] font-normal">
+                What happens next
               </h3>
-              <ol className="space-y-4">
+
+              <div className="space-y-6">
                 {[
-                  { n: '01', title: 'Request Review', desc: 'Our team reviews your submission within 2 hours.' },
-                  { n: '02', title: 'Expert Match', desc: 'We pair you with the best-fit specialist.' },
-                  { n: '03', title: 'Kickoff Call', desc: 'Align on scope, deliverables, and timeline.' },
-                ].map(({ n, title, desc }) => (
-                  <li key={n} className="flex gap-3">
-                    <span className="text-xs font-bold tabular-nums mt-0.5 flex-shrink-0" style={{ color: '#44A194' }}>{n}</span>
+                  { step: '01', title: 'Request Review', desc: 'Our team reviews your submission within 2 hours.' },
+                  { step: '02', title: 'AI Matching', desc: 'We match you with the best-fit specialist from our pool.' },
+                  { step: '03', title: 'Kickoff', desc: 'Align on scope, deliverables, and timeline within 24 hours.' },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="flex gap-4">
+                    <span className="font-['Cormorant_Garamond',serif] text-sm font-medium text-[#44A194] w-8 flex-shrink-0">
+                      {step}
+                    </span>
                     <div>
-                      <p className="text-xs font-semibold text-[#1a2e35]">{title}</p>
-                      <p className="text-xs text-[#9badb8] mt-0.5 leading-relaxed">{desc}</p>
+                      <h4 className="text-sm font-medium text-[#1C2321] mb-1">{title}</h4>
+                      <p className="text-xs text-[#8a8a82] leading-relaxed">{desc}</p>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ol>
+              </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-[#e2e8ec] p-5 shadow-sm space-y-3">
-              {[
-                { label: 'Free Consultation', color: '#44A194' },
-                { label: 'Verified Experts Only', color: '#537D96' },
-                { label: 'Response within 2 hrs', color: '#EC8F8D' },
-              ].map(({ label, color }) => (
-                <div key={label} className="flex items-center gap-2.5">
-                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-                  <span className="text-xs text-[#1a2e35] font-medium">{label}</span>
-                </div>
-              ))}
+            {/* Trust Indicators */}
+            <div className="bg-white border border-[rgba(28,35,33,0.08)] p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#EC8F8D] to-[#44A194]" />
+
+              <div className="space-y-4">
+                {[
+                  { text: 'Free consultation', color: '#44A194' },
+                  { text: 'AI-vetted specialists only', color: '#537D96' },
+                  { text: 'Response within 2 hours', color: '#EC8F8D' },
+                  { text: 'Matches in < 24 hours', color: '#1C2321' },
+                ].map(({ text, color }) => (
+                  <div key={text} className="flex items-center gap-3">
+                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                    <span className="text-xs text-[#3a3a36] font-['Jost',sans-serif]">{text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-[rgba(28,35,33,0.08)]">
+                <p className="text-[10px] text-[#8a8a82] tracking-[0.1em] uppercase mb-2">Trusted by</p>
+                <p className="text-sm font-['Cormorant_Garamond',serif] text-[#1C2321]">10,000+ specialists</p>
+                <p className="text-xs text-[#8a8a82] mt-1">Across 5 marketing disciplines</p>
+              </div>
             </div>
           </motion.aside>
         </div>

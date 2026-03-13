@@ -46,6 +46,12 @@
 @layer base {
   * {
     border-color: var(--border);
+    box-sizing: border-box;
+  }
+
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
   html {
@@ -55,7 +61,20 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Font families */
+  .font-display {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .font-body {
+    font-family: 'Jost', sans-serif;
   }
 
   /* Noise overlay */
@@ -73,18 +92,127 @@
 @layer utilities {
   .calendar-cell-size {
     --cell-size: 2rem;
-    /* 8 in Tailwind spacing scale = 2rem */
+  }
+
+  /* Custom scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Text utilities */
+  .letter-spacing-12 {
+    letter-spacing: 0.12em;
+  }
+
+  .letter-spacing-16 {
+    letter-spacing: 0.16em;
+  }
+
+  .letter-spacing-18 {
+    letter-spacing: 0.18em;
+  }
+
+  .letter-spacing-20 {
+    letter-spacing: 0.2em;
+  }
+
+  .letter-spacing-24 {
+    letter-spacing: 0.24em;
+  }
+
+  .letter-spacing-28 {
+    letter-spacing: 0.28em;
+  }
+
+  .text-uppercase {
+    text-transform: uppercase;
+  }
+
+  /* Font weights */
+  .font-300 {
+    font-weight: 300;
+  }
+
+  .font-400 {
+    font-weight: 400;
+  }
+
+  .font-500 {
+    font-weight: 500;
   }
 }
 
-@keyframes dotGlow {
-  0%, 100% { box-shadow: 0 0 0 2px rgba(68,161,148,0.2); }
-  50% { box-shadow: 0 0 0 5px rgba(68,161,148,0.08); }
+/* Page Transitions */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes tdp {
-  0%,60%,100% { transform: scale(1); opacity: 0.4; }
-  30% { transform: scale(1.4); opacity: 1; }
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageIn 0.45s ease both;
+}
+
+.fade-down {
+  animation: fadeDown 0.6s ease both;
+}
+
+/* Chat Animations */
+@keyframes dotGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(68, 161, 148, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(68, 161, 148, 0.08);
+  }
+}
+
+.animate-dot-glow {
+  animation: dotGlow 2.4s infinite;
+}
+
+@keyframes typingDot {
+  0%, 60%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  30% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+}
+
+.animate-typing-dot {
+  animation: typingDot 1.4s infinite ease-in-out;
 }
 
 .animation-delay-200 {
@@ -93,4 +221,198 @@
 
 .animation-delay-400 {
   animation-delay: 0.4s;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+}
+
+.animation-delay-800 {
+  animation-delay: 0.8s;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-1200 {
+  animation-delay: 1.2s;
+}
+
+/* AI Rings Animation */
+@keyframes ringPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+.animate-ring-pulse {
+  animation: ringPulse 4s ease-in-out infinite;
+}
+
+/* Card Hover Effects */
+.card-hover-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-hover-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--teal);
+  transform: scaleX(0);
+  transition: transform 0.4s;
+}
+
+.card-hover-line:hover::before {
+  transform: scaleX(1);
+}
+
+/* Stat Hover */
+.stat-hover {
+  transition: background-color 0.3s;
+}
+
+.stat-hover:hover {
+  background-color: rgba(68, 161, 148, 0.03);
+}
+
+/* Flow Arrow */
+.flow-arrow {
+  width: 1px;
+  height: 20px;
+  background: rgba(68, 161, 148, 0.3);
+  margin: 0 auto;
+  position: relative;
+}
+
+.flow-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgba(68, 161, 148, 0.3);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 860px) {
+  .hide-on-mobile {
+    display: none;
+  }
+
+  .mobile-stack {
+    flex-direction: column;
+  }
+
+  .mobile-padding {
+    padding: 20px;
+  }
+}
+
+/* Custom Components */
+.chat-message-ai {
+  background: var(--cream);
+  border: 1px solid var(--border-light);
+  color: var(--carbon);
+  border-radius: 0 10px 10px 10px;
+}
+
+.chat-message-user {
+  background: var(--teal);
+  color: white;
+  border-radius: 10px 0 10px 10px;
+}
+
+/* Match Card */
+.match-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.match-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--teal), var(--steel-blue));
+}
+
+/* Section Eyebrow */
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 16px;
+}
+
+.section-eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--teal);
+}
+
+/* Feature List */
+.feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.feature-list li {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--carbon);
+  line-height: 1.75;
+}
+
+.feature-list li::before {
+  content: '';
+  width: 18px;
+  height: 1px;
+  background: var(--coral);
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+
+/* Badge */
+.badge-teal {
+  display: inline-block;
+  padding: 5px 13px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid;
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.badge-blue {
+  border-color: var(--steel-blue);
+  color: var(--steel-blue);
+}
+
+.badge-coral {
+  border-color: var(--coral);
+  color: var(--coral);
 }
