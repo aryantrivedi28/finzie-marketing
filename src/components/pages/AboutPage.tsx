@@ -69,9 +69,9 @@ const AboutPage = () => {
       </Section>
 
       {/* Timeline Section */}
-      <Section className="px-[60px] py-20 border-t border-[rgba(28,35,33,0.08)]">
+      <Section className="px-[60px] py-24 border-t border-[rgba(28,35,33,0.08)]">
         <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-20">
-          <div className="md:sticky md:top-20 self-start">
+          <div className="md:sticky md:top-24 self-start">
             <span className="text-[10px] tracking-[0.28em] uppercase text-[#44A194] mb-4 block">The Journey</span>
             <h3 className="font-['Cormorant_Garamond',serif] text-[32px] font-light leading-[1.2]">
               From a client<br />problem to a<br /><em className="italic text-[#EC8F8D] not-italic">real platform.</em>
