@@ -1,7 +1,22 @@
-'use client';
+// app/admin-panel/bulk-mail-send/page.tsx
+"use client";
 
-import React, { useRef, useState } from 'react';
-import { Mail, Upload, Sheet, Send, CheckCircle, XCircle, AlertCircle, Zap, Users, Clock } from 'lucide-react';
+import React, { useRef, useState } from "react";
+import { motion, type Variants } from "framer-motion";
+import { 
+  Mail, 
+  Upload, 
+  Send, 
+  CheckCircle, 
+  XCircle, 
+  AlertCircle, 
+  Users, 
+  Clock,
+  FileText,
+  ArrowLeft,
+  Zap,
+  Sheet
+} from "lucide-react";
 
 type Failure = { email: string; error: string };
 type Result = {
@@ -12,11 +27,35 @@ type Result = {
   error?: string;
 };
 
-export default function HomePage() {
-  const fileRef = useRef<HTMLInputElement | null>(null);
-  const [sheetUrl, setSheetUrl] = useState('');
-  const [subject, setSubject] = useState('Hello from Bulk Mailer');
-  const [message, setMessage] = useState('We have a new opportunity for you.');
+// Animation variants with proper typing
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.6,
+      ease: [0.6, -0.05, 0.01, 0.99] as const // Add 'as const' to fix easing type
+    } 
+  },
+};
+
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+export default function BulkMailSendPage() {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [sheetUrl, setSheetUrl] = useState("");
+  const [subject, setSubject] = useState("New Opportunity at ExecuMarketing");
+  const [message, setMessage] = useState("We have a new opportunity for you.");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [dryRun, setDryRun] = useState(false);
@@ -66,12 +105,12 @@ export default function HomePage() {
       if (!res.ok) setResult({ error: data?.error || 'Server error' });
       else setResult(data as Result);
 
-      // ✅ Clear fields after process completes
+      // Clear fields after process completes
       setSheetUrl('');
-      setSubject('Hello from Bulk Mailer');
+      setSubject('New Opportunity at ExecuMarketing');
       setMessage('We have a new opportunity for you.');
       setDryRun(false);
-      if (fileRef.current) fileRef.current.value = ''; // clear file input
+      if (fileRef.current) fileRef.current.value = '';
     } catch (err: any) {
       setResult({ error: err?.message || String(err) });
     } finally {
@@ -80,153 +119,154 @@ export default function HomePage() {
     }
   }
 
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#fbf5e5] via-[#fff8e1] to-[#fbf5e5] py-10 font-[Inter] pt-32">
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.5;
-          }
-        }
-        @keyframes shimmer {
-          0% {
-            background-position: -1000px 0;
-          }
-          100% {
-            background-position: 1000px 0;
-          }
-        }
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
-        }
-        .animate-pulse-slow {
-          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        .shimmer {
-          background: linear-gradient(90deg, transparent, rgba(255, 224, 27, 0.3), transparent);
-          background-size: 1000px 100%;
-          animation: shimmer 2s infinite;
-        }
-      `}</style>
-
-      <div className="max-w-5xl mx-auto px-4">
-        {/* Hero Header */}
-        <div className="text-center mb-12 animate-fade-in-up">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-[#FFE01B] rounded-2xl mb-6 shadow-lg transform hover:scale-110 transition-transform duration-300">
-            <Mail className="w-10 h-10 text-[#241C15]" />
-          </div>
-          <h1 className="text-5xl font-bold mb-4 text-[#241C15] tracking-tight">
-            Bulk Freelancers Mailer
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Streamline your outreach with powerful bulk email automation. Upload CSV files or connect Google Sheets to reach hundreds of freelancers instantly.
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={staggerContainer}
+      className="min-h-screen bg-[#F4F0E4]"
+    >
+      {/* Top Bar */}
+      <motion.div 
+        variants={fadeUp}
+        className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-8 py-4 flex items-center"
+      >
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center gap-2 text-[#8a8a82] hover:text-[#1C2321] transition-colors mr-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-xs tracking-[0.16em] uppercase">Back</span>
+        </button>
+        <div>
+          <h1 className="font-display text-2xl font-light text-[#1C2321]">Bulk Mail Sending</h1>
+          <p className="text-sm text-[#8a8a82] mt-1 tracking-[0.04em]">
+            Send personalized emails to multiple freelancers at once
           </p>
         </div>
+      </motion.div>
+
+      {/* Content */}
+      <div className="p-8 max-w-5xl mx-auto">
+        {/* Hero Section */}
+        <motion.div 
+          variants={fadeUp}
+          className="text-center mb-12"
+        >
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-[#44A194]/10 rounded-2xl mb-6">
+            <Mail className="w-10 h-10 text-[#44A194]" />
+          </div>
+          <h1 className="font-display text-4xl font-light text-[#1C2321] mb-4">
+            Bulk Freelancers Mailer
+          </h1>
+          <p className="text-[#8a8a82] max-w-2xl mx-auto">
+            Streamline your outreach with powerful bulk email automation. 
+            Upload CSV files or connect Google Sheets to reach hundreds of freelancers instantly.
+          </p>
+        </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <motion.div 
+          variants={fadeUp}
+          className="grid grid-cols-1 md:grid-cols-3 gap-[2px] bg-[#1C2321]/10 mb-8"
+        >
+          <div className="bg-white p-6">
             <div className="flex items-center gap-4">
-              <div className="bg-[#FFE01B] bg-opacity-20 p-3 rounded-lg">
-                <Zap className="w-6 h-6 text-[#241C15]" />
+              <div className="w-12 h-12 bg-[#44A194]/10 flex items-center justify-center">
+                <Zap className="w-6 h-6 text-[#44A194]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#241C15]">500+</p>
-                <p className="text-sm text-gray-600">Emails per day</p>
+                <div className="font-display text-3xl font-light text-[#1C2321]">500+</div>
+                <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-1">Free Gmail</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="bg-white p-6">
             <div className="flex items-center gap-4">
-              <div className="bg-[#FFE01B] bg-opacity-20 p-3 rounded-lg">
-                <Users className="w-6 h-6 text-[#241C15]" />
+              <div className="w-12 h-12 bg-[#537D96]/10 flex items-center justify-center">
+                <Users className="w-6 h-6 text-[#537D96]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#241C15]">2000+</p>
-                <p className="text-sm text-gray-600">With Workspace</p>
+                <div className="font-display text-3xl font-light text-[#1C2321]">2,000+</div>
+                <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-1">Workspace</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="bg-white p-6">
             <div className="flex items-center gap-4">
-              <div className="bg-[#FFE01B] bg-opacity-20 p-3 rounded-lg">
-                <Clock className="w-6 h-6 text-[#241C15]" />
+              <div className="w-12 h-12 bg-[#EC8F8D]/10 flex items-center justify-center">
+                <Clock className="w-6 h-6 text-[#EC8F8D]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#241C15]">Instant</p>
-                <p className="text-sm text-gray-600">Delivery speed</p>
+                <div className="font-display text-3xl font-light text-[#1C2321]">Instant</div>
+                <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-1">Delivery</div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Important Notice */}
-        <div className="bg-gradient-to-r from-[#FFE01B] to-[#FCD34D] rounded-2xl p-6 mb-8 shadow-lg border-2 border-[#FFE01B] animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <motion.div 
+          variants={fadeUp}
+          className="bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 p-6 mb-8"
+        >
           <div className="flex items-start gap-4">
-            <AlertCircle className="w-6 h-6 text-[#241C15] flex-shrink-0 mt-1" />
+            <AlertCircle className="w-5 h-5 text-[#EC8F8D] flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-bold text-[#241C15] mb-3 text-lg">Email Sending Limits (Gmail)</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-white bg-opacity-60 rounded-lg p-4">
-                  <p className="font-semibold text-[#241C15] mb-1">Free Gmail Accounts</p>
-                  <p className="text-2xl font-bold text-[#241C15]">500</p>
-                  <p className="text-sm text-gray-700">emails per day</p>
+              <h3 className="font-display text-lg font-light text-[#1C2321] mb-3">Email Sending Limits (Gmail)</h3>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white p-4">
+                  <p className="text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1">Free Gmail</p>
+                  <p className="font-display text-2xl font-light text-[#44A194]">500</p>
+                  <p className="text-xs text-[#8a8a82]">emails per day</p>
                 </div>
-                <div className="bg-white bg-opacity-60 rounded-lg p-4">
-                  <p className="font-semibold text-[#241C15] mb-1">Google Workspace</p>
-                  <p className="text-2xl font-bold text-[#241C15]">2,000</p>
-                  <p className="text-sm text-gray-700">emails per day</p>
+                <div className="bg-white p-4">
+                  <p className="text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1">Google Workspace</p>
+                  <p className="font-display text-2xl font-light text-[#537D96]">2,000</p>
+                  <p className="text-xs text-[#8a8a82]">emails per day</p>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-[#241C15] bg-white bg-opacity-40 rounded-lg p-3">
-                💡 <strong>Pro Tip:</strong> Exceeding these limits may temporarily block your Gmail account. For larger campaigns, consider professional email APIs like SendGrid or AWS SES.
+              <p className="text-sm text-[#8a8a82] bg-white p-3">
+                💡 <strong className="text-[#1C2321]">Pro Tip:</strong> Exceeding these limits may temporarily block your Gmail account. 
+                For larger campaigns, consider professional email APIs like SendGrid or AWS SES.
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Main Form */}
-        <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-          <div className="bg-gradient-to-r from-[#241C15] to-[#3a2f23] p-6">
-            <h2 className="text-2xl font-bold text-[#FFE01B] flex items-center gap-3">
-              <Send className="w-7 h-7" />
+        <motion.div 
+          variants={fadeUp}
+          className="bg-white border border-[#1C2321]/10"
+        >
+          {/* Form Header */}
+          <div className="p-6 border-b border-[#1C2321]/10">
+            <h2 className="font-display text-xl font-light text-[#1C2321] flex items-center gap-3">
+              <Send className="w-5 h-5 text-[#44A194]" />
               Campaign Setup
             </h2>
-            <p className="text-gray-300 mt-2">Configure your bulk email campaign below</p>
+            <p className="text-sm text-[#8a8a82] mt-2">
+              Configure your bulk email campaign below
+            </p>
           </div>
 
-          <div className="p-8 space-y-6">
+          {/* Form Body */}
+          <div className="p-6 space-y-6">
             {/* File Upload Section */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#241C15] flex items-center gap-2">
+            <div>
+              <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-2">
                 <Upload className="w-4 h-4" />
                 CSV File Upload
               </label>
-              <div className="relative">
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept=".csv,text/csv"
-                  className="block w-full text-sm text-gray-600 bg-gray-50 border-2 border-gray-300 rounded-xl cursor-pointer p-4 hover:border-[#FFE01B] transition-colors duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#FFE01B] file:text-[#241C15] file:font-semibold hover:file:bg-[#FCD34D] file:cursor-pointer"
-                />
-              </div>
-              <p className="text-xs text-gray-500 flex items-center gap-1">
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".csv,text/csv"
+                className="w-full border border-[#1C2321]/10 p-3 text-sm text-[#1C2321] file:mr-4 file:py-2 file:px-4 file:bg-[#44A194] file:text-white file:text-xs file:tracking-[0.16em] file:uppercase file:border-0 hover:file:bg-[#38857a] transition-colors"
+              />
+              <p className="text-xs text-[#8a8a82] mt-1 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
                 Upload a CSV with email addresses or use Google Sheets below
               </p>
@@ -234,14 +274,14 @@ export default function HomePage() {
 
             {/* Divider */}
             <div className="flex items-center gap-4">
-              <div className="flex-1 h-px bg-gray-300"></div>
-              <span className="text-sm font-medium text-gray-500">OR</span>
-              <div className="flex-1 h-px bg-gray-300"></div>
+              <div className="flex-1 h-px bg-[#1C2321]/10"></div>
+              <span className="text-xs text-[#8a8a82]">OR</span>
+              <div className="flex-1 h-px bg-[#1C2321]/10"></div>
             </div>
 
             {/* Google Sheets Section */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#241C15] flex items-center gap-2">
+            <div>
+              <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-2">
                 <Sheet className="w-4 h-4" />
                 Google Sheet URL
               </label>
@@ -249,165 +289,179 @@ export default function HomePage() {
                 value={sheetUrl}
                 onChange={(e) => setSheetUrl(e.target.value)}
                 placeholder="https://docs.google.com/spreadsheets/d/..."
-                className="w-full border-2 border-gray-300 rounded-xl p-4 text-sm focus:ring-2 focus:ring-[#FFE01B] focus:border-[#FFE01B] text-[#241C15] bg-white transition-all duration-300"
+                className="w-full border border-[#1C2321]/10 p-3 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
               />
-              <p className="text-xs text-gray-500 flex items-center gap-1">
+              <p className="text-xs text-[#8a8a82] mt-1 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
                 Make sure the sheet is shared with "Anyone with the link"
               </p>
             </div>
 
             {/* Subject Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#241C15] flex items-center gap-2">
-                <Mail className="w-4 h-4" />
+            <div>
+              <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">
                 Email Subject
               </label>
               <input
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full border-2 border-gray-300 rounded-xl p-4 text-sm focus:ring-2 focus:ring-[#FFE01B] focus:border-[#FFE01B] text-[#241C15] bg-white transition-all duration-300"
+                className="w-full border border-[#1C2321]/10 p-3 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
                 required
               />
             </div>
 
             {/* Message Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#241C15] flex items-center gap-2">
-                <Mail className="w-4 h-4" />
+            <div>
+              <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">
                 Email Message
               </label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full border-2 border-gray-300 rounded-xl p-4 text-sm min-h-[150px] focus:ring-2 focus:ring-[#FFE01B] focus:border-[#FFE01B] text-[#241C15] bg-white transition-all duration-300"
+                rows={6}
+                className="w-full border border-[#1C2321]/10 p-3 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
+                placeholder="Write your message here..."
                 required
               />
-              <p className="text-xs text-gray-500">Craft a compelling message for your recipients</p>
+              <p className="text-xs text-[#8a8a82] mt-1">
+                Craft a compelling message for your recipients
+              </p>
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-200">
-              <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer group">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-[#1C2321]/10">
+              <label className="flex items-center gap-2 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={dryRun}
                   onChange={(e) => setDryRun(e.target.checked)}
-                  className="w-5 h-5 accent-[#FFE01B] cursor-pointer"
+                  className="w-4 h-4 accent-[#44A194]"
                 />
-                <span className="group-hover:text-[#241C15] transition-colors">
+                <span className="text-sm text-[#8a8a82] group-hover:text-[#1C2321] transition-colors">
                   Dry run (test without sending)
                 </span>
               </label>
 
               <button
-                type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="px-8 py-4 bg-[#FFE01B] text-[#241C15] rounded-xl text-sm font-bold hover:bg-[#FCD34D] disabled:bg-gray-300 disabled:text-gray-500 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2 disabled:transform-none disabled:shadow-none"
+                className="px-8 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {loading ? (
                   <>
-                    <div className="w-5 h-5 border-3 border-[#241C15] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     Sending...
                   </>
                 ) : (
                   <>
-                    <Send className="w-5 h-5" />
+                    <Send className="w-4 h-4" />
                     Send Emails
                   </>
                 )}
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Status Message */}
         {statusMessage && (
-          <div className="mt-6 bg-[#FFE01B] bg-opacity-20 border-2 border-[#FFE01B] rounded-xl p-4 text-center animate-fade-in-up">
-            <p className="text-[#241C15] font-semibold flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-[#241C15] border-t-transparent rounded-full animate-spin"></span>
+          <motion.div 
+            variants={fadeUp}
+            className="mt-6 p-4 bg-[#44A194]/10 border border-[#44A194]/20 text-center"
+          >
+            <p className="text-sm text-[#44A194] flex items-center justify-center gap-2">
+              <span className="w-4 h-4 border-2 border-[#44A194] border-t-transparent rounded-full animate-spin"></span>
               {statusMessage}
             </p>
-          </div>
+          </motion.div>
         )}
 
         {/* Results */}
         {result && (
-          <div className="mt-8 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden animate-fade-in-up">
-            <div className="bg-gradient-to-r from-[#241C15] to-[#3a2f23] p-6">
-              <h2 className="text-xl font-bold text-[#FFE01B] flex items-center gap-2">
+          <motion.div 
+            variants={fadeUp}
+            className="mt-8 bg-white border border-[#1C2321]/10"
+          >
+            {/* Results Header */}
+            <div className="p-6 border-b border-[#1C2321]/10">
+              <h2 className="font-display text-xl font-light text-[#1C2321] flex items-center gap-2">
                 {result.error ? (
                   <>
-                    <XCircle className="w-6 h-6" />
+                    <XCircle className="w-5 h-5 text-[#EC8F8D]" />
                     Campaign Failed
                   </>
                 ) : (
                   <>
-                    <CheckCircle className="w-6 h-6" />
+                    <CheckCircle className="w-5 h-5 text-[#44A194]" />
                     Campaign Results
                   </>
                 )}
               </h2>
             </div>
 
+            {/* Results Body */}
             <div className="p-6">
               {result.error ? (
-                <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 flex items-start gap-3">
-                  <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-red-700">{result.error}</p>
+                <div className="bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 p-4 text-[#EC8F8D]">
+                  {result.error}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                    <p className="text-xs text-gray-600 mb-1">Total Rows</p>
-                    <p className="text-3xl font-bold text-[#241C15]">{result.totalRows ?? 0}</p>
+                <>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-[2px] bg-[#1C2321]/10">
+                    <div className="bg-white p-4">
+                      <div className="text-xs text-[#8a8a82] mb-1">Total Rows</div>
+                      <div className="font-display text-2xl font-light text-[#1C2321]">{result.totalRows ?? 0}</div>
+                    </div>
+                    <div className="bg-white p-4">
+                      <div className="text-xs text-[#8a8a82] mb-1">Attempted</div>
+                      <div className="font-display text-2xl font-light text-[#1C2321]">{result.attempted ?? 0}</div>
+                    </div>
+                    <div className="bg-white p-4">
+                      <div className="text-xs text-[#8a8a82] mb-1">Sent</div>
+                      <div className="font-display text-2xl font-light text-[#44A194]">{result.sent ?? 0}</div>
+                    </div>
+                    <div className="bg-white p-4">
+                      <div className="text-xs text-[#8a8a82] mb-1">Failed</div>
+                      <div className="font-display text-2xl font-light text-[#EC8F8D]">{result.failed?.length ?? 0}</div>
+                    </div>
                   </div>
-                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                    <p className="text-xs text-gray-600 mb-1">Attempted</p>
-                    <p className="text-3xl font-bold text-[#241C15]">{result.attempted ?? 0}</p>
-                  </div>
-                  <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-                    <p className="text-xs text-green-700 mb-1">Sent</p>
-                    <p className="text-3xl font-bold text-green-600">{result.sent ?? 0}</p>
-                  </div>
-                  <div className="bg-red-50 rounded-xl p-4 border border-red-200">
-                    <p className="text-xs text-red-700 mb-1">Failed</p>
-                    <p className="text-3xl font-bold text-red-600">{result.failed?.length ?? 0}</p>
-                  </div>
-                </div>
-              )}
 
-              {result.failed && result.failed.length > 0 && (
-                <details className="mt-6 bg-gray-50 rounded-xl p-4 border border-gray-200">
-                  <summary className="cursor-pointer text-sm font-semibold text-[#241C15] flex items-center gap-2 hover:text-gray-700">
-                    <AlertCircle className="w-4 h-4" />
-                    View Failed Emails ({result.failed.length})
-                  </summary>
-                  <ul className="mt-4 space-y-2">
-                    {result.failed.map((f, i) => (
-                      <li key={i} className="text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-200">
-                        <code className="font-semibold text-[#241C15]">{f.email}</code>
-                        <span className="text-red-600 ml-2">— {f.error}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
+                  {result.failed && result.failed.length > 0 && (
+                    <details className="mt-6">
+                      <summary className="cursor-pointer text-sm text-[#1C2321] flex items-center gap-2 mb-4">
+                        <AlertCircle className="w-4 h-4 text-[#EC8F8D]" />
+                        View Failed Emails ({result.failed.length})
+                      </summary>
+                      <div className="space-y-2">
+                        {result.failed.map((f, i) => (
+                          <div key={i} className="p-3 bg-[#EC8F8D]/5 border border-[#EC8F8D]/20 text-sm">
+                            <code className="font-medium text-[#1C2321]">{f.email}</code>
+                            <span className="text-[#EC8F8D] ml-2">— {f.error}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
+                </>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Footer Info */}
-        <div className="mt-12 text-center space-y-4 pb-8">
-          <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 inline-block">
-            <p className="text-sm text-gray-600 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-[#FFE01B]" />
-              Need help? Make sure your Google Sheet is shared with <strong>"Anyone with the link"</strong>
+        <motion.div 
+          variants={fadeUp}
+          className="mt-12 text-center"
+        >
+          <div className="inline-block bg-white border border-[#1C2321]/10 p-4">
+            <p className="text-sm text-[#8a8a82] flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-[#44A194]" />
+              Need help? Make sure your Google Sheet is shared with{" "}
+              <strong className="text-[#1C2321]">"Anyone with the link"</strong>
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </main>
+    </motion.div>
   );
 }

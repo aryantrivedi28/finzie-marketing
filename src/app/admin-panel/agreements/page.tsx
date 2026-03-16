@@ -1,22 +1,8 @@
-"use client"
+// app/admin-panel/agreements/page.tsx
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useState, useEffect } from "react";
+import { motion, type Variants } from "framer-motion";
 import {
   ArrowLeft,
   FileText,
@@ -30,13 +16,41 @@ import {
   Trash2,
   Copy,
   MoreVertical,
-} from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { InvoiceForm } from "../../../components/invoice-form"
-import { motion } from "framer-motion"
-import { ClientAgreementForm } from "../../../components/client-agreement-form"
-import { useToast } from "@/hooks/use-toast"
-import { FreelancerAgreementForm } from "../../../components/freelancer-agreement-form"
+  CheckCircle,
+  XCircle,
+  Clock,
+  DollarSign,
+  Send,
+  Plus,
+} from "lucide-react";
+import { InvoiceForm } from "../../../components/admin-panel/invoice-form";
+import { ClientAgreementForm } from "../../../components/admin-panel/client-agreement-form";
+import { useToast } from "@/hooks/use-toast";
+import { FreelancerAgreementForm } from "../../../components/admin-panel/freelancer-agreement-form";
+
+// Animation variants
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.6,
+      ease: [0.6, -0.05, 0.01, 0.99] as const
+    } 
+  },
+};
+
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    },
+  },
+};
 
 // Define proper TypeScript interfaces
 interface BaseDocument {
@@ -117,27 +131,25 @@ interface FormData {
 }
 
 function AgreementAutomationPageContent() {
-  const [activeTab, setActiveTab] = useState("dashboard")
-  const [agreements, setAgreements] = useState<Agreement[]>([])
-  const [invoices, setInvoices] = useState<Invoice[]>([])
-  const [loading, setLoading] = useState(false)
-  const [aiLoading, setAiLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  // CHANGE: make toast hook compatible with both { toast } and { addToast }
-  const toastApi = useToast() as any
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [agreements, setAgreements] = useState<Agreement[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const toastApi = useToast() as any;
   const toast =
     typeof toastApi?.toast === "function"
       ? toastApi.toast
       : typeof toastApi?.addToast === "function"
         ? toastApi.addToast
-        : () => { } // no-op fallback
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null)
-  const [editFormData, setEditFormData] = useState<any>({})
+        : () => { };
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [editFormData, setEditFormData] = useState<any>({});
 
-
-const defaultFreelancerTerms = `
+  const defaultFreelancerTerms = `
 **1. Professional Conduct & Communication**
 
       Freelancers are expected to maintain the highest level of professionalism in all interactions, both internal and external.  
@@ -171,7 +183,7 @@ Any potential conflict of interest must be disclosed immediately. Freelancers ar
 
 All work created during the engagement shall be the exclusive property of Finzie or its respective clients.  
 Freelancers waive any rights to reuse, reproduce, or republish any part of the work without prior written consent from Finzie or the client.
-`
+`;
 
   const [formData, setFormData] = useState<FormData>({
     client_name: "",
@@ -192,53 +204,53 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
     rate_amount: "",
     rate_type: "hour",
     project_duration: "",
-  })
+  });
 
   useEffect(() => {
-    fetchAgreements()
-    fetchInvoices()
-  }, [])
+    fetchAgreements();
+    fetchInvoices();
+  }, []);
 
   const fetchAgreements = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await fetch("/api/agreements")
+      const response = await fetch("/api/agreements");
       if (!response.ok) {
-        throw new Error(`Failed to fetch agreements: ${response.status}`)
+        throw new Error(`Failed to fetch agreements: ${response.status}`);
       }
-      const data = await response.json()
-      setAgreements(data.agreements || [])
+      const data = await response.json();
+      setAgreements(data.agreements || []);
     } catch (error) {
-      console.error("Error fetching agreements:", error)
-      setError("Failed to load agreements")
+      console.error("Error fetching agreements:", error);
+      setError("Failed to load agreements");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchInvoices = async () => {
     try {
-      const response = await fetch("/api/invoices")
+      const response = await fetch("/api/invoices");
       if (!response.ok) {
-        throw new Error(`Failed to fetch invoices: ${response.status}`)
+        throw new Error(`Failed to fetch invoices: ${response.status}`);
       }
-      const data = await response.json()
-      setInvoices(data.invoices || [])
+      const data = await response.json();
+      setInvoices(data.invoices || []);
     } catch (error) {
-      console.error("Error fetching invoices:", error)
-      setError("Failed to load invoices")
+      console.error("Error fetching invoices:", error);
+      setError("Failed to load invoices");
     }
-  }
+  };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const generateAITerms = async (type: "client" | "freelancer" | "payment") => {
-    setAiLoading(true)
-    setError(null)
+    setAiLoading(true);
+    setError(null);
     try {
-      let requestData
+      let requestData;
 
       if (type === "client") {
         requestData = {
@@ -247,7 +259,7 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
           scope: formData.scope,
           paymentAmount: Number.parseFloat(formData.payment_amount) || 0,
           currency: formData.currency,
-        }
+        };
       } else if (type === "freelancer") {
         requestData = {
           type: "freelancer",
@@ -255,44 +267,44 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
           rateAmount: Number.parseFloat(formData.rate_amount) || 0,
           rateType: formData.rate_type,
           projectDuration: formData.project_duration,
-        }
+        };
       } else {
         requestData = {
           type: "payment",
           amount: Number.parseFloat(formData.payment_amount) || 0,
           currency: formData.currency,
           projectType: formData.project_title,
-        }
+        };
       }
 
       const response = await fetch("/api/agreements/generate-terms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestData),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`Failed to generate terms: ${response.status}`)
+        throw new Error(`Failed to generate terms: ${response.status}`);
       }
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (type === "payment") {
-        handleInputChange("payment_terms", data.terms)
+        handleInputChange("payment_terms", data.terms);
       } else {
-        handleInputChange("terms", data.terms)
+        handleInputChange("terms", data.terms);
       }
     } catch (error) {
-      console.error("Error generating terms:", error)
-      setError("Failed to generate terms. Please try again.")
+      console.error("Error generating terms:", error);
+      setError("Failed to generate terms. Please try again.");
     } finally {
-      setAiLoading(false)
+      setAiLoading(false);
     }
-  }
+  };
 
   const generateAIContent = async (prompt: string, type: "terms" | "payment_terms" | "deliverables" | "scope") => {
-    setAiLoading(true)
-    setError(null)
+    setAiLoading(true);
+    setError(null);
     try {
       const requestData = {
         type: "custom",
@@ -305,44 +317,41 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
           paymentAmount: formData.payment_amount,
           currency: formData.currency,
         },
-      }
+      };
 
       const response = await fetch("/api/agreements/generate-terms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestData),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`Failed to generate content: ${response.status}`)
+        throw new Error(`Failed to generate content: ${response.status}`);
       }
 
-      const data = await response.json()
-      handleInputChange(type, data.terms)
+      const data = await response.json();
+      handleInputChange(type, data.terms);
     } catch (error) {
-      console.error("Error generating content:", error)
-      setError("Failed to generate content. Please try again.")
+      console.error("Error generating content:", error);
+      setError("Failed to generate content. Please try again.");
     } finally {
-      setAiLoading(false)
+      setAiLoading(false);
     }
-  }
+  };
 
-  // Replaced single handleSubmit with separate client and freelancer submit functions
   const handleClientSubmit = async (clientPayload?: Partial<FormData>) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      // Use the payload passed by the child if present; otherwise fallback to parent's formData
-      const source = clientPayload ?? formData
+      const source = clientPayload ?? formData;
 
-      // Build payload with proper numeric conversions
       const payload = {
         type: "client",
         client_name: source.client_name || "",
         client_address: source.client_address || "",
         client_email: source.client_email || "",
-        freelancer_email: source.freelancer_email || "", // Assuming this might be relevant for client agreements too
+        freelancer_email: source.freelancer_email || "",
         project_title: source.project_title || "",
         scope: source.scope || "",
         payment_terms: source.payment_terms || "",
@@ -358,28 +367,27 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
         confidentiality: source.confidentiality || "",
         governing_law: source.governing_law || "",
         ownership: source.ownership || "",
-      }
+      };
 
       const response = await fetch("/api/agreements", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `Failed to create client agreement: ${response.status}`)
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to create client agreement: ${response.status}`);
       }
 
-      await fetchAgreements()
+      await fetchAgreements();
 
       toast({
         title: "Success",
         description: "Client agreement created successfully",
         variant: "default",
-      })
+      });
 
-      // Reset form data after successful submission for client agreement
       setFormData({
         client_name: "",
         client_address: "",
@@ -388,10 +396,10 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
         scope: "",
         payment_terms: "",
         deliverables: "",
-        terms: defaultFreelancerTerms, // Reset to default or keep last used? For now, default.
+        terms: defaultFreelancerTerms,
         payment_amount: "",
         currency: "USD",
-        freelancer_name: "", // Clear freelancer specific if any was filled
+        freelancer_name: "",
         freelancer_email: "",
         work_type: "",
         nda: "",
@@ -399,38 +407,37 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
         rate_amount: "",
         rate_type: "hour",
         project_duration: "",
-        responsibilities: "", // Clear client specific extra fields
+        responsibilities: "",
         termination: "",
         confidentiality: "",
         governing_law: "",
         ownership: "",
-      })
-      setActiveTab("dashboard")
+      });
+      setActiveTab("dashboard");
     } catch (error) {
-      console.error("[v0] Error creating client agreement:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to create client agreement"
-      setError(errorMessage)
+      console.error("Error creating client agreement:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to create client agreement";
+      setError(errorMessage);
       toast({
         title: "Error",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleFreelancerSubmit = async (freelancerPayload?: Partial<FormData>) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      const source = freelancerPayload ?? formData
+      const source = freelancerPayload ?? formData;
 
-      // Basic validation using the payload
-      if (!source.freelancer_name) throw new Error("Freelancer name is required")
-      if (!source.freelancer_email) throw new Error("Freelancer email is required")
-      if (!source.client_name) throw new Error("Client name is required for freelancer agreement")
+      if (!source.freelancer_name) throw new Error("Freelancer name is required");
+      if (!source.freelancer_email) throw new Error("Freelancer email is required");
+      if (!source.client_name) throw new Error("Client name is required for freelancer agreement");
 
       const payload = {
         type: "freelancer",
@@ -448,31 +455,27 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
         rate_type: source.rate_type || "hour",
         currency: source.currency || "USD",
         project_duration: source.project_duration || "",
-      }
-
-      console.log("[v0] Submitting freelancer agreement payload:", payload)
+      };
 
       const response = await fetch("/api/agreements", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `Failed to create freelancer agreement: ${response.status}`)
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to create freelancer agreement: ${response.status}`);
       }
 
-      console.log("[v0] Freelancer agreement created successfully ✅")
-      await fetchAgreements()
+      await fetchAgreements();
 
       toast({
         title: "Success",
         description: "Freelancer agreement created successfully",
         variant: "default",
-      })
+      });
 
-      // Reset form data after successful submission for freelancer agreement
       setFormData({
         client_name: "",
         client_address: "",
@@ -481,7 +484,7 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
         scope: "",
         payment_terms: "",
         deliverables: "",
-        terms: defaultFreelancerTerms, // Reset to default
+        terms: defaultFreelancerTerms,
         payment_amount: "",
         currency: "USD",
         freelancer_name: "",
@@ -492,34 +495,34 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
         rate_amount: "",
         rate_type: "hour",
         project_duration: "",
-      })
-      setActiveTab("dashboard")
+      });
+      setActiveTab("dashboard");
     } catch (error) {
-      console.error("[v0] Error creating freelancer agreement:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to create freelancer agreement"
-      setError(errorMessage)
+      console.error("Error creating freelancer agreement:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to create freelancer agreement";
+      setError(errorMessage);
       toast({
         title: "Error",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const downloadFile = async (url: string, filename: string) => {
-    const response = await fetch(url)
-    const blob = await response.blob()
-    const blobUrl = window.URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = blobUrl
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(blobUrl)
-  }
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  };
 
   const generatePDF = async (agreementId: string, type: "client" | "freelancer") => {
     try {
@@ -527,21 +530,21 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ agreementId, type }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`Failed to generate PDF: ${response.status}`)
+        throw new Error(`Failed to generate PDF: ${response.status}`);
       }
 
-      const data = await response.json()
-      await downloadFile(data.pdfUrl, `agreement-${agreementId}.pdf`)
+      const data = await response.json();
+      await downloadFile(data.pdfUrl, `agreement-${agreementId}.pdf`);
 
-      await fetchAgreements()
+      await fetchAgreements();
     } catch (error) {
-      console.error("Error generating PDF:", error)
-      setError("Failed to generate PDF")
+      console.error("Error generating PDF:", error);
+      setError("Failed to generate PDF");
     }
-  }
+  };
 
   const generateInvoicePDF = async (invoiceId: string) => {
     try {
@@ -549,527 +552,517 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ invoiceId }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`Failed to generate invoice PDF: ${response.status}`)
+        throw new Error(`Failed to generate invoice PDF: ${response.status}`);
       }
 
-      const data = await response.json()
-      // Try common keys returned by backends
-      const url = data.pdfUrl || data.url
+      const data = await response.json();
+      const url = data.pdfUrl || data.url;
       if (url) {
-        await downloadFile(url, `invoice-${invoiceId}.pdf`)
+        await downloadFile(url, `invoice-${invoiceId}.pdf`);
       }
 
-      await fetchInvoices()
+      await fetchInvoices();
     } catch (error) {
-      console.error("Error generating invoice PDF:", error)
-      setError("Failed to generate invoice PDF")
+      console.error("Error generating invoice PDF:", error);
+      setError("Failed to generate invoice PDF");
     }
-  }
+  };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-      case "sent":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/30"
-      case "signed":
-        return "bg-green-500/20 text-green-300 border-green-500/30"
-      case "completed":
-        return "bg-purple-500/20 text-purple-300 border-purple-500/30"
-      case "paid":
-        return "bg-green-500/20 text-green-300 border-green-500/30"
-      default:
-        return "bg-gray-500/20 text-gray-300 border-gray-500/30"
-    }
-  }
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { color: string; icon: any }> = {
+      pending: { color: "bg-[#EC8F8D]/10 text-[#EC8F8D] border-[#EC8F8D]/20", icon: Clock },
+      sent: { color: "bg-[#537D96]/10 text-[#537D96] border-[#537D96]/20", icon: Send },
+      signed: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: CheckCircle },
+      completed: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: CheckCircle },
+      paid: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: DollarSign },
+    };
+    const config = statusConfig[status?.toLowerCase()] || statusConfig.pending;
+    const Icon = config.icon;
+
+    return (
+      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border ${config.color}`}>
+        <Icon className="w-3 h-3" />
+        {status}
+      </span>
+    );
+  };
 
   const getDocumentAmount = (document: Document): number => {
     const toNumber = (val: unknown) => {
-      const num = typeof val === "number" ? val : Number.parseFloat(String(val))
-      return Number.isFinite(num) ? num : 0
-    }
+      const num = typeof val === "number" ? val : Number.parseFloat(String(val));
+      return Number.isFinite(num) ? num : 0;
+    };
 
     if ("amount" in document && (document as any).amount !== undefined) {
-      return toNumber((document as any).amount)
+      return toNumber((document as any).amount);
     }
     if ("total_amount" in document && (document as any).total_amount !== undefined) {
-      return toNumber((document as any).total_amount)
+      return toNumber((document as any).total_amount);
     }
     if ("payment_amount" in document && (document as any).payment_amount !== undefined) {
-      return toNumber((document as any).payment_amount)
+      return toNumber((document as any).payment_amount);
     }
-    return 0
-  }
+    return 0;
+  };
 
   const allDocuments = [
     ...agreements.map((a) => ({ ...a, document_type: "agreement" as const })),
     ...invoices.map((i) => ({ ...i, document_type: "invoice" as const })),
-  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   const stats = {
     total: agreements.length + invoices.length,
     pending: allDocuments.filter((doc) => doc.status === "pending").length,
     signed: allDocuments.filter((doc) => doc.status === "signed" || doc.status === "paid").length,
     revenue: allDocuments.reduce((sum, doc) => sum + getDocumentAmount(doc), 0),
-  }
+  };
 
   const handleInvoiceSubmit = async (invoiceData: any) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
       const response = await fetch("/api/invoices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(invoiceData),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || `Failed to create invoice: ${response.status}`)
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to create invoice: ${response.status}`);
       }
 
-      await fetchInvoices()
-      setActiveTab("dashboard")
+      await fetchInvoices();
+      setActiveTab("dashboard");
       toast({
         title: "Success",
         description: "Invoice created successfully",
         variant: "default",
-      })
+      });
     } catch (error) {
-      console.error("Error creating invoice:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to create invoice"
-      setError(errorMessage)
+      console.error("Error creating invoice:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to create invoice";
+      setError(errorMessage);
       toast({
         title: "Error",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  // CHANGE: allow direct delete by accepting an optional document param
   const handleDelete = async (docParam?: Document) => {
-    const doc = docParam ?? selectedDocument
-    if (!doc) return
+    const doc = docParam ?? selectedDocument;
+    if (!doc) return;
 
     try {
-      const endpoint = doc.document_type === "invoice" ? "/api/invoices" : "/api/agreements"
+      const endpoint = doc.document_type === "invoice" ? "/api/invoices" : "/api/agreements";
       const params = new URLSearchParams({
         id: doc.id,
         ...(doc.document_type === "agreement" && { type: (doc as Agreement).type }),
-      })
+      });
 
-      const response = await fetch(`${endpoint}?${params}`, { method: "DELETE" })
+      const response = await fetch(`${endpoint}?${params}`, { method: "DELETE" });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || "Failed to delete document")
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to delete document");
       }
 
       toast({
         title: "Success",
         description: "Document deleted successfully",
         variant: "default",
-      })
+      });
 
       if (doc.document_type === "invoice") {
-        fetchInvoices()
+        fetchInvoices();
       } else {
-        fetchAgreements()
+        fetchAgreements();
       }
     } catch (error) {
-      console.error("Error deleting document:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to delete document"
+      console.error("Error deleting document:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete document";
       toast({
         title: "Error",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setDeleteDialogOpen(false)
-      setSelectedDocument(null)
+      setDeleteDialogOpen(false);
+      setSelectedDocument(null);
     }
-  }
+  };
 
   const handleEdit = async () => {
-    if (!selectedDocument) return
+    if (!selectedDocument) return;
 
     try {
-      console.log("[v0] Edit form data:", editFormData)
-      const endpoint = selectedDocument.document_type === "invoice" ? "/api/invoices" : "/api/agreements"
+      const endpoint = selectedDocument.document_type === "invoice" ? "/api/invoices" : "/api/agreements";
 
-      // Prepare the update payload, ensuring correct type handling for agreements
       const updatePayload: any = {
         id: selectedDocument.id,
-        ...editFormData, // Spread the form data
-      }
-      console.log("[v0] Initial update payload:", updatePayload)
+        ...editFormData,
+      };
+
       if (selectedDocument.document_type === "agreement") {
-        // Ensure 'type' is included for agreements if it's not already in editFormData
-        updatePayload.type = (selectedDocument as Agreement).type
+        updatePayload.type = (selectedDocument as Agreement).type;
       }
 
-      // For numeric fields, attempt conversion if they are strings
       if (selectedDocument.document_type === "invoice") {
-        if (editFormData.amount !== undefined) updatePayload.amount = Number.parseFloat(String(editFormData.amount))
+        if (editFormData.amount !== undefined) updatePayload.amount = Number.parseFloat(String(editFormData.amount));
         if (editFormData.total_amount !== undefined)
-          updatePayload.total_amount = Number.parseFloat(String(editFormData.total_amount))
+          updatePayload.total_amount = Number.parseFloat(String(editFormData.total_amount));
       } else {
-        // Agreement types
         if (editFormData.payment_amount !== undefined)
-          updatePayload.payment_amount = Number.parseFloat(String(editFormData.payment_amount))
+          updatePayload.payment_amount = Number.parseFloat(String(editFormData.payment_amount));
         if (editFormData.hourly_rate !== undefined)
-          updatePayload.hourly_rate = Number.parseFloat(String(editFormData.hourly_rate))
+          updatePayload.hourly_rate = Number.parseFloat(String(editFormData.hourly_rate));
       }
-
-      console.log("[v0] Sending update payload:", updatePayload)
 
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatePayload),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || "Failed to update document")
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to update document");
       }
 
       toast({
         title: "Success",
         description: "Document updated successfully",
         variant: "default",
-      })
+      });
 
       if (selectedDocument.document_type === "invoice") {
-        fetchInvoices()
+        fetchInvoices();
       } else {
-        fetchAgreements()
+        fetchAgreements();
       }
     } catch (error) {
-      console.error("Error updating document:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to update document"
+      console.error("Error updating document:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to update document";
       toast({
         title: "Error",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setEditDialogOpen(false)
-      setSelectedDocument(null)
-      setEditFormData({})
+      setEditDialogOpen(false);
+      setSelectedDocument(null);
+      setEditFormData({});
     }
-  }
+  };
 
   const handleRecreate = async (invoice: Invoice) => {
     try {
-      // Fetch the specific invoice to get its details
-      const response = await fetch(`/api/invoices?id=${invoice.id}`) // Assuming an API endpoint to get a single invoice by ID
+      const response = await fetch(`/api/invoices?id=${invoice.id}`);
       if (!response.ok) {
-        throw new Error("Failed to fetch invoice details")
+        throw new Error("Failed to fetch invoice details");
       }
 
-      const data = await response.json()
-      console.log("[v0] Invoice data received for recreation:", data)
+      const data = await response.json();
 
-      // Check if invoice data exists in the response
       if (!data.invoice) {
-        throw new Error("Invoice data not found in response")
+        throw new Error("Invoice data not found in response");
       }
 
-      const invoiceData = data.invoice
-
-      // Remove id and timestamps to create a new invoice with the same details
-      // Keep fields like invoice_number, amount, client_name, etc.
-      const { id, created_at, updated_at, ...recreateData } = invoiceData
+      const invoiceData = data.invoice;
+      const { id, created_at, updated_at, ...recreateData } = invoiceData;
 
       const createResponse = await fetch("/api/invoices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(recreateData),
-      })
+      });
 
       if (!createResponse.ok) {
-        const errorData = await createResponse.json().catch(() => ({}))
-        throw new Error(errorData.error || "Failed to recreate invoice")
+        const errorData = await createResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to recreate invoice");
       }
 
       toast({
         title: "Success",
         description: "Invoice recreated successfully",
         variant: "default",
-      })
+      });
 
-      fetchInvoices() // Refresh the list of invoices
+      fetchInvoices();
     } catch (error) {
-      console.error("[v0] Error recreating invoice:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to recreate invoice"
+      console.error("Error recreating invoice:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to recreate invoice";
       toast({
         title: "Error",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const openEditDialog = (document: Document) => {
-    setSelectedDocument(document)
-    // Initialize editFormData with the document's data, handling potential null/undefined for optional fields
-    setEditFormData({ ...document })
-    setEditDialogOpen(true)
-  }
-
+    setSelectedDocument(document);
+    setEditFormData({ ...document });
+    setEditDialogOpen(true);
+  };
 
   return (
-    <div className="min-h-screen bg-[#241C15] text-white p-4 md:p-6 pt-[80px] sm:pt-[120px] lg:pt-[140px]">
-      <div className="max-w-7xl mx-auto">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={staggerContainer}
+      className="min-h-screen bg-[#F4F0E4]"
+    >
+      {/* Top Bar */}
+      <motion.div 
+        variants={fadeUp}
+        className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-8 py-4 flex items-center"
+      >
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center gap-2 text-[#8a8a82] hover:text-[#1C2321] transition-colors mr-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-xs tracking-[0.16em] uppercase">Back</span>
+        </button>
+        <div className="flex-1">
+          <h1 className="font-display text-2xl font-light text-[#1C2321]">Agreement Automation</h1>
+          <p className="text-sm text-[#8a8a82] mt-1 tracking-[0.04em]">
+            Manage agreements, invoices & document signing
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Content */}
+      <div className="p-8">
+        {/* Stats Cards */}
+        <motion.div 
+          variants={fadeUp}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2px] bg-[#1C2321]/10 mb-8"
+        >
+          <div className="bg-white p-6">
+            <div className="font-display text-4xl font-light text-[#1C2321]">{stats.total}</div>
+            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Documents</div>
+          </div>
+          <div className="bg-white p-6">
+            <div className="font-display text-4xl font-light text-[#1C2321]">{stats.pending}</div>
+            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Pending</div>
+          </div>
+          <div className="bg-white p-6">
+            <div className="font-display text-4xl font-light text-[#1C2321]">{stats.signed}</div>
+            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Completed</div>
+          </div>
+          <div className="bg-white p-6">
+            <div className="font-display text-4xl font-light text-[#1C2321]">
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 0,
+              }).format(stats.revenue)}
+            </div>
+            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Revenue</div>
+          </div>
+        </motion.div>
+
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-200 animate-pulse">
+          <motion.div 
+            variants={fadeUp}
+            className="mb-6 p-4 bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 text-[#EC8F8D]"
+          >
             <p>{error}</p>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="mt-2 text-red-200 hover:text-white hover:bg-red-500/30"
-              onClick={() => setError(null)}
-            >
-              Dismiss
-            </Button>
-          </div>
+          </motion.div>
         )}
 
-        {/* Header */}
-        <motion.div
-          className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-6"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          {/* Left: Back button */}
-          <motion.div whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.history.back()}
-              className="text-white hover:text-[#FFE01B] hover:bg-white/10 transition-all duration-200 flex items-center gap-2"
+        {/* Tabs */}
+        <motion.div variants={fadeUp}>
+          <div className="flex gap-2 mb-8">
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
+                activeTab === "dashboard"
+                  ? "bg-[#44A194] text-white"
+                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
+              }`}
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Back to Admin</span>
-            </Button>
-          </motion.div>
-
-          {/* Right: Title + Subtitle */}
-          <motion.div
-            className="flex flex-col text-center md:text-left"
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-          >
-            <div className="flex items-center justify-center md:justify-start gap-2">
-              <FileText className="w-6 h-6 text-[#FFE01B]" />
-              <h1 className="text-2xl md:text-3xl font-bold text-white">Agreement Automation</h1>
-            </div>
-            <p className="text-white/70 text-sm md:text-base mt-1">Manage agreements, invoices & document signing</p>
-          </motion.div>
+              <FileText className="w-4 h-4 inline mr-2" />
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab("client-agreement")}
+              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
+                activeTab === "client-agreement"
+                  ? "bg-[#44A194] text-white"
+                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
+              }`}
+            >
+              <User className="w-4 h-4 inline mr-2" />
+              Client
+            </button>
+            <button
+              onClick={() => setActiveTab("freelancer-agreement")}
+              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
+                activeTab === "freelancer-agreement"
+                  ? "bg-[#44A194] text-white"
+                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
+              }`}
+            >
+              <Briefcase className="w-4 h-4 inline mr-2" />
+              Freelancer
+            </button>
+            <button
+              onClick={() => setActiveTab("invoice")}
+              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
+                activeTab === "invoice"
+                  ? "bg-[#44A194] text-white"
+                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
+              }`}
+            >
+              <CreditCard className="w-4 h-4 inline mr-2" />
+              Invoice
+            </button>
+          </div>
         </motion.div>
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-          <Card className="bg-white/5 backdrop-blur-sm border-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white/70 text-sm">Total Documents</p>
-                  <p className="text-xl md:text-2xl font-bold text-white">{stats.total}</p>
-                </div>
-                <div className="p-2 bg-[#FFE01B]/20 rounded-lg">
-                  <FileText className="w-5 h-5 md:w-6 md:h-6 text-[#FFE01B]" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Removed unused stat cards for brevity */}
-        </div>
-
-        {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
-          <TabsList className="bg-white/5 backdrop-blur-sm border-white/10 w-full flex flex-wrap">
-            <TabsTrigger
-              value="dashboard"
-              className="flex-1 data-[state=active]:bg-[#FFE01B] data-[state=active]:text-black transition-all duration-200 rounded-xl h-full"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Dashboard</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="client-agreement"
-              className="flex-1 data-[state=active]:bg-[#FFE01B] data-[state=active]:text-black transition-all duration-200 rounded-xl h-full"
-            >
-              <User className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Client</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="freelancer-agreement"
-              className="flex-1 data-[state=active]:bg-[#FFE01B] data-[state=active]:text-black transition-all duration-200 rounded-xl h-full"
-            >
-              <Briefcase className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Freelancer</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="invoice"
-              className="flex-1 data-[state=active]:bg-[#FFE01B] data-[state=active]:text-black transition-all duration-200 rounded-xl h-full"
-            >
-              <CreditCard className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Invoice</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Dashboard Tab */}
-          <TabsContent value="dashboard" className="space-y-4 md:space-y-6 animate-fadeIn">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <h2 className="text-xl font-semibold text-white">Recent Documents</h2>
+        {/* Dashboard Tab */}
+        {activeTab === "dashboard" && (
+          <motion.div 
+            variants={fadeUp}
+            className="bg-white border border-[#1C2321]/10"
+          >
+            <div className="p-6 border-b border-[#1C2321]/10">
+              <h2 className="font-display text-xl font-light text-[#1C2321]">Recent Documents</h2>
             </div>
+            <div className="p-6">
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-[#44A194]" />
+                </div>
+              ) : allDocuments.length === 0 ? (
+                <div className="text-center py-12">
+                  <FileText className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
+                  <p className="text-[#8a8a82]">No documents found. Create your first document to get started.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {allDocuments.map((document) => (
+                    <div
+                      key={`${document.document_type}-${document.id}`}
+                      className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-[#F4F0E4] hover:bg-[#ece8d8] transition-colors"
+                    >
+                      <div className="flex items-center gap-4 mb-3 md:mb-0">
+                        <div className="w-10 h-10 bg-[#44A194]/10 flex items-center justify-center">
+                          {document.document_type === "invoice" ? (
+                            <CreditCard className="w-5 h-5 text-[#44A194]" />
+                          ) : (
+                            <FileText className="w-5 h-5 text-[#44A194]" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-[#1C2321]">
+                            {document.project_title ||
+                              document.work_type ||
+                              ("invoice_number" in document ? document.invoice_number : "Untitled")}
+                          </h3>
+                          <p className="text-sm text-[#8a8a82]">
+                            {document.client_name || document.freelancer_name} • {document.document_type}
+                            {document.type && ` (${document.type})`}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+                        {getDocumentAmount(document) > 0 && (
+                          <span className="text-[#44A194] font-medium text-sm">
+                            {new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: "currency" in document && (document as any).currency ? (document as any).currency : "USD",
+                              minimumFractionDigits: 2,
+                            }).format(getDocumentAmount(document))}
+                          </span>
+                        )}
 
-            <Card className="bg-white/5 backdrop-blur-sm border-white/10 transition-all duration-300">
-              <CardContent className="p-4 md:p-6">
-                <div className="space-y-4">
-                  {loading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="w-6 h-6 animate-spin text-[#FFE01B]" />
-                    </div>
-                  ) : allDocuments.length === 0 ? (
-                    <div className="text-center py-8">
-                      <FileText className="w-12 h-12 mx-auto text-white/40 mb-4" />
-                      <p className="text-white/70">No documents found. Create your first document to get started.</p>
-                    </div>
-                  ) : (
-                    allDocuments.map((document) => (
-                      <div key={`${document.document_type}-${document.id}`} className="space-y-4">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 transition-all duration-200 hover:bg-white/10">
-                          <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-0">
-                            <div className="w-10 h-10 bg-[#FFE01B]/20 rounded-lg flex items-center justify-center">
-                              {document.document_type === "invoice" ? (
-                                <CreditCard className="w-5 h-5 text-[#FFE01B]" />
-                              ) : (
-                                <FileText className="w-5 h-5 text-[#FFE01B]" />
-                              )}
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-white text-base md:text-lg">
-                                {document.project_title ||
-                                  document.work_type ||
-                                  ("invoice_number" in document ? document.invoice_number : "Untitled")}
-                              </h3>
-                              <p className="text-white/70 text-sm">
-                                {document.client_name || document.freelancer_name} • {document.document_type}
-                                {document.type && ` (${document.type})`}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
-                            {getDocumentAmount(document) > 0 && (
-                              <span className="text-[#FFE01B] font-semibold text-sm md:text-base">
-                                {new Intl.NumberFormat("en-IN", {
-                                  style: "currency",
-                                  currency:
-                                    "currency" in document && (document as any).currency
-                                      ? (document as any).currency
-                                      : "USD", // fallback USD if not provided
-                                  minimumFractionDigits: 2,
-                                }).format(getDocumentAmount(document))}
-                              </span>
-                            )}
+                        {getStatusBadge(document.status)}
 
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="text-white hover:text-[#FFE01B] hover:bg-[#FFE01B]/10 transition-all duration-200"
-                                onClick={() => {
-                                  if (document.document_type === "invoice") {
-                                    generateInvoicePDF(document.id)
-                                  } else {
-                                    generatePDF(document.id, (document as Agreement).type)
-                                  }
-                                }}
+                        <div className="flex gap-2">
+                          <button
+                            className="p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
+                            onClick={() => {
+                              if (document.document_type === "invoice") {
+                                generateInvoicePDF(document.id);
+                              } else {
+                                generatePDF(document.id, (document as Agreement).type);
+                              }
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          {document.pdf_url && (
+                            <button
+                              className="p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
+                              onClick={() =>
+                                downloadFile(document.pdf_url!, `${document.document_type}-${document.id}.pdf`)
+                              }
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
+                          )}
+
+                          <div className="relative">
+                            <button
+                              className="p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
+                              onClick={() => {
+                                // Toggle dropdown - you can add dropdown state management if needed
+                              }}
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </button>
+                            {/* Simple dropdown menu - you can enhance this with proper dropdown component */}
+                            <div className="absolute right-0 mt-2 w-48 bg-white border border-[#1C2321]/10 shadow-lg hidden group-hover:block">
+                              <button
+                                onClick={() => openEditDialog(document)}
+                                className="w-full px-4 py-2 text-left text-sm text-[#1C2321] hover:bg-[#F4F0E4] flex items-center gap-2"
                               >
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                              {document.pdf_url && (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="text-white hover:text-[#FFE01B] hover:bg-[#FFE01B]/10 transition-all duration-200"
-                                  onClick={() =>
-                                    downloadFile(document.pdf_url!, `${document.document_type}-${document.id}.pdf`)
-                                  }
+                                <Pencil className="w-4 h-4" />
+                                Edit
+                              </button>
+                              {document.document_type === "invoice" && (
+                                <button
+                                  onClick={() => handleRecreate(document as Invoice)}
+                                  className="w-full px-4 py-2 text-left text-sm text-[#1C2321] hover:bg-[#F4F0E4] flex items-center gap-2"
                                 >
-                                  <Download className="w-4 h-4" />
-                                </Button>
+                                  <Copy className="w-4 h-4" />
+                                  Recreate
+                                </button>
                               )}
-
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="text-white hover:text-[#FFE01B] hover:bg-[#FFE01B]/10 transition-all duration-200"
-                                  >
-                                    <MoreVertical className="w-4 h-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="bg-[#241C15] border-white/10">
-                                  {/* use onSelect for Radix menu items so actions fire correctly */}
-                                  <DropdownMenuItem
-                                    onSelect={(e) => {
-                                      e.preventDefault()
-                                      openEditDialog(document)
-                                    }}
-                                    className="text-white hover:text-[#FFE01B] hover:bg-[#FFE01B]/10 cursor-pointer"
-                                  >
-                                    <Pencil className="w-4 h-4 mr-2" />
-                                    Edit
-                                  </DropdownMenuItem>
-                                  {document.document_type === "invoice" && (
-                                    <DropdownMenuItem
-                                      onSelect={() => handleRecreate(document as Invoice)}
-                                      className="text-white hover:text-[#FFE01B] hover:bg-[#FFE01B]/10 cursor-pointer"
-                                    >
-                                      <Copy className="w-4 h-4 mr-2" />
-                                      Recreate
-                                    </DropdownMenuItem>
-                                  )}
-                                  {/* CHANGE: call delete directly from the menu instead of opening dialog */}
-                                  <DropdownMenuItem
-                                    onSelect={() => {
-                                      // directly call delete for this document
-                                      handleDelete(document)
-                                    }}
-                                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
-                                  >
-                                    <Trash2 className="w-4 h-4 mr-2" />
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                              <button
+                                onClick={() => handleDelete(document)}
+                                className="w-full px-4 py-2 text-left text-sm text-[#EC8F8D] hover:bg-[#F4F0E4] flex items-center gap-2"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Delete
+                              </button>
                             </div>
                           </div>
                         </div>
                       </div>
-                    ))
-                  )}
+                    </div>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              )}
+            </div>
+          </motion.div>
+        )}
 
-          {/* Client Agreement Tab */}
-          <TabsContent value="client-agreement" className="space-y-4 md:space-y-6 animate-fadeIn">
+        {/* Client Agreement Tab */}
+        {activeTab === "client-agreement" && (
+          <motion.div variants={fadeUp}>
             <ClientAgreementForm
               onSubmitAction={handleClientSubmit}
               loading={loading}
@@ -1077,314 +1070,32 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
               onGenerateAITermsAction={generateAITerms}
               aiLoading={aiLoading}
             />
-          </TabsContent>
+          </motion.div>
+        )}
 
-          {/* Freelancer Agreement Tab */}
-          <TabsContent value="freelancer-agreement" className="space-y-4 md:space-y-6 animate-fadeIn">
-            {/* Removed old inline form, now using FreelancerAgreementForm component */}
+        {/* Freelancer Agreement Tab */}
+        {activeTab === "freelancer-agreement" && (
+          <motion.div variants={fadeUp}>
             <FreelancerAgreementForm
               onSubmitAction={handleFreelancerSubmit}
               loading={loading}
               onGenerateAITerms={generateAITerms}
               aiLoading={aiLoading}
             />
-          </TabsContent>
+          </motion.div>
+        )}
 
-          {/* Invoice Tab */}
-          <TabsContent value="invoice" className="animate-fadeIn">
+        {/* Invoice Tab */}
+        {activeTab === "invoice" && (
+          <motion.div variants={fadeUp}>
             <InvoiceForm onSubmitAction={handleInvoiceSubmit} loading={loading} />
-          </TabsContent>
-        </Tabs>
-
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent className="bg-[#241C15] border-white/10">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-white">Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-white/70">
-                This action cannot be undone. This will permanently delete the document from the database.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="bg-white/5 text-white border-white/10 hover:bg-white/10">
-                Cancel
-              </AlertDialogCancel>
-              {/* Call the updated handleDelete without arguments to use selectedDocument */}
-              <AlertDialogAction onClick={() => handleDelete()} className="bg-red-500 text-white hover:bg-red-600">
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        {/* Edit Dialog */}
-        <Dialog open={editDialogOpen} onOpenChange={(open) => {
-          // Only allow closing, not opening through onOpenChange
-          if (!open) {
-            setEditDialogOpen(false)
-          }
-        }}>
-          <DialogContent className="bg-[#241C15] border-white/10 max-w-2xl max-h-[80vh] overflow-y-auto" style={{ zIndex: 10000, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-            <DialogHeader>
-              <DialogTitle className="text-white">Edit Document</DialogTitle>
-              <DialogDescription className="text-white/70">
-                Make changes to your document. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 py-4">
-              {selectedDocument?.document_type === "invoice" ? (
-                <>
-                  <div>
-                    <label className="text-white/70 text-sm mb-2 block">Invoice Number</label>
-                    <Input
-                      value={editFormData.invoice_number || ""}
-                      onChange={(e) => setEditFormData({ ...editFormData, invoice_number: e.target.value })}
-                      className="bg-white/5 border-white/20 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-white/70 text-sm mb-2 block">Client Name</label>
-                    <Input
-                      value={editFormData.client_name || ""}
-                      onChange={(e) => setEditFormData({ ...editFormData, client_name: e.target.value })}
-                      className="bg-white/5 border-white/20 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-white/70 text-sm mb-2 block">Amount</label>
-                    <Input
-                      type="number"
-                      value={editFormData.amount || ""}
-                      onChange={(e) =>
-                        setEditFormData({ ...editFormData, amount: Number.parseFloat(String(e.target.value)) })
-                      }
-                      className="bg-white/5 border-white/20 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-white/70 text-sm mb-2 block">Due Date</label>
-                    <Input
-                      type="date"
-                      value={editFormData.due_date ? editFormData.due_date.split("T")[0] : ""} // Format for date input
-                      onChange={(e) => setEditFormData({ ...editFormData, due_date: e.target.value })}
-                      className="bg-white/5 border-white/20 text-white"
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Dynamic fields based on agreement type */}
-                  {(selectedDocument as Agreement)?.type === "client" ? (
-                    <>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Client Name</label>
-                        <Input
-                          value={editFormData.client_name || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, client_name: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Client Email</label>
-                        <Input
-                          type="email"
-                          value={editFormData.client_email || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, client_email: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Payment Amount</label>
-                        <Input
-                          type="number"
-                          value={editFormData.payment_amount || ""}
-                          onChange={(e) =>
-                            setEditFormData({
-                              ...editFormData,
-                              payment_amount: Number.parseFloat(String(e.target.value)),
-                            })
-                          }
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Currency</label>
-                        <Input
-                          value={editFormData.currency || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, currency: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Scope</label>
-                        <Textarea
-                          value={editFormData.scope || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, scope: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white min-h-[100px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Deliverables</label>
-                        <Textarea
-                          value={editFormData.deliverables || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, deliverables: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white min-h-[100px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Responsibilities</label>
-                        <Textarea
-                          value={editFormData.responsibilities || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, responsibilities: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white min-h-[100px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Termination Clause</label>
-                        <Textarea
-                          value={editFormData.termination || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, termination: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white min-h-[100px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Confidentiality</label>
-                        <Textarea
-                          value={editFormData.confidentiality || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, confidentiality: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white min-h-[100px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Governing Law</label>
-                        <Input
-                          value={editFormData.governing_law || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, governing_law: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Ownership Clause</label>
-                        <Textarea
-                          value={editFormData.ownership || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, ownership: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white min-h-[100px]"
-                        />
-                      </div>
-                    </>
-                  ) : (selectedDocument as Agreement)?.type === "freelancer" ? (
-                    <>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Freelancer Name</label>
-                        <Input
-                          value={editFormData.freelancer_name || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, freelancer_name: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Freelancer Email</label>
-                        <Input
-                          type="email"
-                          value={editFormData.freelancer_email || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, freelancer_email: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <label className="text-white/70 text-sm">Freelancer Rate</label>
-
-                        <div className="flex items-center gap-3">
-                          {/* Rate Input */}
-                          <Input
-                            type="number"
-                            placeholder="Enter amount"
-                            value={editFormData.rate_amount || ""}
-                            onChange={(e) =>
-                              setEditFormData({ ...editFormData, rate_amount: e.target.value })
-                            }
-                            className="bg-white/5 border-white/20 text-white w-1/2"
-                          />
-
-                          {/* Rate Type Dropdown */}
-                          <select
-                            value={editFormData.rate_type || "hour"}
-                            onChange={(e) =>
-                              setEditFormData({ ...editFormData, rate_type: e.target.value })
-                            }
-                            className="bg-white/5 border border-white/20 text-white text-sm rounded-md px-3 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option value="hour">Per Hour</option>
-                            <option value="day">Per Day</option>
-                            <option value="month">Per Month</option>
-                            <option value="video">Per Video</option>
-                            <option value="project">Per Project</option>
-                            <option value="other">Other</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Project Duration</label>
-                        <Input
-                          value={editFormData.project_duration || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, project_duration: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-white/70 text-sm mb-2 block">Work Type</label>
-                        <Input
-                          value={editFormData.work_type || ""}
-                          onChange={(e) => setEditFormData({ ...editFormData, work_type: e.target.value })}
-                          className="bg-white/5 border-white/20 text-white"
-                        />
-                      </div>
-                    </>
-                  ) : null}
-
-                  <div>
-                    <label className="text-white/70 text-sm mb-2 block">Terms & Conditions</label>
-                    <Textarea
-                      value={editFormData.terms || ""}
-                      onChange={(e) => setEditFormData({ ...editFormData, terms: e.target.value })}
-                      className="bg-white/5 border-white/20 text-white min-h-[150px]"
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="flex gap-3 justify-end">
-              <Button
-                variant="outline"
-                onClick={() => setEditDialogOpen(false)}
-                className="bg-white/5 text-white border-white/10 hover:bg-white/10"
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleEdit} className="bg-[#FFE01B] text-black hover:bg-[#FFE01B]/90">
-                Save Changes
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+          </motion.div>
+        )}
       </div>
-
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out forwards;
-        }
-      `}</style>
-    </div>
-  )
+    </motion.div>
+  );
 }
 
 export default function AgreementAutomationPage() {
-  return <AgreementAutomationPageContent />
+  return <AgreementAutomationPageContent />;
 }

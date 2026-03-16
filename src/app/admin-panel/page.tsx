@@ -1,7 +1,9 @@
-"use client"
-import { useRouter } from "next/navigation"
-import { useState, useEffect, useMemo } from "react"
-import { motion, type Variants } from "framer-motion"
+// app/admin-panel/page.tsx
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useMemo } from "react";
+import { motion, type Variants } from "framer-motion";
 import {
   Search,
   Download,
@@ -26,49 +28,69 @@ import {
   Bell,
   FileCheck,
   Send,
-} from "lucide-react"
-import { supabase } from "../../lib/SupabaseAuthClient"
-import { supabaseAdmin } from "../../lib/supabase-admin"
-import toast from "react-hot-toast"
-import { Toaster } from "@/components/ui/toaster"
-import MultiSelectFilter from "@/src/components/MultiSelectFilter"
+  LayoutDashboard,
+  Briefcase,
+  CreditCard,
+  Sparkles,
+  DollarSign,
+  Globe,
+  Building,
+  Factory,
+  Clock,
+  Award,
+  Star,
+  ChevronRight,
+  ArrowLeft,
+  User,
+  Tag,
+  BookOpen,
+  Code,
+  Palette,
+  Database,
+  Shield,
+  Zap,
+  HelpCircle,
+} from "lucide-react";
+import { supabase } from "../../lib/SupabaseAuthClient";
+import { supabaseAdmin } from "../../lib/supabase-admin";
+import toast from "react-hot-toast";
+import { Toaster } from "@/components/ui/toaster";
+import MultiSelectFilter from "../../components/admin-panel/MultiSelectFilter";
 
 // Animation variants
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 60 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.8,
-      ease: [0.6, -0.05, 0.01, 0.99],
-    },
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.6, 
+      ease: [0.6, -0.05, 0.01, 0.99] 
+    } 
   },
-}
-
+};
 
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.1,
       delayChildren: 0.1,
     },
   },
-}
+};
 
 const scaleIn: Variants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.6,
-      ease: [0.6, -0.05, 0.01, 0.99],
-    },
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { 
+    opacity: 1, 
+    scale: 1, 
+    transition: { 
+      duration: 0.5 
+    } 
   },
-}
+};
 
 type Freelancer = {
   id: string
@@ -92,6 +114,11 @@ type Freelancer = {
   experience_level?: string
   experience_other?: string
   updated_at: string
+  profile_rating?: number
+  main_category?: string
+  sub_category?: string[]
+  years_experience?: string
+  passing_year?: string
   [key: string]: any
 }
 
@@ -105,7 +132,7 @@ export type Form = {
   industry: string
   tech_stack?: string | null
   tools?: string | null
-  created_by: string // NEW ✅ tracks who created the form
+  created_by: string
   created_at: string
   is_active: boolean
   form_message?: string | null
@@ -113,7 +140,6 @@ export type Form = {
   custom_questions?: any[]
   submission_count?: number
 }
-
 
 type FormSubmission = {
   id: string
@@ -350,20 +376,19 @@ type SelectFilterProps = {
 };
 
 const SelectFilter = ({ label, value, onChange, options, placeholder }: SelectFilterProps) => (
-  <div className="space-y-4">
-    <label className="block text-sm font-semibold text-[#FFE01B]">{label}</label>
+  <div className="space-y-2">
+    <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82]">{label}</label>
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300"
+      className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] bg-white"
     >
       <option value="">{placeholder || `All ${label}`}</option>
       {options.map((opt) => {
         const optionValue = typeof opt === "string" ? opt : opt.value;
         const optionLabel = typeof opt === "string" ? opt : opt.label;
-
         return (
-          <option key={optionValue} value={optionValue} className="bg-[#241C15]">
+          <option key={optionValue} value={optionValue}>
             {optionLabel}
           </option>
         );
@@ -454,34 +479,10 @@ const categoryOptionss: Record<string, string[]> = {
     "DevOps",
     "Not Mentioned",
   ],
-  // "Data Science": [
-  //   "Machine Learning",
-  //   "Data Analysis",
-  //   "Data Engineering",
-  //   "Not Mentioned",
-  // ],
-  // "Data Analysis": [
-  //   "Data Analytics",
-  //   "Data Engineering",
-  //   "Business Analysis",
-  // ],
-  // "Machine Learning": [
-  //   "AI Engineering",
-  //   "Computer Vision",
-  //   "Data Analysis",
-  // ],
-  // "Machine Learning & AI": [
-  //   "MLOps",
-  //   "AI Development",
-  //   "Data Science",
-  // ],
   "Artificial Intelligence": [
     "Machine Learning",
     "AI Engineering",
   ],
-  // "Bioinformatics": [
-  //   "Machine Learning",
-  // ],
   "Marketing & Content": [
     "Digital Marketing",
     "Performance Marketing",
@@ -491,24 +492,6 @@ const categoryOptionss: Record<string, string[]> = {
   "E-commerce Marketing": [
     "Digital Marketing",
   ],
-  // "AI Automation": [
-  //   "Automation Development",
-  // ],
-  // "Customer Support Automation": [
-  //   "Workflow Automation",
-  // ],
-  // "Operations Management": [
-  //   "Operational Efficiency",
-  // ],
-  // "Accounting": [
-  //   "Bookkeeping",
-  // ],
-  // "Lead Generation": [
-  //   "Not Mentioned",
-  // ],
-  // "Cybersecurity": [
-  //   "Web Application Security",
-  // ],
   "Video Editing": [
     "Video Production",
     "Content Creation",
@@ -540,54 +523,8 @@ const categoryOptionss: Record<string, string[]> = {
     "Design",
     "Not Mentioned",
   ],
-  "Visual Design": [
-    "Brand Identity",
-    "Web Design",
-  ],
-  // "Web Design": [
-  //   "UI/UX Design",
-  // ],
-  // "Web Development": [
-  //   "Portfolio Creation",
-  // ],
-  // "Portfolio Development": [
-  //   "Web Design",
-  //   "Web Development",
-  //   "Graphic Design",
-  //   "Design",
-  //   "Visual Design",
-  // ],
-  // "Portfolio Design": [
-  //   "Graphic Design",
-  //   "Web Design",
-  // ],
-  // "Portfolio Creation": [
-  //   "Graphic Design",
-  //   "Web Development",
-  //   "Design",
-  // ],
-  // "Portfolio Presentation": [
-  //   "Not Mentioned",
-  // ],
-  // "Portfolio": [
-  //   "Design",
-  //   "Graphic Design",
-  //   "Not Mentioned",
-  // ],
-  // "Custom Portfolio Development": [
-  //   "Web Development",
-  // ],
-  // "Digital Portfolio": [
-  //   "Design",
-  // ],
   "Creative": [
     "Social Media Management",
-  ],
-  "Creative Portfolio": [
-    "Design",
-  ],
-  "Consulting": [
-    "Management",
   ],
   "DevOps": [
     "Cloud Automation",
@@ -607,14 +544,16 @@ const categoryOptionss: Record<string, string[]> = {
 // ⭐ Rating options
 const ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((r) => ({
   label: r.toString(),
-  value: r.toString(), // keep value as string
+  value: r.toString(),
 }))
 
-
 export default function AdminPanel() {
-  const router = useRouter()
-  const [mounted, setMounted] = useState(false)
-  const [activeTab, setActiveTab] = useState<"freelancers" | "forms">("freelancers")
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState<"freelancers" | "forms">(
+    (searchParams.get("tab") as "freelancers" | "forms") || "freelancers"
+  );
 
   // Freelancer search state
   const [filters, setFilters] = useState<SearchFilters>({
@@ -628,16 +567,16 @@ export default function AdminPanel() {
     tech_stack: [],
     tools: [],
     profile_rating: "",
-  })
-  const [freelancers, setFreelancers] = useState<Freelancer[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  });
+  const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Form management state
-  const [forms, setForms] = useState<Form[]>([])
-  const [formSubmissions, setFormSubmissions] = useState<FormSubmission[]>([])
-  const [selectedForm, setSelectedForm] = useState<string | null>(null)
-  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [forms, setForms] = useState<Form[]>([]);
+  const [formSubmissions, setFormSubmissions] = useState<FormSubmission[]>([]);
+  const [selectedForm, setSelectedForm] = useState<string | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [newForm, setNewForm] = useState({
     form_id: "",
     form_name: "",
@@ -647,34 +586,34 @@ export default function AdminPanel() {
     subcategory: [] as string[],
     tech_stack: [] as string[],
     tools: [] as string[],
-  })
+  });
 
-  const [createFormLoading, setCreateFormLoading] = useState(false)
-  const [copiedFormId, setCopiedFormId] = useState<string | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState("")
-  const [selectedSubcategory, setSelectedSubcategory] = useState("")
-  const [selectedTechStack, setSelectedTechStack] = useState("")
-  const [availableSubcategories, setAvailableSubcategories] = useState<string[]>([])
-  const [availableTechStacks, setAvailableTechStacks] = useState<string[]>([])
-  const [availableTools, setAvailableTools] = useState<string[]>([])
+  const [createFormLoading, setCreateFormLoading] = useState(false);
+  const [copiedFormId, setCopiedFormId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
+  const [selectedTechStack, setSelectedTechStack] = useState("");
+  const [availableSubcategories, setAvailableSubcategories] = useState<string[]>([]);
+  const [availableTechStacks, setAvailableTechStacks] = useState<string[]>([]);
+  const [availableTools, setAvailableTools] = useState<string[]>([]);
 
   // Other options state
-  const [showOtherCategory, setShowOtherCategory] = useState(false)
-  const [showOtherSubcategory, setShowOtherSubcategory] = useState(false)
-  const [showOtherTechStack, setShowOtherTechStack] = useState(false)
-  const [showOtherTools, setShowOtherTools] = useState(false)
-  const [emailMessage, setEmailMessage] = useState("")
-  const [sending, setSending] = useState(false)
-  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([])
-  const [selectedTechStacks, setSelectedTechStacks] = useState<string[]>([])
-  const [selectedTools, setSelectedTools] = useState<string[]>([])
-  const [dashboard, setDashboard] = useState<string>("")
+  const [showOtherCategory, setShowOtherCategory] = useState(false);
+  const [showOtherSubcategory, setShowOtherSubcategory] = useState(false);
+  const [showOtherTechStack, setShowOtherTechStack] = useState(false);
+  const [showOtherTools, setShowOtherTools] = useState(false);
+  const [emailMessage, setEmailMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([]);
+  const [selectedTechStacks, setSelectedTechStacks] = useState<string[]>([]);
+  const [selectedTools, setSelectedTools] = useState<string[]>([]);
+  const [dashboard, setDashboard] = useState<string>("");
   const [selectedRequiredFields, setSelectedRequiredFields] = useState<string[]>([
     "name",
     "email",
     "phone",
     "resume_link",
-  ])
+  ]);
   const [customQuestions, setCustomQuestions] = useState<
     Array<{
       id: string
@@ -683,10 +622,10 @@ export default function AdminPanel() {
       required: boolean
       options?: string[]
     }>
-  >([])
+  >([]);
 
-  const [editingForm, setEditingForm] = useState<Form | null>(null)
-  const [showEditForm, setShowEditForm] = useState(false)
+  const [editingForm, setEditingForm] = useState<Form | null>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
 
   const [submissionFilters, setSubmissionFilters] = useState<{
     formTextId: string
@@ -696,7 +635,7 @@ export default function AdminPanel() {
     formTextId: "",
     category: "",
     subcategory: "",
-  })
+  });
 
   const uniqueSubcategoriess = Array.from(
     new Set(Object.values(categoryOptionss).flat())
@@ -704,9 +643,28 @@ export default function AdminPanel() {
 
   const [filterType, setFilterType] = useState<"all" | "selected" | "not_selected">("all");
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (searchParams.get("tab") === "freelancers" || searchParams.get("tab") === "forms") {
+      setActiveTab(searchParams.get("tab") as "freelancers" | "forms");
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (mounted && typeof window !== "undefined") {
+      if (activeTab === "freelancers") {
+        loadAllFreelancers();
+      } else {
+        loadForms();
+      }
+    }
+  }, [mounted, activeTab]);
+
   const toggleCandidateSelection = async (submissionId: string, isSelected: boolean) => {
     try {
-      // 1️⃣ Get the Supabase session token
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -716,7 +674,6 @@ export default function AdminPanel() {
         return;
       }
 
-      // 2️⃣ Call your Next.js API route
       const res = await fetch("/api/client/select-candidate", {
         method: "POST",
         headers: {
@@ -731,19 +688,17 @@ export default function AdminPanel() {
 
       const result = await res.json();
 
-      // 3️⃣ Handle response
       if (result.success) {
         toast.success(`Candidate ${isSelected ? "selected" : "unselected"} successfully`);
-
         setFormSubmissions((prev) =>
           prev.map((sub) =>
             sub.id === submissionId
               ? {
-                ...sub,
-                is_selected: isSelected,
-                selection_date: new Date().toISOString(),
-                selected_by: result.data?.[0]?.selected_by ?? null,
-              }
+                  ...sub,
+                  is_selected: isSelected,
+                  selection_date: new Date().toISOString(),
+                  selected_by: result.data?.[0]?.selected_by ?? null,
+                }
               : sub
           )
         );
@@ -756,35 +711,18 @@ export default function AdminPanel() {
     }
   };
 
-
-
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (mounted && typeof window !== "undefined") {
-      if (activeTab === "freelancers") {
-        loadAllFreelancers()
-      } else {
-        loadForms()
-      }
-    }
-  }, [mounted, activeTab])
-
   const handleSendEmails = async () => {
     if (!emailMessage.trim()) {
-      toast.error("Please enter a message before sending.")
-      return
+      toast.error("Please enter a message before sending.");
+      return;
     }
 
     if (!freelancers.length) {
-      toast.error("No freelancers found to send emails to.")
-      return
+      toast.error("No freelancers found to send emails to.");
+      return;
     }
 
-    setSending(true)
+    setSending(true);
 
     try {
       const res = await fetch("/api/send-bulk-email", {
@@ -797,23 +735,23 @@ export default function AdminPanel() {
           })),
           message: emailMessage,
         }),
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (data.success) {
-        toast.success(`✅ Emails sent: ${data.sent}, Failed: ${data.failed}`)
-        setEmailMessage("")
+        toast.success(`✅ Emails sent: ${data.sent}, Failed: ${data.failed}`);
+        setEmailMessage("");
       } else {
-        toast.error("❌ Some emails failed to send.")
+        toast.error("❌ Some emails failed to send.");
       }
     } catch (err) {
-      console.error("Email send error:", err)
-      toast.error("Something went wrong while sending emails.")
+      console.error("Email send error:", err);
+      toast.error("Something went wrong while sending emails.");
     } finally {
-      setSending(false)
+      setSending(false);
     }
-  }
+  };
 
   const availableStandardFields = [
     { key: "name", label: "Full Name" },
@@ -824,18 +762,18 @@ export default function AdminPanel() {
     { key: "resume_link", label: "Resume URL" },
     { key: "years_experience", label: "Years of Experience" },
     { key: "proposal_link", label: "Proposal/Cover Letter" },
-  ]
+  ];
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[#241C15] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-          className="w-12 h-12 border-4 border-[#FFE01B] border-t-transparent rounded-full"
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 border-4 border-[#44A194] border-t-transparent rounded-full"
         />
       </div>
-    )
+    );
   }
 
   const handleSearch = async () => {
@@ -883,10 +821,8 @@ export default function AdminPanel() {
       }
 
       if (filters.profile_rating && filters.profile_rating !== "All") {
-        query = query.eq("profile_rating", Number(filters.profile_rating))
+        query = query.eq("profile_rating", Number(filters.profile_rating));
       }
-
-
 
       if (filters.search_text.trim()) {
         query = query.or(
@@ -916,48 +852,48 @@ export default function AdminPanel() {
   };
 
   const handleNavigation = (path: string) => {
-    setDashboard(path)
-    router.push(path)
-  }
+    setDashboard(path);
+    router.push(path);
+  };
 
   const loadAllFreelancers = async () => {
-    if (typeof window === "undefined") return
+    if (typeof window === "undefined") return;
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
       if (!supabase) {
-        setError("Database client is not initialized.")
-        setFreelancers([])
-        setLoading(false)
-        return
+        setError("Database client is not initialized.");
+        setFreelancers([]);
+        setLoading(false);
+        return;
       }
       const { data, error } = await supabase
         .from("all-freelancer")
         .select("*")
         .limit(10000)
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error loading freelancers:", error)
-        setError("Error loading freelancers: " + error.message)
-        setFreelancers([])
+        console.error("Error loading freelancers:", error);
+        setError("Error loading freelancers: " + error.message);
+        setFreelancers([]);
       } else {
         if (data && data.length > 0) {
-          setFreelancers(data)
+          setFreelancers(data);
         } else {
-          setFreelancers([])
-          setError("No freelancers found in the database")
+          setFreelancers([]);
+          setError("No freelancers found in the database");
         }
       }
     } catch (err: any) {
-      console.error("Unexpected error:", err)
-      setError("Unexpected error occurred: " + (err.message || "Unknown error"))
-      setFreelancers([])
+      console.error("Unexpected error:", err);
+      setError("Unexpected error occurred: " + (err.message || "Unknown error"));
+      setFreelancers([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const resetFilters = () => {
     setFilters({
@@ -971,13 +907,13 @@ export default function AdminPanel() {
       profile_rating: "",
       search_text: "",
       experience_level: "",
-    })
+    });
   };
 
   const downloadCSV = () => {
     if (freelancers.length === 0) {
-      toast.error("No data to download.")
-      return
+      toast.error("No data to download.");
+      return;
     }
 
     const headers = [
@@ -994,8 +930,8 @@ export default function AdminPanel() {
       "LinkedIn",
       "Resume",
       "Created At",
-    ]
-    const rows = [headers.join(",")]
+    ];
+    const rows = [headers.join(",")];
     freelancers.forEach((f) => {
       const row = [
         `"${f.full_name || ""}"`,
@@ -1011,106 +947,106 @@ export default function AdminPanel() {
         `"${f.linkedin_url || ""}"`,
         `"${f.resume_url || ""}"`,
         `"${new Date(f.created_at).toLocaleDateString()}"`,
-      ]
-      rows.push(row.join(","))
-    })
-    const blob = new Blob([rows.join("\n")], { type: "text/csv" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "freelancers.csv"
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
+      ];
+      rows.push(row.join(","));
+    });
+    const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "freelancers.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleCategoryChange = (category: string) => {
     if (category === "other") {
-      setShowOtherCategory(true)
-      setSelectedCategory("")
-      setAvailableSubcategories([])
-      setAvailableTechStacks([])
-      setAvailableTools([])
-      return
+      setShowOtherCategory(true);
+      setSelectedCategory("");
+      setAvailableSubcategories([]);
+      setAvailableTechStacks([]);
+      setAvailableTools([]);
+      return;
     }
 
-    setShowOtherCategory(false)
-    setSelectedCategory(category)
-    setNewForm((prev) => ({ ...prev, category, subcategory: [], tech_stack: [], tools: [] }))
+    setShowOtherCategory(false);
+    setSelectedCategory(category);
+    setNewForm((prev) => ({ ...prev, category, subcategory: [], tech_stack: [], tools: [] }));
 
     if (categoryOptions[category]) {
-      setAvailableSubcategories(categoryOptions[category]?.subcategories || [])
-      setAvailableTechStacks(categoryOptions[category]?.techStacks || [])
+      setAvailableSubcategories(categoryOptions[category]?.subcategories || []);
+      setAvailableTechStacks(categoryOptions[category]?.techStacks || []);
     }
-    setAvailableTools([])
-    setSelectedSubcategory("")
-    setSelectedTechStack("")
-  }
+    setAvailableTools([]);
+    setSelectedSubcategory("");
+    setSelectedTechStack("");
+  };
 
   const handleSubcategoryChange = (value: string) => {
     if (value === "other") {
-      setShowOtherSubcategory(true)
+      setShowOtherSubcategory(true);
     } else {
       setSelectedSubcategories((prev) =>
-        prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value],
-      )
+        prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
+      );
       setNewForm((prev) => ({
         ...prev,
         subcategory: selectedSubcategories.includes(value)
           ? selectedSubcategories.filter((item) => item !== value)
           : [...selectedSubcategories, value],
-      }))
+      }));
     }
-  }
+  };
 
   const handleTechStackChange = (value: string) => {
     if (value === "other") {
-      setShowOtherTechStack(true)
+      setShowOtherTechStack(true);
     } else {
       const newTechStacks = selectedTechStacks.includes(value)
         ? selectedTechStacks.filter((item) => item !== value)
-        : [...selectedTechStacks, value]
+        : [...selectedTechStacks, value];
 
-      setSelectedTechStacks(newTechStacks)
+      setSelectedTechStacks(newTechStacks);
       setNewForm((prev) => ({
         ...prev,
         tech_stack: newTechStacks,
-      }))
+      }));
 
       if (selectedCategory && categoryOptions[selectedCategory]) {
-        const toolsForTech = categoryOptions[selectedCategory].tools[value] || []
-        setAvailableTools(toolsForTech)
+        const toolsForTech = categoryOptions[selectedCategory].tools[value] || [];
+        setAvailableTools(toolsForTech);
       }
     }
-  }
+  };
 
   const handleToolsChange = (value: string) => {
     if (value === "other") {
-      setShowOtherTools(true)
+      setShowOtherTools(true);
     } else {
-      setSelectedTools((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]))
+      setSelectedTools((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
       setNewForm((prev) => ({
         ...prev,
         tools: prev.tools.includes(value) ? prev.tools.filter((item) => item !== value) : [...prev.tools, value],
-      }))
+      }));
     }
-  }
+  };
 
   const validateFormCreation = () => {
-    const missingFields: string[] = []
+    const missingFields: string[] = [];
 
-    if (!newForm.form_id.trim()) missingFields.push("Form ID")
-    if (!newForm.form_name.trim()) missingFields.push("Form Name")
-    if (!newForm.form_description.trim()) missingFields.push("Form Description")
-    if (!newForm.industry.trim()) missingFields.push("Industry")
-    if (!newForm.category.trim()) missingFields.push("Category")
-    if (!selectedSubcategories.length) missingFields.push("At least one Subcategory")
-    if (!selectedTechStacks.length) missingFields.push("At least one Tech Stack")
-    if (!selectedTools.length) missingFields.push("At least one Tool")
+    if (!newForm.form_id.trim()) missingFields.push("Form ID");
+    if (!newForm.form_name.trim()) missingFields.push("Form Name");
+    if (!newForm.form_description.trim()) missingFields.push("Form Description");
+    if (!newForm.industry.trim()) missingFields.push("Industry");
+    if (!newForm.category.trim()) missingFields.push("Category");
+    if (!selectedSubcategories.length) missingFields.push("At least one Subcategory");
+    if (!selectedTechStacks.length) missingFields.push("At least one Tech Stack");
+    if (!selectedTools.length) missingFields.push("At least one Tool");
 
-    return missingFields
-  }
+    return missingFields;
+  };
 
   const handleCreateForm = async () => {
     const missingFields = validateFormCreation();
@@ -1125,7 +1061,7 @@ export default function AdminPanel() {
 
     try {
       const payload = {
-        form_id: newForm.form_id, // Admin can set manually
+        form_id: newForm.form_id,
         form_name: newForm.form_name,
         form_description: newForm.form_description,
         industry: newForm.industry,
@@ -1156,7 +1092,6 @@ export default function AdminPanel() {
     }
   };
 
-  // helper
   const resetFormFields = () => {
     setNewForm({
       form_id: "",
@@ -1179,7 +1114,6 @@ export default function AdminPanel() {
     setSelectedTools([]);
   };
 
-
   const addCustomQuestion = () => {
     const newQuestion = {
       id: Date.now().toString(),
@@ -1187,28 +1121,27 @@ export default function AdminPanel() {
       label: "",
       required: false,
       options: [],
-    }
-    setCustomQuestions((prev) => [...prev, newQuestion])
-  }
+    };
+    setCustomQuestions((prev) => [...prev, newQuestion]);
+  };
 
   const updateCustomQuestion = (id: string, updates: Partial<(typeof customQuestions)[0]>) => {
-    setCustomQuestions((prev) => prev.map((q) => (q.id === id ? { ...q, ...updates } : q)))
-  }
+    setCustomQuestions((prev) => prev.map((q) => (q.id === id ? { ...q, ...updates } : q)));
+  };
 
   const removeCustomQuestion = (id: string) => {
-    setCustomQuestions((prev) => prev.filter((q) => q.id !== id))
-  }
+    setCustomQuestions((prev) => prev.filter((q) => q.id !== id));
+  };
 
   const handleRequiredFieldChange = (fieldKey: string) => {
     setSelectedRequiredFields((prev) =>
-      prev.includes(fieldKey) ? prev.filter((f) => f !== fieldKey) : [...prev, fieldKey],
-    )
-  }
+      prev.includes(fieldKey) ? prev.filter((f) => f !== fieldKey) : [...prev, fieldKey]
+    );
+  };
 
-  // Form management functions
   const loadForms = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
       const { data, error } = await supabaseAdmin
         .from("forms")
@@ -1216,88 +1149,85 @@ export default function AdminPanel() {
           *,
           freelancer_submissions(count)
         `)
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: false });
 
       if (error) {
-        setError("Error loading forms: " + error.message)
-        setForms([])
+        setError("Error loading forms: " + error.message);
+        setForms([]);
       } else {
         const formsWithCounts =
           data?.map((form) => ({
             ...form,
             submission_count: form.freelancer_submissions?.[0]?.count || 0,
-          })) || []
-        setForms(formsWithCounts)
+          })) || [];
+        setForms(formsWithCounts);
       }
     } catch (err: any) {
-      setError("Error loading forms: " + err.message)
-      setForms([])
+      setError("Error loading forms: " + err.message);
+      setForms([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-  // Fetch submissions for a form
+  };
+
   const loadFormSubmissions = async (formId: string) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      console.log("Loading submissions for form ID:", formId)
+      console.log("Loading submissions for form ID:", formId);
 
       const { data: formData, error: formError } = await supabaseAdmin
         .from("forms")
         .select("id")
         .eq("id", formId)
-        .single()
+        .single();
 
       if (formError || !formData) {
-        setError("Form not found")
-        setFormSubmissions([])
-        return
+        setError("Form not found");
+        setFormSubmissions([]);
+        return;
       }
 
       const { data, error } = await supabaseAdmin
         .from("freelancer_submissions")
         .select("*")
         .eq("form_id", formData.id)
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: false });
 
       if (error) {
-        setError("Error loading submissions: " + error.message)
-        setFormSubmissions([])
+        setError("Error loading submissions: " + error.message);
+        setFormSubmissions([]);
       } else {
-        setFormSubmissions(data || [])
+        setFormSubmissions(data || []);
       }
     } catch (err: any) {
-      setError("Error loading submissions: " + err.message)
-      setFormSubmissions([])
+      setError("Error loading submissions: " + err.message);
+      setFormSubmissions([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  // Updated CSV download function with filter support
   const downloadCSVForForm = (formId: string, filter: "all" | "selected" | "not_selected" = "all") => {
     if (!formSubmissions.length) {
-      alert("No submissions available to download")
-      return
+      alert("No submissions available to download");
+      return;
     }
 
-    // Apply filter
     const filteredSubmissions = formSubmissions.filter((sub) =>
       filter === "selected"
         ? sub.is_selected
         : filter === "not_selected"
-          ? !sub.is_selected
-          : true
-    )
+        ? !sub.is_selected
+        : true
+    );
 
     if (!filteredSubmissions.length) {
-      alert(`No ${filter} submissions to download`)
-      return
+      alert(`No ${filter} submissions to download`);
+      return;
     }
 
-    // Define the CSV fields you want to include
     const headers = [
       "Name",
       "Email",
@@ -1310,7 +1240,7 @@ export default function AdminPanel() {
       "Is Selected",
       "Selection Date",
       "Selected By",
-    ]
+    ];
 
     const rows = filteredSubmissions.map((s) => [
       s.name || "",
@@ -1324,9 +1254,8 @@ export default function AdminPanel() {
       s.is_selected ? "Yes" : "No",
       s.selection_date ? new Date(s.selection_date).toLocaleString() : "",
       s.selected_by || "",
-    ])
+    ]);
 
-    // Build CSV string
     const csvContent =
       headers.join(",") +
       "\n" +
@@ -1340,97 +1269,93 @@ export default function AdminPanel() {
             )
             .join(",")
         )
-        .join("\n")
+        .join("\n");
 
-    // Create and download file
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `form_${formId}_${filter}_submissions.csv`
-    link.click()
-    URL.revokeObjectURL(url)
-  }
-
-
-
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `form_${formId}_${filter}_submissions.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const copyFormLink = async (formId: string) => {
-    const url = `${window.location.origin}/form/${formId}`
-    await navigator.clipboard.writeText(url)
-    setCopiedFormId(formId)
-    setTimeout(() => setCopiedFormId(null), 2000)
-  }
+    const url = `${window.location.origin}/form/${formId}`;
+    await navigator.clipboard.writeText(url);
+    setCopiedFormId(formId);
+    setTimeout(() => setCopiedFormId(null), 2000);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "student":
-        return "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+        return "bg-[#44A194]/10 text-[#44A194] border border-[#44A194]/20";
       case "fresher":
-        return "bg-green-500/20 text-green-400 border border-green-500/30"
+        return "bg-[#537D96]/10 text-[#537D96] border border-[#537D96]/20";
       case "full time":
-        return "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+        return "bg-[#1C2321]/10 text-[#1C2321] border border-[#1C2321]/20";
       case "part time":
-        return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+        return "bg-[#EC8F8D]/10 text-[#EC8F8D] border border-[#EC8F8D]/20";
       default:
-        return "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+        return "bg-[#8a8a82]/10 text-[#8a8a82] border border-[#8a8a82]/20";
     }
-  }
+  };
 
   const getExperienceColor = (level: string) => {
-    if (!level) return "bg-gray-500/20 text-gray-400"
+    if (!level) return "bg-[#8a8a82]/10 text-[#8a8a82]";
 
     if (level.includes("Less than 1")) {
-      return "bg-blue-500/20 text-blue-400"
+      return "bg-[#44A194]/10 text-[#44A194]";
     } else if (level.includes("1-2")) {
-      return "bg-yellow-500/20 text-yellow-400"
+      return "bg-[#537D96]/10 text-[#537D96]";
     } else if (level.includes("3-5")) {
-      return "bg-orange-500/20 text-orange-400"
+      return "bg-[#EC8F8D]/10 text-[#EC8F8D]";
     } else if (level.includes("5+")) {
-      return "bg-green-500/20 text-green-400"
+      return "bg-[#1C2321]/10 text-[#1C2321]";
     } else if (level.toLowerCase().includes("fresher")) {
-      return "bg-purple-500/20 text-purple-400"
+      return "bg-[#44A194]/10 text-[#44A194]";
     } else {
-      return "bg-gray-500/20 text-gray-400"
+      return "bg-[#8a8a82]/10 text-[#8a8a82]";
     }
-  }
+  };
 
   const handleDeleteForm = async (formId: string, formName: string) => {
     if (
       !confirm(`Are you sure you want to delete "${formName}"? This will also delete all submissions for this form.`)
     ) {
-      return
+      return;
     }
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await fetch(`/api/forms?id=${formId}`, {
         method: "DELETE",
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to delete form")
+        throw new Error(data.error || "Failed to delete form");
       }
 
-      setForms((prev) => prev.filter((form) => form.id !== formId))
+      setForms((prev) => prev.filter((form) => form.id !== formId));
 
       if (selectedForm === formId) {
-        setSelectedForm(null)
+        setSelectedForm(null);
       }
     } catch (err: any) {
-      setError("Error deleting form: " + err.message)
+      setError("Error deleting form: " + err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleToggleFormStatus = async (form: Form) => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await fetch("/api/forms", {
@@ -1452,24 +1377,24 @@ export default function AdminPanel() {
           required_fields: form.required_fields,
           custom_questions: form.custom_questions,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to update form status")
+        throw new Error(data.error || "Failed to update form status");
       }
 
-      setForms((prev) => prev.map((f) => (f.id === form.id ? { ...f, is_active: !f.is_active } : f)))
+      setForms((prev) => prev.map((f) => (f.id === form.id ? { ...f, is_active: !f.is_active } : f)));
     } catch (err: any) {
-      setError("Error updating form status: " + err.message)
+      setError("Error updating form status: " + err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleEditForm = (form: Form) => {
-    setEditingForm(form)
+    setEditingForm(form);
     setNewForm({
       form_id: form.form_id,
       form_name: form.form_name,
@@ -1479,28 +1404,28 @@ export default function AdminPanel() {
       subcategory: typeof form.subcategory === "string" ? form.subcategory.split(", ") : [],
       tech_stack: typeof form.tech_stack === "string" ? form.tech_stack.split(", ") : [],
       tools: typeof form.tools === "string" ? form.tools.split(", ") : [],
-    })
-    setSelectedCategory(form?.category)
-    setSelectedSubcategories(typeof form.subcategory === "string" ? form.subcategory.split(", ") : [])
-    setSelectedTechStacks(typeof form.tech_stack === "string" ? form.tech_stack.split(", ") : [])
-    setSelectedTools(typeof form.tools === "string" ? form.tools.split(", ") : [])
-    setSelectedRequiredFields(form.required_fields || ["name", "email", "phone", "resume_link"])
-    setCustomQuestions(form.custom_questions || [])
-    setShowEditForm(true)
-  }
+    });
+    setSelectedCategory(form?.category);
+    setSelectedSubcategories(typeof form.subcategory === "string" ? form.subcategory.split(", ") : []);
+    setSelectedTechStacks(typeof form.tech_stack === "string" ? form.tech_stack.split(", ") : []);
+    setSelectedTools(typeof form.tools === "string" ? form.tools.split(", ") : []);
+    setSelectedRequiredFields(form.required_fields || ["name", "email", "phone", "resume_link"]);
+    setCustomQuestions(form.custom_questions || []);
+    setShowEditForm(true);
+  };
 
   const handleUpdateForm = async () => {
-    if (!editingForm) return
+    if (!editingForm) return;
 
-    const missingFields = validateFormCreation()
+    const missingFields = validateFormCreation();
 
     if (missingFields.length > 0) {
-      setError(`Missing required fields: ${missingFields.join(", ")}`)
-      return
+      setError(`Missing required fields: ${missingFields.join(", ")}`);
+      return;
     }
 
-    setCreateFormLoading(true)
-    setError(null)
+    setCreateFormLoading(true);
+    setError(null);
 
     try {
       const formData = {
@@ -1516,7 +1441,7 @@ export default function AdminPanel() {
         is_active: editingForm.is_active,
         required_fields: selectedRequiredFields,
         custom_questions: customQuestions,
-      }
+      };
 
       const response = await fetch("/api/forms", {
         method: "PUT",
@@ -1524,17 +1449,17 @@ export default function AdminPanel() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to update form")
+        throw new Error(data.error || "Failed to update form");
       }
 
       setForms((prev) =>
-        prev.map((f) => (f.id === editingForm.id ? { ...data.form, submission_count: f.submission_count } : f)),
-      )
+        prev.map((f) => (f.id === editingForm.id ? { ...data.form, submission_count: f.submission_count } : f))
+      );
 
       setNewForm({
         form_id: "",
@@ -1545,36 +1470,36 @@ export default function AdminPanel() {
         subcategory: [],
         tech_stack: [],
         tools: [],
-      })
-      setSelectedRequiredFields(["name", "email", "phone", "resume_link"])
-      setCustomQuestions([])
-      setShowEditForm(false)
-      setEditingForm(null)
-      setSelectedCategory("")
-      setSelectedSubcategory("")
-      setSelectedTechStack("")
-      setSelectedSubcategories([])
-      setSelectedTechStacks([])
-      setSelectedTools([])
+      });
+      setSelectedRequiredFields(["name", "email", "phone", "resume_link"]);
+      setCustomQuestions([]);
+      setShowEditForm(false);
+      setEditingForm(null);
+      setSelectedCategory("");
+      setSelectedSubcategory("");
+      setSelectedTechStack("");
+      setSelectedSubcategories([]);
+      setSelectedTechStacks([]);
+      setSelectedTools([]);
     } catch (err: any) {
-      setError("Error updating form: " + err.message)
+      setError("Error updating form: " + err.message);
     } finally {
-      setCreateFormLoading(false)
+      setCreateFormLoading(false);
     }
-  }
+  };
 
-  const formIdOptions = Array.from(new Set(forms.map((f) => f.form_id))).sort()
+  const formIdOptions = Array.from(new Set(forms.map((f) => f.form_id))).sort();
   const subcategoryOptions: string[] = Array.from(
     new Set(
       forms
         .map((f) => f.subcategory)
         .filter((s): s is string => typeof s === "string" && s !== "")
     )
-  ).sort()
+  ).sort();
 
   const loadFilteredSubmissions = async () => {
     try {
-      if (!supabase) return
+      if (!supabase) return;
 
       let query = supabase
         .from("freelancer_submissions")
@@ -1588,613 +1513,387 @@ export default function AdminPanel() {
           subcategory,
           form_name
         )
-      `,
+      `
         )
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: false });
 
-      const { formTextId, category, subcategory } = submissionFilters
+      const { formTextId, category, subcategory } = submissionFilters;
 
       if (formTextId) {
-        const match = forms.find((f) => f.form_id === formTextId)
+        const match = forms.find((f) => f.form_id === formTextId);
         if (match) {
-          query = query.eq("form_id", match.id)
+          query = query.eq("form_id", match.id);
         } else {
-          setFormSubmissions([])
-          return
+          setFormSubmissions([]);
+          return;
         }
       }
 
       if (category) {
-        const categoryFormIds = forms.filter((f) => f.category === category).map((f) => f.id)
+        const categoryFormIds = forms.filter((f) => f.category === category).map((f) => f.id);
         if (categoryFormIds.length > 0) {
-          query = query.in("form_id", categoryFormIds)
+          query = query.in("form_id", categoryFormIds);
         } else {
-          setFormSubmissions([])
-          return
+          setFormSubmissions([]);
+          return;
         }
       }
 
       if (subcategory) {
-        const subFormIds = forms.filter((f) => f.subcategory === subcategory).map((f) => f.id)
+        const subFormIds = forms.filter((f) => f.subcategory === subcategory).map((f) => f.id);
         if (subFormIds.length > 0) {
-          query = query.in("form_id", subFormIds)
+          query = query.in("form_id", subFormIds);
         } else {
-          setFormSubmissions([])
-          return
+          setFormSubmissions([]);
+          return;
         }
       }
 
-      const { data, error } = await query
+      const { data, error } = await query;
       if (error) {
-        console.error("[v0] Error filtering submissions:", error)
-        setFormSubmissions([])
-        setError("Error filtering submissions: " + error.message)
-        return
+        console.error("Error filtering submissions:", error);
+        setFormSubmissions([]);
+        setError("Error filtering submissions: " + error.message);
+        return;
       }
-      setFormSubmissions(data || [])
+      setFormSubmissions(data || []);
     } catch (e: any) {
-      console.error("[v0] loadFilteredSubmissions error:", e)
-      setError("Error filtering submissions: " + e.message)
+      console.error("loadFilteredSubmissions error:", e);
+      setError("Error filtering submissions: " + e.message);
     }
-  }
+  };
 
   const resetSubmissionFilters = () => {
     setSubmissionFilters({
       formTextId: "",
       category: "",
       subcategory: "",
-    })
-    loadFilteredSubmissions()
-  }
+    });
+    loadFilteredSubmissions();
+  };
 
   const handleAgreementAutomation = () => {
-    window.location.href = "/admin-panel/agreements"
-  }
+    router.push("/admin-panel/agreements");
+  };
 
   const handleFormDashboard = () => {
-    window.location.href = "/admin-form-creation/dashboard"
-  }
+    router.push("/admin-form-creation/dashboard");
+  };
 
   function Field({ label, value, highlight = false }: { label: string; value: string | number; highlight?: boolean }) {
     return (
       <div>
-        <p className="text-gray-400 text-sm mb-1">{label}:</p>
-        <p className={`text-white ${highlight ? "font-semibold text-yellow-400" : ""}`}>{value}</p>
+        <p className="text-[#8a8a82] text-xs mb-1">{label}:</p>
+        <p className={`text-[#1C2321] ${highlight ? "font-semibold text-[#44A194]" : ""}`}>{value}</p>
       </div>
-    )
+    );
   }
 
   function FieldLink({ label, href }: { label: string; href: string }) {
     return (
       <div>
-        <p className="text-gray-400 text-sm mb-1">{label}:</p>
+        <p className="text-[#8a8a82] text-xs mb-1">{label}:</p>
         <a
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-400 hover:text-blue-300 transition-colors break-all"
+          className="text-[#44A194] hover:text-[#38857a] transition-colors break-all text-sm"
         >
           View {label}
         </a>
       </div>
-    )
+    );
   }
 
-
   return (
-    <div className="min-h-screen bg-[#241C15] text-white overflow-hidden pt-[50px] sm:pt-[80px] lg:pt-[100px]">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <motion.div
-          animate={{
-            rotate: 360,
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            rotate: { duration: 30, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
-            scale: { duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-          }}
-          className="absolute -top-40 -right-40 w-80 h-80 bg-[#FFE01B] opacity-10 rounded-full"
-        />
-        <motion.div
-          animate={{
-            rotate: -360,
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            rotate: { duration: 25, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
-            scale: { duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-          }}
-          className="absolute top-1/2 -left-40 w-64 h-64 bg-[#FFE01B] opacity-10 rounded-full"
-        />
-        <motion.div
-          animate={{
-            rotate: 180,
-            scale: [1, 1.3, 1],
-          }}
-          transition={{
-            rotate: { duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
-            scale: { duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-          }}
-          className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#FFE01B] opacity-10 rounded-full"
-        />
+    <div className="min-h-screen bg-[#F4F0E4]">
+      {/* Top Bar */}
+      <div className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-8 py-4 flex items-center">
+        <div className="flex-1">
+          <h1 className="font-display text-2xl font-light text-[#1C2321]">
+            {activeTab === "freelancers" ? "Freelancer Database" : "Form Management"}
+          </h1>
+          <p className="text-sm text-[#8a8a82] mt-1 tracking-[0.04em]">
+            {activeTab === "freelancers" 
+              ? "Manage and search through your freelancer pool"
+              : "Create and manage gig forms"}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {activeTab === "freelancers" ? (
+            <button
+              onClick={downloadCSV}
+              className="px-4 py-2 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" /> Export CSV
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="px-4 py-2 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" /> New Form
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Header Section */}
-      <section className="relative py-20 px-4 z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#241C15] via-[#2a1f16] to-[#241C15]" />
-
-        <motion.div
-          className="relative max-w-6xl mx-auto"
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-        >
-          <div className="text-center space-y-8">
-            <motion.div
-              className="flex items-center justify-center gap-3 mb-6"
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
-            >
-              <motion.div
-                className="w-12 h-12 bg-[#FFE01B]/20 rounded-xl flex items-center justify-center border border-[#FFE01B]/30"
-                whileHover={{ scale: 1.1, rotate: 10 }}
-              >
-                <Settings className="w-6 h-6 text-[#FFE01B]" />
-              </motion.div>
-              <span className="text-[#FFE01B] font-semibold text-lg">Admin Panel</span>
-            </motion.div>
-
-            <motion.h1
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
-              className="text-5xl lg:text-7xl font-bold leading-tight"
-            >
-              <span className="bg-gradient-to-r from-white to-[#FFE01B] bg-clip-text text-transparent">
-                Management Dashboard
-              </span>
-            </motion.h1>
-
-            <motion.p
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
-              className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
-            >
-              Manage freelancer database and create custom gig forms
-            </motion.p>
-
-            {/* Tab Navigation */}
-            <motion.div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-8 sm:mt-12"
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
-            >
-              <button
-                onClick={() => setActiveTab("freelancers")}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-      ${activeTab === "freelancers"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <Users className="w-5 h-5 shrink-0" />
-                Freelancer Search
-              </button>
-
-              <button
-                onClick={() => setActiveTab("forms")}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-      ${activeTab === "forms"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <FileText className="w-5 h-5 shrink-0" />
-                Form Management
-              </button>
-
-              <button
-                onClick={() => handleNavigation("/admin-form-creation/dashboard")}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-      ${dashboard === "/admin-form-creation/dashboard"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <FileText className="w-5 h-5 shrink-0" />
-                Form Dashboard
-              </button>
-
-              <button
-                onClick={handleAgreementAutomation}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-      ${dashboard === "/admin-panel/agreements"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <FileCheck className="w-5 h-5 shrink-0" />
-                Agreement Automation
-              </button>
-
-              <button
-                onClick={() => handleNavigation("/admin-panel/notifications")}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-      ${dashboard === "/admin-panel/notifications"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <Bell className="w-5 h-5 shrink-0" />
-                Notifications
-              </button>
-
-              <button
-                onClick={() => handleNavigation("/analyze")}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-      ${dashboard === "/analyze"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <BarChart3 className="w-5 h-5 shrink-0" />
-                Analyze
-              </button>
-
-              <button
-                onClick={() => handleNavigation("/admin-panel/generate-form")}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-    ${dashboard === "/admin-panel/generate-form"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <FileText className="w-5 h-5 shrink-0" />
-                Form Generation
-              </button>
-
-              <button
-                onClick={() => handleNavigation("/email-personalize")}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-    ${dashboard === "/email-personalize"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <Mail className="w-5 h-5 shrink-0" />
-                Email Personalization
-              </button>
-
-              <button
-                onClick={() => handleNavigation("/admin-panel/bulk-mail-send")}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 w-full text-left 
-    ${dashboard === "/admin-panel/bulk-mail-send"
-                    ? "bg-[#FFE01B] text-[#241C15]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-              >
-                <Mail className="w-5 h-5 shrink-0" />
-                Bulk Mail Sending
-              </button>
-            </motion.div>
-
-            {/* Stats */}
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto mt-12"
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
-            >
-              <motion.div
-                className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
-                initial="hidden"
-                animate="visible"
-                variants={scaleIn}
-              >
-                <div className="flex items-center justify-center mb-3">
-                  <Users className="w-8 h-8 text-[#FFE01B]" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">{freelancers.length}</h3>
-                <p className="text-gray-400 text-sm">Total Freelancers</p>
-              </motion.div>
-
-              <motion.div
-                className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
-                initial="hidden"
-                animate="visible"
-                variants={scaleIn}
-              >
-                <div className="flex items-center justify-center mb-3">
-                  <FileText className="w-8 h-8 text-[#FFE01B]" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">{forms.length}</h3>
-                <p className="text-gray-400 text-sm">Active Forms</p>
-              </motion.div>
-
-              <motion.div
-                className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
-                initial="hidden"
-                animate="visible"
-                variants={scaleIn}
-              >
-                <div className="flex items-center justify-center mb-3">
-                  <BarChart3 className="w-8 h-8 text-[#FFE01B]" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">
-                  {forms.reduce((sum, form) => sum + (form.submission_count || 0), 0)}
-                </h3>
-                <p className="text-gray-400 text-sm">Total Submissions</p>
-              </motion.div>
-            </motion.div>
+      {/* Content */}
+      <div className="p-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-[2px] bg-[#1C2321]/10 mb-8">
+          <div className="bg-white p-6">
+            <div className="font-display text-4xl font-light text-[#1C2321]">{freelancers.length}</div>
+            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Freelancers</div>
           </div>
-        </motion.div>
-      </section>
+          <div className="bg-white p-6">
+            <div className="font-display text-4xl font-light text-[#1C2321]">{forms.length}</div>
+            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Active Forms</div>
+          </div>
+          <div className="bg-white p-6">
+            <div className="font-display text-4xl font-light text-[#1C2321]">
+              {forms.reduce((sum, f) => sum + (f.submission_count || 0), 0)}
+            </div>
+            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Submissions</div>
+          </div>
+          <div className="bg-white p-6">
+            <div className="font-display text-4xl font-light text-[#1C2321]">0</div>
+            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Active Agreements</div>
+          </div>
+        </div>
 
-      {/* Content based on active tab */}
-      {activeTab === "freelancers" ? (
-        <>
-          {/* Search Filters Section */}
-          <section className="relative py-12 px-4 z-10">
-            <motion.div
-              className="max-w-7xl mx-auto"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={{ hidden: {}, visible: {} }}
-            >
-              <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10">
-                <motion.div className="space-y-8">
-                  {/* Header */}
-                  <div className="flex items-center gap-3 mb-6">
-                    <motion.div
-                      className="w-10 h-10 bg-[#FFE01B]/20 rounded-xl flex items-center justify-center border border-[#FFE01B]/30"
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                    >
-                      <Filter className="w-5 h-5 text-[#FFE01B]" />
-                    </motion.div>
-                    <h2 className="text-2xl font-bold text-white">Search Filters</h2>
-                  </div>
+        {/* Tabs */}
+        <div className="flex gap-8 border-b border-[#1C2321]/10 mb-8">
+          <button
+            onClick={() => {
+              setActiveTab("freelancers");
+              router.push("/admin-panel?tab=freelancers");
+            }}
+            className={`pb-3 text-xs tracking-[0.16em] uppercase transition-colors relative ${
+              activeTab === "freelancers" 
+                ? "text-[#44A194] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#44A194]" 
+                : "text-[#8a8a82] hover:text-[#1C2321]"
+            }`}
+          >
+            Freelancer Database
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("forms");
+              router.push("/admin-panel?tab=forms");
+            }}
+            className={`pb-3 text-xs tracking-[0.16em] uppercase transition-colors relative ${
+              activeTab === "forms" 
+                ? "text-[#44A194] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#44A194]" 
+                : "text-[#8a8a82] hover:text-[#1C2321]"
+            }`}
+          >
+            Form Management
+          </button>
+        </div>
 
-                  {/* Filters Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                    <SelectFilter
-                      label="Main Category"
-                      value={filters.main_category || ""}
-                      onChange={(v) => setFilters({ ...filters, main_category: v })}
-                      options={mainCategoryOptions}
-                      placeholder="Main Categories"
-                    />
-
-                    <SelectFilter
-                      label="Category"
-                      value={filters.category || ""}
-                      onChange={(v) => setFilters({ ...filters, category: v })}
-                      options={Object.keys(categoryOptionss)}
-                      placeholder="Categories"
-                    />
-
-
-
-                    <SelectFilter
-                      label="Subcategory"
-                      value={filters.subcategory || ""}
-                      onChange={(v) => setFilters({ ...filters, subcategory: v })}
-                      options={uniqueSubcategoriess}
-                      placeholder="Subcategories"
-                    />
-
-                    <SelectFilter
-                      label="Passing Year"
-                      value={filters.passing_year || ""}
-                      onChange={(v) => setFilters({ ...filters, passing_year: v })}
-                      options={passingYearOptions}
-                      placeholder="Passout Years"
-                    />
-
-                    <SelectFilter
-                      label="Years of Experience"
-                      value={filters.years_experience || ""}
-                      onChange={(v) => setFilters({ ...filters, years_experience: v })}
-                      options={experienceYearOptions}
-                      placeholder="Experience Levels"
-                    />
-
-                    <MultiSelectFilter
-                      label="Tech Stack"
-                      value={filters.tech_stack}
-                      onChange={(vals) => setFilters({ ...filters, tech_stack: vals })}
-                      options={techStackOptions}
-                    />
-
-                    <MultiSelectFilter
-                      label="Tools"
-                      value={filters.tools}
-                      onChange={(vals) => setFilters({ ...filters, tools: vals })}
-                      options={toolsOptions}
-                    />
-
-                    <SelectFilter
-                      label="Profile Rating"
-                      value={filters.profile_rating || ""}
-                      onChange={(v) => setFilters({ ...filters, profile_rating: v })}
-                      options={ratingOptions}
-                      placeholder="All Ratings"
-                    />
-                  </div>
-
-                  {/* Search Input */}
-                  <div className="mt-4">
-                    <label className="block text-sm font-semibold text-[#FFE01B]">Search</label>
-                    <input
-                      type="text"
-                      value={filters.search_text}
-                      onChange={(e) => setFilters({ ...filters, search_text: e.target.value })}
-                      placeholder="Search by name or email..."
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300"
-                    />
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/10">
-                    <motion.button
-                      onClick={handleSearch}
-                      disabled={loading}
-                      className="flex-1 bg-[#FFE01B] hover:bg-yellow-300 text-[#241C15] font-bold py-4 px-8 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-                      whileHover={{ scale: loading ? 1 : 1.02, y: loading ? 0 : -2 }}
-                      whileTap={{ scale: loading ? 1 : 0.98 }}
-                    >
-                      {loading ? (
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-5 h-5 border-2 border-[#241C15] border-t-transparent rounded-full"
-                        />
-                      ) : (
-                        <>
-                          <Search className="w-5 h-5" /> Search Freelancers
-                        </>
-                      )}
-                    </motion.button>
-
-                    <motion.button
-                      onClick={resetFilters}
-                      className="bg-white/10 hover:bg-white/20 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 border border-white/20 hover:border-white/40"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Reset Filters
-                    </motion.button>
-                  </div>
-                </motion.div>
+        {/* Freelancer Tab Content */}
+        {activeTab === "freelancers" ? (
+          <>
+            {/* Search Filters */}
+            <div className="bg-white border border-[#1C2321]/10 p-6 mb-8">
+              <div className="flex items-center gap-3 mb-6">
+                <Filter className="w-5 h-5 text-[#44A194]" />
+                <h2 className="font-display text-xl font-light text-[#1C2321]">Search Filters</h2>
               </div>
-            </motion.div>
-          </section>
 
-          {/* Error Message */}
-          {error && (
-            <section className="relative py-6 px-4 z-10">
-              <motion.div
-                className="max-w-6xl mx-auto bg-red-500/20 border border-red-500/30 rounded-xl p-4 text-center"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <p className="text-red-300">{error}</p>
-              </motion.div>
-            </section>
-          )}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <SelectFilter
+                  label="Main Category"
+                  value={filters.main_category || ""}
+                  onChange={(v) => setFilters({ ...filters, main_category: v })}
+                  options={mainCategoryOptions}
+                  placeholder="Main Categories"
+                />
 
-          {/* Results */}
-          {freelancers.length > 0 ? (
-            <section className="relative py-12 px-4 z-10">
-              <motion.div className="max-w-7xl mx-auto">
-                {/* Send Email Section */}
-                {freelancers.length > 0 && (
-                  <motion.div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 mb-12">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 bg-[#FFE01B]/20 rounded-xl flex items-center justify-center border border-[#FFE01B]/30">
-                        <Mail className="w-5 h-5 text-[#FFE01B]" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-white">Send Email to Filtered Freelancers</h3>
-                    </div>
+                <SelectFilter
+                  label="Category"
+                  value={filters.category || ""}
+                  onChange={(v) => setFilters({ ...filters, category: v })}
+                  options={Object.keys(categoryOptionss)}
+                  placeholder="Categories"
+                />
 
-                    <p className="text-gray-400 mb-4 text-sm">
-                      Type your message below and click "Send Email". This will send to all freelancers currently shown in the list.
-                    </p>
+                <SelectFilter
+                  label="Subcategory"
+                  value={filters.subcategory || ""}
+                  onChange={(v) => setFilters({ ...filters, subcategory: v })}
+                  options={uniqueSubcategoriess}
+                  placeholder="Subcategories"
+                />
 
-                    <textarea
-                      value={emailMessage}
-                      onChange={(e) => setEmailMessage(e.target.value)}
-                      placeholder="Write your message here..."
-                      className="w-full bg-white/10 border border-white/20 text-white rounded-2xl p-4 mb-6 focus:outline-none focus:border-[#FFE01B] transition-colors duration-300 placeholder-gray-400"
-                      rows={5}
-                    />
+                <SelectFilter
+                  label="Passing Year"
+                  value={filters.passing_year || ""}
+                  onChange={(v) => setFilters({ ...filters, passing_year: v })}
+                  options={passingYearOptions}
+                  placeholder="Passout Years"
+                />
 
-                    <motion.button
-                      onClick={handleSendEmails}
-                      disabled={sending}
-                      className="w-full sm:w-auto bg-[#FFE01B] hover:bg-yellow-300 text-[#241C15] font-bold py-4 px-10 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                      whileHover={{ scale: sending ? 1 : 1.03, y: sending ? 1 : -2 }}
-                      whileTap={{ scale: sending ? 1 : 0.97 }}
-                    >
-                      {sending ? (
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-5 h-5 border-2 border-[#241C15] border-t-transparent rounded-full"
-                        />
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5" /> Send Email
-                        </>
-                      )}
-                    </motion.button>
-                  </motion.div>
-                )}
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-                  <div className="flex items-center gap-3 mb-4 sm:mb-0">
-                    <div className="w-10 h-10 bg-[#FFE01B]/20 rounded-xl flex items-center justify-center border border-[#FFE01B]/30">
-                      <Eye className="w-5 h-5 text-[#FFE01B]" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">Search Results</h2>
-                      <p className="text-gray-400">Found {freelancers.length} matching freelancers</p>
-                    </div>
-                  </div>
-                  <motion.button
-                    onClick={downloadCSV}
-                    className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 flex items-center gap-2"
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Download className="w-5 h-5" /> Download CSV
-                  </motion.button>
+                <SelectFilter
+                  label="Years of Experience"
+                  value={filters.years_experience || ""}
+                  onChange={(v) => setFilters({ ...filters, years_experience: v })}
+                  options={experienceYearOptions}
+                  placeholder="Experience Levels"
+                />
+
+                <MultiSelectFilter
+                  label="Tech Stack"
+                  value={filters.tech_stack}
+                  onChange={(vals) => setFilters({ ...filters, tech_stack: vals })}
+                  options={techStackOptions}
+                />
+
+                <MultiSelectFilter
+                  label="Tools"
+                  value={filters.tools}
+                  onChange={(vals) => setFilters({ ...filters, tools: vals })}
+                  options={toolsOptions}
+                />
+
+                <SelectFilter
+                  label="Profile Rating"
+                  value={filters.profile_rating || ""}
+                  onChange={(v) => setFilters({ ...filters, profile_rating: v })}
+                  options={ratingOptions}
+                  placeholder="All Ratings"
+                />
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Search</label>
+                <input
+                  type="text"
+                  value={filters.search_text}
+                  onChange={(e) => setFilters({ ...filters, search_text: e.target.value })}
+                  placeholder="Search by name or email..."
+                  className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-[#1C2321]/10">
+                <button
+                  onClick={handleSearch}
+                  disabled={loading}
+                  className="flex-1 px-6 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Searching...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4" />
+                      Search Freelancers
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={resetFilters}
+                  className="px-6 py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-xs tracking-[0.16em] uppercase hover:border-[#44A194] transition-colors"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 text-[#EC8F8D]">
+                {error}
+              </div>
+            )}
+
+            {/* Send Email Section */}
+            {freelancers.length > 0 && (
+              <div className="bg-white border border-[#1C2321]/10 p-6 mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <Mail className="w-5 h-5 text-[#44A194]" />
+                  <h3 className="font-display text-xl font-light text-[#1C2321]">Send Email to Filtered Freelancers</h3>
                 </div>
 
-                {/* Freelancer Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <textarea
+                  value={emailMessage}
+                  onChange={(e) => setEmailMessage(e.target.value)}
+                  placeholder="Write your message here..."
+                  rows={5}
+                  className="w-full border border-[#1C2321]/10 p-4 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mb-4"
+                />
+
+                <button
+                  onClick={handleSendEmails}
+                  disabled={sending}
+                  className="px-6 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {sending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      Send Email
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Results */}
+            {freelancers.length > 0 ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-display text-xl font-light text-[#1C2321]">
+                    Found {freelancers.length} matching freelancers
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {freelancers.map((f, i) => (
                     <motion.div
                       key={f.id}
-                      className="group relative bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10 hover:border-[#FFE01B]/50 transition-all duration-500"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      whileHover={{ y: -10, scale: 1.02 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="bg-white border border-[#1C2321]/10 p-6 hover:border-[#44A194]/30 transition-colors relative overflow-hidden group"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#FFE01B]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      <div className="relative space-y-4">
+                      {/* Top gradient line on hover */}
+                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] to-[#537D96] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+
+                      <div className="space-y-4">
                         {/* Header */}
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white group-hover:text-[#FFE01B] truncate">
+                            <h3 className="font-medium text-[#1C2321] group-hover:text-[#44A194] transition-colors">
                               {f.full_name}
                             </h3>
-                            <p className="text-gray-400 text-sm truncate">{f.email}</p>
+                            <p className="text-sm text-[#8a8a82]">{f.email}</p>
                             <div className="flex items-center gap-2 mt-1">
-                              <Calendar className="w-3 h-3 text-gray-500" />
-                              <span className="text-gray-500 text-xs">{new Date(f.created_at).toLocaleDateString()}</span>
+                              <Calendar className="w-3 h-3 text-[#8a8a82]" />
+                              <span className="text-xs text-[#8a8a82]">{new Date(f.created_at).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          <div
-                            className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                              f.employment_status || "N/A"
-                            )}`}
-                          >
+                          <div className={`px-2 py-1 text-xs rounded-full ${getStatusColor(f.employment_status || "N/A")}`}>
                             {f.employment_status || "N/A"}
                           </div>
                         </div>
 
                         {/* Category & Experience */}
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-[#FFE01B]/20 text-[#FFE01B] text-xs rounded-lg border border-[#FFE01B]/30">
-                            {f.category}
+                          <span className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs rounded">
+                            {f.category || "N/A"}
                           </span>
                           {f.experience_level && (
-                            <span className={`px-2 py-1 text-xs rounded-lg ${getExperienceColor(f.experience_level)}`}>
+                            <span className={`px-2 py-1 text-xs rounded ${getExperienceColor(f.experience_level)}`}>
                               {f.experience_level}
                             </span>
                           )}
@@ -2204,15 +1903,15 @@ export default function AdminPanel() {
                         <div className="space-y-2">
                           {f.domains && f.domains.length > 0 && (
                             <div>
-                              <p className="text-gray-400 text-xs mb-1">Domains:</p>
+                              <p className="text-xs text-[#8a8a82] mb-1">Domains:</p>
                               <div className="flex flex-wrap gap-1">
                                 {f.domains.slice(0, 3).map((d, idx) => (
-                                  <span key={idx} className="px-2 py-1 bg-blue-500/10 text-blue-400 text-xs rounded border border-blue-500/20">
+                                  <span key={idx} className="px-2 py-1 bg-[#537D96]/10 text-[#537D96] text-xs rounded">
                                     {d}
                                   </span>
                                 ))}
                                 {f.domains.length > 3 && (
-                                  <span className="px-2 py-1 bg-white/10 text-gray-400 text-xs rounded">
+                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-xs rounded">
                                     +{f.domains.length - 3}
                                   </span>
                                 )}
@@ -2221,15 +1920,15 @@ export default function AdminPanel() {
                           )}
                           {f.tech_stack && f.tech_stack.length > 0 && (
                             <div>
-                              <p className="text-gray-400 text-xs mb-1">Tech:</p>
+                              <p className="text-xs text-[#8a8a82] mb-1">Tech:</p>
                               <div className="flex flex-wrap gap-1">
                                 {f.tech_stack.slice(0, 3).map((t, idx) => (
-                                  <span key={idx} className="px-2 py-1 bg-green-500/10 text-green-400 text-xs rounded border border-green-500/20">
+                                  <span key={idx} className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs rounded">
                                     {t}
                                   </span>
                                 ))}
                                 {f.tech_stack.length > 3 && (
-                                  <span className="px-2 py-1 bg-white/10 text-gray-400 text-xs rounded">
+                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-xs rounded">
                                     +{f.tech_stack.length - 3}
                                   </span>
                                 )}
@@ -2239,808 +1938,528 @@ export default function AdminPanel() {
                         </div>
 
                         {/* Contact */}
-                        <div className="space-y-2 pt-4 border-t border-white/10">
+                        <div className="space-y-2 pt-4 border-t border-[#1C2321]/10">
                           {f.phone && (
-                            <div className="flex items-center gap-2 text-gray-300 text-sm">
-                              <Phone className="w-4 h-4" /> <span className="truncate">{f.phone}</span>
+                            <div className="flex items-center gap-2 text-sm text-[#8a8a82]">
+                              <Phone className="w-4 h-4" />
+                              <span className="truncate">{f.phone}</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-2 text-gray-300 text-sm">
-                            <Mail className="w-4 h-4" /> <span className="truncate">{f.email}</span>
+                          <div className="flex items-center gap-2 text-sm text-[#8a8a82]">
+                            <Mail className="w-4 h-4" />
+                            <span className="truncate">{f.email}</span>
                           </div>
                         </div>
 
                         {/* Links */}
                         <div className="flex gap-2 pt-2">
                           {f.portfolio_url && (
-                            <motion.a
+                            <a
                               href={f.portfolio_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-semibold py-2 px-3 rounded-xl border border-blue-500/30 text-center text-sm flex items-center justify-center gap-1"
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
+                              className="flex-1 px-3 py-2 bg-[#44A194]/10 text-[#44A194] text-xs text-center hover:bg-[#44A194]/20 transition-colors flex items-center justify-center gap-1"
                             >
-                              <ExternalLink className="w-3 h-3" /> Portfolio
-                            </motion.a>
+                              <ExternalLink className="w-3 h-3" />
+                              Portfolio
+                            </a>
                           )}
                           {f.linkedin_url && (
-                            <motion.a
+                            <a
                               href={f.linkedin_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 bg-blue-600/10 hover:bg-blue-600/20 text-blue-300 font-semibold py-2 px-3 rounded-xl border border-blue-600/30 text-center text-sm flex items-center justify-center gap-1"
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
+                              className="flex-1 px-3 py-2 bg-[#537D96]/10 text-[#537D96] text-xs text-center hover:bg-[#537D96]/20 transition-colors flex items-center justify-center gap-1"
                             >
-                              <Linkedin className="w-3 h-3" /> LinkedIn
-                            </motion.a>
+                              <Linkedin className="w-3 h-3" />
+                              LinkedIn
+                            </a>
                           )}
                           {f.resume_url && (
-                            <motion.a
+                            <a
                               href={f.resume_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 font-semibold py-2 px-3 rounded-xl border border-green-500/30 text-center text-sm flex items-center justify-center gap-1"
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
+                              className="flex-1 px-3 py-2 bg-[#1C2321]/10 text-[#1C2321] text-xs text-center hover:bg-[#1C2321]/20 transition-colors flex items-center justify-center gap-1"
                             >
-                              <FileDown className="w-3 h-3" /> Resume
-                            </motion.a>
+                              <FileDown className="w-3 h-3" />
+                              Resume
+                            </a>
                           )}
                         </div>
                       </div>
                     </motion.div>
                   ))}
                 </div>
-
-
-              </motion.div>
-            </section>
-          ) : (
-            !loading && (
-              <section className="relative py-20 px-4 z-10">
-                <motion.div className="max-w-2xl mx-auto text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                  <div className="w-20 h-20 bg-[#FFE01B]/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <Search className="w-10 h-10 text-[#FFE01B]" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-4">No Freelancers Found</h3>
-                  <p className="text-gray-400 mb-8">{error || "Try adjusting your search filters."}</p>
-                  <motion.button
-                    onClick={resetFilters}
-                    className="bg-[#FFE01B] hover:bg-yellow-300 text-[#241C15] font-bold px-6 py-3 rounded-xl transition-all duration-300"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Reset Filters
-                  </motion.button>
-                </motion.div>
-              </section>
-            )
-          )}
-        </>
-      ) : (
-        <>
-          {/* Form Management Section */}
-          <section className="relative py-12 px-4 z-10">
-            <motion.div
-              className="max-w-6xl mx-auto"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={staggerContainer}
-            >
-              {/* Create Form Button */}
-              <motion.div
-                className="flex justify-between items-center mb-8"
-                initial="hidden"
-                animate="visible"
-                variants={fadeUp}
-              >
-                <div className="flex items-center gap-3">
-                  <motion.div
-                    className="w-10 h-10 bg-[#FFE01B]/20 rounded-xl flex items-center justify-center border border-[#FFE01B]/30"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <FileText className="w-5 h-5 text-[#FFE01B]" />
-                  </motion.div>
-                  <h2 className="text-2xl font-bold text-white">Form Management</h2>
+              </div>
+            ) : (
+              !loading && (
+                <div className="text-center py-12">
+                  <Users className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
+                  <p className="text-[#8a8a82]">{error || "No freelancers found. Try adjusting your search filters."}</p>
                 </div>
-
-                <motion.button
-                  onClick={() => setShowCreateForm(!showCreateForm)}
-                  className="bg-[#FFE01B] hover:bg-yellow-300 text-[#241C15] font-bold px-6 py-3 rounded-xl transition-all duration-300 flex items-center gap-2"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Plus className="w-5 h-5" />
-                  Create New Form
-                </motion.button>
-              </motion.div>
-
-              {(showCreateForm || showEditForm) && (
-                <motion.div
-                  className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10 mb-8"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                >
-                  <h3 className="text-xl font-bold text-white mb-6">
-                    {showEditForm ? "Edit Form" : "Create New Form"}
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">Form ID</label>
-                      <input
-                        type="text"
-                        value={newForm.form_id}
-                        onChange={(e) => setNewForm((prev) => ({ ...prev, form_id: e.target.value }))}
-                        placeholder="e.g., reactjs1, nodejs2"
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">Form Name</label>
-                      <input
-                        type="text"
-                        value={newForm.form_name}
-                        onChange={(e) => setNewForm((prev) => ({ ...prev, form_name: e.target.value }))}
-                        placeholder="e.g., React.js Developer Position"
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">Form Description</label>
-                      <input
-                        type="text"
-                        value={newForm.form_description}
-                        onChange={(e) => setNewForm((prev) => ({ ...prev, form_description: e.target.value }))}
-                        placeholder=""
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">Industry</label>
-                      <input
-                        type="text"
-                        value={newForm.industry}
-                        onChange={(e) => setNewForm((prev) => ({ ...prev, industry: e.target.value }))}
-                        placeholder="e.g., Technology, Healthcare, Finance"
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">Category</label>
-                      <select
-                        value={selectedCategory}
-                        onChange={(e) => handleCategoryChange(e.target.value)}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300"
-                      >
-                        <option value="" className="bg-[#241C15] text-white">
-                          Select Category
-                        </option>
-                        {Object.keys(categoryOptions).map((category) => (
-                          <option key={category} value={category} className="bg-[#241C15] text-white">
-                            {category}
-                          </option>
-                        ))}
-                        <option value="other" className="bg-[#241C15] text-white">
-                          Other
-                        </option>
-                      </select>
-                      {showOtherCategory && (
+              )
+            )}
+          </>
+        ) : (
+          /* Form Management Tab Content */
+          <>
+            {/* Create Form Modal */}
+            {showCreateForm && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <div className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                  <div className="p-6 border-b border-[#1C2321]/10 flex justify-between items-center">
+                    <h3 className="font-display text-xl font-light text-[#1C2321]">Create New Form</h3>
+                    <button onClick={() => setShowCreateForm(false)} className="text-[#8a8a82] hover:text-[#1C2321]">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Form ID</label>
                         <input
                           type="text"
-                          value={newForm.category}
-                          onChange={(e) => setNewForm((prev) => ({ ...prev, category: e.target.value }))}
-                          placeholder="Enter custom category"
-                          className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300 mt-2"
+                          value={newForm.form_id}
+                          onChange={(e) => setNewForm((prev) => ({ ...prev, form_id: e.target.value }))}
+                          placeholder="e.g., reactjs1, nodejs2"
+                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
                         />
-                      )}
-                    </div>
-                    {/* Updated form interface to show multiple selections with checkboxes */}
-                    <div>
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">
-                        Subcategories (Select Multiple)
-                      </label>
-                      <div className="bg-white/10 border border-white/20 rounded-xl p-4 max-h-40 overflow-y-auto">
-                        {availableSubcategories.map((subcategory) => (
-                          <label key={subcategory} className="flex items-center space-x-2 mb-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={selectedSubcategories.includes(subcategory)}
-                              onChange={() => handleSubcategoryChange(subcategory)}
-                              className="w-4 h-4 text-[#FFE01B] bg-transparent border-white/20 rounded focus:ring-[#FFE01B]"
-                            />
-                            <span className="text-white text-sm">{subcategory}</span>
-                          </label>
-                        ))}
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={showOtherSubcategory}
-                            onChange={() => setShowOtherSubcategory(!showOtherSubcategory)}
-                            className="w-4 h-4 text-[#FFE01B] bg-transparent border-white/20 rounded focus:ring-[#FFE01B]"
-                          />
-                          <span className="text-white text-sm">Other</span>
-                        </label>
                       </div>
-                      {selectedSubcategories.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {selectedSubcategories.map((item) => (
-                            <span key={item} className="bg-[#FFE01B] text-black px-2 py-1 rounded-lg text-xs">
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {showOtherSubcategory && (
+                      <div>
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Form Name</label>
                         <input
                           type="text"
-                          placeholder="Enter custom subcategory and press Enter"
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                              const customValue = e.currentTarget.value.trim()
-                              setSelectedSubcategories((prev) => [...prev, customValue])
-                              setNewForm((prev) => ({
-                                ...prev,
-                                subcategory: [...(prev.subcategory || []), customValue],
-                              }))
-                              e.currentTarget.value = ""
-                            }
-                          }}
-                          className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300 mt-2"
+                          value={newForm.form_name}
+                          onChange={(e) => setNewForm((prev) => ({ ...prev, form_name: e.target.value }))}
+                          placeholder="e.g., React.js Developer Position"
+                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
                         />
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">
-                        Tech Stack (Select Multiple)
-                      </label>
-                      <div className="bg-white/10 border border-white/20 rounded-xl p-4 max-h-40 overflow-y-auto">
-                        {availableTechStacks.map((techStack) => (
-                          <label key={techStack} className="flex items-center space-x-2 mb-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={selectedTechStacks.includes(techStack)}
-                              onChange={() => handleTechStackChange(techStack)}
-                              className="w-4 h-4 text-[#FFE01B] bg-transparent border-white/20 rounded focus:ring-[#FFE01B]"
-                            />
-                            <span className="text-white text-sm">{techStack}</span>
-                          </label>
-                        ))}
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={showOtherTechStack}
-                            onChange={() => setShowOtherTechStack(!showOtherTechStack)}
-                            className="w-4 h-4 text-[#FFE01B] bg-transparent border-white/20 rounded focus:ring-[#FFE01B]"
-                          />
-                          <span className="text-white text-sm">Other</span>
-                        </label>
                       </div>
-                      {selectedTechStacks.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {selectedTechStacks.map((item) => (
-                            <span key={item} className="bg-[#FFE01B] text-black px-2 py-1 rounded-lg text-xs">
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {showOtherTechStack && (
+                      <div>
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Form Description</label>
                         <input
                           type="text"
-                          placeholder="Enter custom tech stack and press Enter"
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                              const customValue = e.currentTarget.value.trim()
-                              const newTechStacks = [...selectedTechStacks, customValue]
-                              setSelectedTechStacks(newTechStacks)
-                              setNewForm((prev) => ({
-                                ...prev,
-                                tech_stack: newTechStacks,
-                              }))
-                              e.currentTarget.value = ""
-                            }
-                          }}
-                          className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300 mt-2"
+                          value={newForm.form_description}
+                          onChange={(e) => setNewForm((prev) => ({ ...prev, form_description: e.target.value }))}
+                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
                         />
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">Tools (Select Multiple)</label>
-                      <div className="bg-white/10 border border-white/20 rounded-xl p-4 max-h-40 overflow-y-auto">
-                        {availableTools.map((tool) => (
-                          <label key={tool} className="flex items-center space-x-2 mb-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={selectedTools.includes(tool)}
-                              onChange={() => handleToolsChange(tool)}
-                              className="w-4 h-4 text-[#FFE01B] bg-transparent border-white/20 rounded focus:ring-[#FFE01B]"
-                            />
-                            <span className="text-white text-sm">{tool}</span>
-                          </label>
-                        ))}
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={showOtherTools}
-                            onChange={() => setShowOtherTools(!showOtherTools)}
-                            className="w-4 h-4 text-[#FFE01B] bg-transparent border-white/20 rounded focus:ring-[#FFE01B]"
-                          />
-                          <span className="text-white text-sm">Other</span>
-                        </label>
                       </div>
-                      {selectedTools.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {selectedTools.map((item) => (
-                            <span key={item} className="bg-[#FFE01B] text-black px-2 py-1 rounded-lg text-xs">
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {showOtherTools && (
+                      <div>
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Industry</label>
                         <input
                           type="text"
-                          placeholder="Enter custom tool and press Enter"
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                              const customValue = e.currentTarget.value.trim()
-                              setSelectedTools((prev) => [...prev, customValue])
-                              setNewForm((prev) => ({
-                                ...prev,
-                                tools: [...(prev.tools || []), customValue],
-                              }))
-                              e.currentTarget.value = ""
-                            }
-                          }}
-                          className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFE01B] transition-colors duration-300 mt-2"
+                          value={newForm.industry}
+                          onChange={(e) => setNewForm((prev) => ({ ...prev, industry: e.target.value }))}
+                          placeholder="e.g., Technology, Healthcare, Finance"
+                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
                         />
-                      )}
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-[#FFE01B] mb-2">
-                        Required Standard Fields
-                      </label>
-                      <div className="bg-white/10 border border-white/20 rounded-xl p-4">
-                        <div className="grid grid-cols-2 gap-2">
-                          {availableStandardFields.map((field) => (
-                            <label key={field.key} className="flex items-center space-x-2 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={selectedRequiredFields.includes(field.key)}
-                                onChange={() => handleRequiredFieldChange(field.key)}
-                                className="w-4 h-4 text-[#FFE01B] bg-transparent border-white/20 rounded focus:ring-[#FFE01B]"
-                              />
-                              <span className="text-white text-sm">{field.label}</span>
-                            </label>
+                      </div>
+                      <div>
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Category</label>
+                        <select
+                          value={selectedCategory}
+                          onChange={(e) => handleCategoryChange(e.target.value)}
+                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] bg-white"
+                        >
+                          <option value="">Select Category</option>
+                          {Object.keys(categoryOptions).map((category) => (
+                            <option key={category} value={category}>
+                              {category}
+                            </option>
                           ))}
-                        </div>
-                        {selectedRequiredFields.length > 0 && (
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {selectedRequiredFields.map((fieldKey) => {
-                              const field = availableStandardFields.find((f) => f.key === fieldKey)
-                              return (
-                                <span key={fieldKey} className="bg-[#FFE01B] text-black px-2 py-1 rounded-lg text-xs">
-                                  {field?.label}
-                                </span>
-                              )
-                            })}
-                          </div>
+                          <option value="other">Other</option>
+                        </select>
+                        {showOtherCategory && (
+                          <input
+                            type="text"
+                            value={newForm.category}
+                            onChange={(e) => setNewForm((prev) => ({ ...prev, category: e.target.value }))}
+                            placeholder="Enter custom category"
+                            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                          />
                         )}
                       </div>
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <div className="flex items-center justify-between mb-4">
-                        <label className="block text-sm font-semibold text-[#FFE01B]">Custom Questions</label>
-                        <motion.button
-                          onClick={addCustomQuestion}
-                          className="bg-[#FFE01B] hover:bg-yellow-300 text-[#241C15] font-semibold px-4 py-2 rounded-lg transition-all duration-300 text-sm"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Plus className="w-4 h-4 inline mr-1" />
-                          Add Question
-                        </motion.button>
-                      </div>
-
-                      {customQuestions.length > 0 && (
-                        <div className="space-y-4">
-                          {customQuestions.map((question, index) => (
-                            <div key={question.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-white font-semibold">Question {index + 1}</span>
-                                <button
-                                  onClick={() => removeCustomQuestion(question.id)}
-                                  className="text-red-400 hover:text-red-300 transition-colors"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                  <label className="block text-xs text-gray-300 mb-1">Question Type</label>
-                                  <select
-                                    value={question.type}
-                                    onChange={(e) =>
-                                      updateCustomQuestion(question.id, {
-                                        type: e.target.value as any,
-                                        options:
-                                          e.target.value === "select" ||
-                                            e.target.value === "radio" ||
-                                            e.target.value === "checkbox"
-                                            ? [""]
-                                            : undefined,
-                                      })
-                                    }
-                                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#FFE01B]"
-                                  >
-                                    <option value="text" className="bg-[#241C15]">
-                                      Text Input
-                                    </option>
-                                    <option value="textarea" className="bg-[#241C15]">
-                                      Textarea
-                                    </option>
-                                    <option value="select" className="bg-[#241C15]">
-                                      Dropdown
-                                    </option>
-                                    <option value="radio" className="bg-[#241C15]">
-                                      Radio Buttons
-                                    </option>
-                                    <option value="checkbox" className="bg-[#241C15]">
-                                      Checkboxes
-                                    </option>
-                                  </select>
-                                </div>
-
-                                <div className="md:col-span-2">
-                                  <label className="block text-xs text-gray-300 mb-1">Question Label</label>
-                                  <input
-                                    type="text"
-                                    value={question.label}
-                                    onChange={(e) => updateCustomQuestion(question.id, { label: e.target.value })}
-                                    placeholder="Enter your question..."
-                                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#FFE01B]"
-                                  />
-                                </div>
-                              </div>
-
-                              {(question.type === "select" ||
-                                question.type === "radio" ||
-                                question.type === "checkbox") && (
-                                  <div className="mt-3">
-                                    <label className="block text-xs text-gray-300 mb-2">Options (one per line)</label>
-                                    <textarea
-                                      value={question.options?.join("\n") || ""}
-                                      onChange={(e) =>
-                                        updateCustomQuestion(question.id, {
-                                          options: e.target.value.split("\n").filter((opt) => opt.trim()),
-                                        })
-                                      }
-                                      placeholder="Option 1&#10;Option 2&#10;Option 3"
-                                      rows={3}
-                                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#FFE01B]"
-                                    />
-                                  </div>
-                                )}
-
-                              <div className="mt-3">
-                                <label className="flex items-center space-x-2 cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={question.required}
-                                    onChange={(e) => updateCustomQuestion(question.id, { required: e.target.checked })}
-                                    className="w-4 h-4 text-[#FFE01B] bg-transparent border-white/20 rounded focus:ring-[#FFE01B]"
-                                  />
-                                  <span className="text-white text-sm">Required field</span>
-                                </label>
-                              </div>
-                            </div>
+                      <div>
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Subcategories</label>
+                        <div className="border border-[#1C2321]/10 p-4 max-h-40 overflow-y-auto">
+                          {availableSubcategories.map((subcategory) => (
+                            <label key={subcategory} className="flex items-center gap-2 mb-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedSubcategories.includes(subcategory)}
+                                onChange={() => handleSubcategoryChange(subcategory)}
+                                className="accent-[#44A194]"
+                              />
+                              <span className="text-sm text-[#1C2321]">{subcategory}</span>
+                            </label>
                           ))}
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={showOtherSubcategory}
+                              onChange={() => setShowOtherSubcategory(!showOtherSubcategory)}
+                              className="accent-[#44A194]"
+                            />
+                            <span className="text-sm text-[#1C2321]">Other</span>
+                          </label>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex gap-4 mt-6">
-                    <motion.button
-                      onClick={showEditForm ? handleUpdateForm : handleCreateForm}
-                      disabled={createFormLoading}
-                      className="bg-[#FFE01B] hover:bg-yellow-300 text-[#241C15] font-bold px-6 py-3 rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center gap-2"
-                      whileHover={{ scale: createFormLoading ? 1 : 1.05 }}
-                      whileTap={{ scale: createFormLoading ? 1 : 0.95 }}
-                    >
-                      {createFormLoading ? (
-                        <>
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                            className="w-4 h-4 border-2 border-[#241C15] border-t-transparent rounded-full"
+                        {showOtherSubcategory && (
+                          <input
+                            type="text"
+                            placeholder="Enter custom subcategory and press Enter"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                                const customValue = e.currentTarget.value.trim();
+                                setSelectedSubcategories((prev) => [...prev, customValue]);
+                                setNewForm((prev) => ({
+                                  ...prev,
+                                  subcategory: [...(prev.subcategory || []), customValue],
+                                }));
+                                e.currentTarget.value = "";
+                              }
+                            }}
+                            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
                           />
-                          {showEditForm ? "Updating..." : "Creating..."}
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-4 h-4" />
-                          {showEditForm ? "Update Form" : "Create Form"}
-                        </>
-                      )}
-                    </motion.button>
-                    <motion.button
-                      onClick={() => {
-                        setShowCreateForm(false)
-                        setShowEditForm(false)
-                        setEditingForm(null)
-                      }}
-                      className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Cancel
-                    </motion.button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Error Message */}
-              {error && (
-                <motion.div
-                  className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 text-center mb-8"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <p className="text-red-300">{error}</p>
-                </motion.div>
-              )}
-
-              {/* Forms List */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {forms.map((form, index) => (
-                  <motion.div
-                    key={form.id}
-                    initial="hidden"
-                    animate="visible"
-                    variants={scaleIn}
-                    transition={{ delay: index * 0.1 }}
-                    className="group relative bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10 hover:border-[#FFE01B]/50 transition-all duration-500"
-                    whileHover={{ y: -10, scale: 1.02 }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#FFE01B]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                    <div className="relative space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white group-hover:text-[#FFE01B] transition-colors duration-300">
-                            {form.form_name}
-                          </h3>
-                          <p className="text-gray-400 text-sm">ID: {form.form_id}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Calendar className="w-3 h-3 text-gray-500" />
-                            <span className="text-gray-500 text-xs">
-                              {new Date(form.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Tech Stack</label>
+                        <div className="border border-[#1C2321]/10 p-4 max-h-40 overflow-y-auto">
+                          {availableTechStacks.map((techStack) => (
+                            <label key={techStack} className="flex items-center gap-2 mb-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedTechStacks.includes(techStack)}
+                                onChange={() => handleTechStackChange(techStack)}
+                                className="accent-[#44A194]"
+                              />
+                              <span className="text-sm text-[#1C2321]">{techStack}</span>
+                            </label>
+                          ))}
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={showOtherTechStack}
+                              onChange={() => setShowOtherTechStack(!showOtherTechStack)}
+                              className="accent-[#44A194]"
+                            />
+                            <span className="text-sm text-[#1C2321]">Other</span>
+                          </label>
                         </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <div className="px-3 py-1 bg-[#FFE01B]/40 text-[#FFE01B] text-xs rounded-full border border-[#FFE01B]/30">
-                            {form.submission_count || 0} submissions
-                          </div>
-                          <div
-                            className={`px-3 py-1 text-xs rounded-full border ${form.is_active
-                              ? "bg-green-500/20 text-green-400 border-green-500/30"
-                              : "bg-red-500/20 text-red-400 border-red-500/30"
-                              }`}
-                          >
-                            {form.is_active ? "Active" : "Inactive"}
+                        {showOtherTechStack && (
+                          <input
+                            type="text"
+                            placeholder="Enter custom tech stack and press Enter"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                                const customValue = e.currentTarget.value.trim();
+                                const newTechStacks = [...selectedTechStacks, customValue];
+                                setSelectedTechStacks(newTechStacks);
+                                setNewForm((prev) => ({
+                                  ...prev,
+                                  tech_stack: newTechStacks,
+                                }));
+                                e.currentTarget.value = "";
+                              }
+                            }}
+                            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Tools</label>
+                        <div className="border border-[#1C2321]/10 p-4 max-h-40 overflow-y-auto">
+                          {availableTools.map((tool) => (
+                            <label key={tool} className="flex items-center gap-2 mb-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedTools.includes(tool)}
+                                onChange={() => handleToolsChange(tool)}
+                                className="accent-[#44A194]"
+                              />
+                              <span className="text-sm text-[#1C2321]">{tool}</span>
+                            </label>
+                          ))}
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={showOtherTools}
+                              onChange={() => setShowOtherTools(!showOtherTools)}
+                              className="accent-[#44A194]"
+                            />
+                            <span className="text-sm text-[#1C2321]">Other</span>
+                          </label>
+                        </div>
+                        {showOtherTools && (
+                          <input
+                            type="text"
+                            placeholder="Enter custom tool and press Enter"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                                const customValue = e.currentTarget.value.trim();
+                                setSelectedTools((prev) => [...prev, customValue]);
+                                setNewForm((prev) => ({
+                                  ...prev,
+                                  tools: [...(prev.tools || []), customValue],
+                                }));
+                                e.currentTarget.value = "";
+                              }
+                            }}
+                            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                          />
+                        )}
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">
+                          Required Standard Fields
+                        </label>
+                        <div className="border border-[#1C2321]/10 p-4">
+                          <div className="grid grid-cols-2 gap-2">
+                            {availableStandardFields.map((field) => (
+                              <label key={field.key} className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRequiredFields.includes(field.key)}
+                                  onChange={() => handleRequiredFieldChange(field.key)}
+                                  className="accent-[#44A194]"
+                                />
+                                <span className="text-sm text-[#1C2321]">{field.label}</span>
+                              </label>
+                            ))}
                           </div>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="mt-2 flex items-center gap-2">
-                        <span
-                          className={`px-2 py-1 text-xs rounded border font-medium ${form.created_by === "admin"
-                            ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                            : "bg-pink-500/20 text-pink-400 border-pink-500/30"
-                            }`}
-                        >
-                          {form.created_by === "admin" ? "Created By Admin" : "Created By Client"}
+                    <div className="flex gap-4 mt-6 pt-6 border-t border-[#1C2321]/10">
+                      <button
+                        onClick={handleCreateForm}
+                        disabled={createFormLoading}
+                        className="px-6 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {createFormLoading ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Creating...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="w-4 h-4" />
+                            Create Form
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => setShowCreateForm(false)}
+                        className="px-6 py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-xs tracking-[0.16em] uppercase hover:border-[#44A194] transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Forms List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {forms.map((form, index) => (
+                <motion.div
+                  key={form.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-white border border-[#1C2321]/10 p-6 hover:border-[#44A194]/30 transition-colors relative overflow-hidden group"
+                >
+                  {/* Top gradient line on hover */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] to-[#537D96] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-medium text-[#1C2321] group-hover:text-[#44A194] transition-colors">
+                          {form.form_name}
+                        </h3>
+                        <p className="text-xs text-[#8a8a82]">ID: {form.form_id}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Calendar className="w-3 h-3 text-[#8a8a82]" />
+                          <span className="text-xs text-[#8a8a82]">
+                            {new Date(form.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <div className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs rounded">
+                          {form.submission_count || 0} submissions
+                        </div>
+                        <div className={`px-2 py-1 text-xs rounded ${
+                          form.is_active
+                            ? "bg-[#44A194]/10 text-[#44A194]"
+                            : "bg-[#EC8F8D]/10 text-[#EC8F8D]"
+                        }`}>
+                          {form.is_active ? "Active" : "Inactive"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 bg-[#537D96]/10 text-[#537D96] text-xs rounded">
+                          {form.category}
+                        </span>
+                        <span className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs rounded">
+                          {form.subcategory}
                         </span>
                       </div>
-
-
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded border border-blue-500/30">
-                            {form.category}
-                          </span>
-                          <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded border border-green-500/30">
-                            {form.subcategory}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded border border-purple-500/30">
-                            {form.industry}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2 pt-4 border-t border-white/10">
-                        <motion.button
-                          onClick={() => copyFormLink(form.id)}
-                          className="flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-semibold py-2 px-3 rounded-xl transition-all duration-300 border border-blue-500/30 hover:border-blue-500 text-center text-sm flex items-center justify-center gap-1"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          {copiedFormId === form.id ? (
-                            <>
-                              <CheckCircle className="w-3 h-3" />
-                              Copied!
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3 h-3" />
-                              Copy Link
-                            </>
-                          )}
-                        </motion.button>
-                        <motion.button
-                          onClick={() => {
-                            setSelectedForm(form.id)
-                            loadFormSubmissions(form.id)
-                          }}
-                          className="flex-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 font-semibold py-2 px-3 rounded-xl transition-all duration-300 border border-green-500/30 hover:border-green-500 text-center text-sm flex items-center justify-center gap-1"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <Eye className="w-3 h-3" />
-                          View
-                        </motion.button>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <motion.button
-                          onClick={() => handleToggleFormStatus(form)}
-                          className={`flex-1 font-semibold py-2 px-3 rounded-xl transition-all duration-300 text-center text-sm flex items-center justify-center gap-1 ${form.is_active
-                            ? "bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 hover:border-red-500"
-                            : "bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 hover:border-green-500"
-                            }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          {form.is_active ? (
-                            <>
-                              <X className="w-3 h-3" />
-                              Deactivate
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="w-3 h-3" />
-                              Activate
-                            </>
-                          )}
-                        </motion.button>
-                        <motion.button
-                          onClick={() => handleEditForm(form)}
-                          className="flex-1 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 font-semibold py-2 px-3 rounded-xl transition-all duration-300 border border-yellow-500/30 hover:border-yellow-500 text-center text-sm flex items-center justify-center gap-1"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <Edit className="w-3 h-3" />
-                          Edit
-                        </motion.button>
-                        <motion.button
-                          onClick={() => handleDeleteForm(form.id, form.form_name)}
-                          className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-semibold py-2 px-3 rounded-xl transition-all duration-300 border border-red-500/30 hover:border-red-500 text-center text-sm flex items-center justify-center gap-1"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                          Delete
-                        </motion.button>
+                      <div>
+                        <span className="px-2 py-1 bg-[#1C2321]/10 text-[#1C2321] text-xs rounded">
+                          {form.industry}
+                        </span>
                       </div>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
 
-              {/* Form Submissions Modal/Section */}
-              {selectedForm && (
-                <motion.div
-                  className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  onClick={() => setSelectedForm(null)}
+                    <div className="flex gap-2 pt-4 border-t border-[#1C2321]/10">
+                      <button
+                        onClick={() => copyFormLink(form.id)}
+                        className="flex-1 px-3 py-2 bg-[#537D96]/10 text-[#537D96] text-xs hover:bg-[#537D96]/20 transition-colors flex items-center justify-center gap-1"
+                      >
+                        {copiedFormId === form.id ? (
+                          <>
+                            <CheckCircle className="w-3 h-3" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3" />
+                            Copy Link
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedForm(form.id);
+                          loadFormSubmissions(form.id);
+                        }}
+                        className="flex-1 px-3 py-2 bg-[#44A194]/10 text-[#44A194] text-xs hover:bg-[#44A194]/20 transition-colors flex items-center justify-center gap-1"
+                      >
+                        <Eye className="w-3 h-3" />
+                        View
+                      </button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleToggleFormStatus(form)}
+                        className={`flex-1 px-3 py-2 text-xs transition-colors flex items-center justify-center gap-1 ${
+                          form.is_active
+                            ? "bg-[#EC8F8D]/10 text-[#EC8F8D] hover:bg-[#EC8F8D]/20"
+                            : "bg-[#44A194]/10 text-[#44A194] hover:bg-[#44A194]/20"
+                        }`}
+                      >
+                        {form.is_active ? (
+                          <>
+                            <X className="w-3 h-3" />
+                            Deactivate
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="w-3 h-3" />
+                            Activate
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleEditForm(form)}
+                        className="flex-1 px-3 py-2 bg-[#1C2321]/10 text-[#1C2321] text-xs hover:bg-[#1C2321]/20 transition-colors flex items-center justify-center gap-1"
+                      >
+                        <Edit className="w-3 h-3" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteForm(form.id, form.form_name)}
+                        className="flex-1 px-3 py-2 bg-[#EC8F8D]/10 text-[#EC8F8D] text-xs hover:bg-[#EC8F8D]/20 transition-colors flex items-center justify-center gap-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Form Submissions Modal */}
+            {selectedForm && (
+              <div
+                className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+                onClick={() => setSelectedForm(null)}
+              >
+                <div
+                  className="bg-white max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <motion.div
-                    className="bg-[#1E1810] rounded-3xl p-8 max-w-6xl w-full max-h-[85vh] overflow-y-auto border border-white/10 shadow-2xl"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {/* Header */}
-                    <div className="flex flex-wrap items-center justify-between mb-8 border-b border-white/10 pb-4 gap-3">
-                      <h3 className="text-2xl font-bold text-white">📄 Form Submissions</h3>
-
-                      <div className="flex flex-wrap items-center gap-3">
-                        {/* Filter Dropdown */}
-                        <select
-                          value={filterType}
-                          onChange={(e) => setFilterType(e.target.value as "all" | "selected" | "not_selected")}
-                          className="bg-white/10 text-black px-3 py-2 rounded-md border border-white/20 focus:outline-none"
-                        >
-                          <option value="all">All</option>
-                          <option value="selected">Selected</option>
-                          <option value="not_selected">Not Selected</option>
-                        </select>
-
-                        {/* CSV Buttons */}
-                        <button
-                          onClick={() => downloadCSVForForm(selectedForm, "selected")}
-                          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-all"
-                        >
-                          <Download size={16} /> Selected CSV
-                        </button>
-
-                        <button
-                          onClick={() => downloadCSVForForm(selectedForm, "not_selected")}
-                          className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md transition-all"
-                        >
-                          <Download size={16} /> Not Selected CSV
-                        </button>
-
-
-                        <button
-                          onClick={() => setSelectedForm(null)}
-                          className="text-gray-400 hover:text-white text-xl transition-colors"
-                        >
-                          ✕
-                        </button>
-                      </div>
+                  <div className="p-6 border-b border-[#1C2321]/10 flex justify-between items-center">
+                    <h3 className="font-display text-xl font-light text-[#1C2321]">Form Submissions</h3>
+                    <div className="flex items-center gap-3">
+                      <select
+                        value={filterType}
+                        onChange={(e) => setFilterType(e.target.value as "all" | "selected" | "not_selected")}
+                        className="border border-[#1C2321]/10 px-3 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                      >
+                        <option value="all">All</option>
+                        <option value="selected">Selected</option>
+                        <option value="not_selected">Not Selected</option>
+                      </select>
+                      <button
+                        onClick={() => downloadCSVForForm(selectedForm, "selected")}
+                        className="px-3 py-2 bg-[#44A194] text-white text-xs hover:bg-[#38857a] transition-colors flex items-center gap-1"
+                      >
+                        <Download className="w-3 h-3" />
+                        Selected CSV
+                      </button>
+                      <button
+                        onClick={() => setSelectedForm(null)}
+                        className="text-[#8a8a82] hover:text-[#1C2321]"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
                     </div>
+                  </div>
 
-                    {/* Filtered Submissions */}
+                  <div className="p-6">
                     {formSubmissions.filter((sub) =>
                       filterType === "selected"
                         ? sub.is_selected
                         : filterType === "not_selected"
-                          ? !sub.is_selected
-                          : true
+                        ? !sub.is_selected
+                        : true
                     ).length > 0 ? (
-                      <div className="space-y-6">
+                      <div className="space-y-4">
                         {formSubmissions
                           .filter((sub) =>
                             filterType === "selected"
                               ? sub.is_selected
                               : filterType === "not_selected"
-                                ? !sub.is_selected
-                                : true
+                              ? !sub.is_selected
+                              : true
                           )
                           .map((submission, index) => (
-                            <motion.div
+                            <div
                               key={submission.id}
-                              className={`rounded-2xl p-6 border transition-all duration-300 ${submission.is_selected
-                                ? "bg-green-900/30 border-green-500/30"
-                                : "bg-white/5 border-white/10 hover:bg-white/10"
-                                }`}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
+                              className={`p-6 border ${
+                                submission.is_selected
+                                  ? "border-[#44A194]/30 bg-[#44A194]/5"
+                                  : "border-[#1C2321]/10 bg-white"
+                              }`}
                             >
-                              {/* Header */}
-                              <div className="flex items-center justify-between mb-4">
-                                <h4 className="text-lg font-semibold text-white">
-                                  Submission {index + 1}
-                                </h4>
-                                <span className="text-xs text-gray-400">
+                              <div className="flex justify-between mb-4">
+                                <h4 className="font-medium text-[#1C2321]">Submission {index + 1}</h4>
+                                <span className="text-xs text-[#8a8a82]">
                                   {new Date(submission.created_at).toLocaleString()}
                                 </span>
                               </div>
 
-                              {/* Candidate Info */}
                               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <Field label="Name" value={submission.name} />
                                 <Field label="Email" value={submission.email} />
@@ -3074,77 +2493,43 @@ export default function AdminPanel() {
                                 )}
                               </div>
 
-                              {/* Proposal */}
                               {submission.proposal_link && (
                                 <div className="mt-4">
-                                  <p className="text-gray-400 text-sm mb-1">Proposal:</p>
-                                  <p className="text-white break-words">{submission.proposal_link}</p>
+                                  <p className="text-[#8a8a82] text-xs mb-1">Proposal:</p>
+                                  <p className="text-sm text-[#1C2321]">{submission.proposal_link}</p>
                                 </div>
                               )}
 
-                              {/* Custom Responses */}
                               {submission.custom_responses &&
                                 Object.keys(submission.custom_responses).length > 0 && (
-                                  <div className="mt-5 border-t border-white/10 pt-4">
-                                    <p className="text-gray-400 text-sm mb-2">Custom Responses:</p>
+                                  <div className="mt-4 pt-4 border-t border-[#1C2321]/10">
+                                    <p className="text-[#8a8a82] text-xs mb-2">Custom Responses:</p>
                                     <div className="space-y-1">
                                       {Object.entries(submission.custom_responses).map(([key, value]) => (
-                                        <p key={key} className="text-white text-sm">
-                                          <span className="text-gray-400">{key}:</span>{" "}
-                                          {String(value)}
+                                        <p key={key} className="text-sm text-[#1C2321]">
+                                          <span className="text-[#8a8a82]">{key}:</span> {String(value)}
                                         </p>
                                       ))}
                                     </div>
                                   </div>
                                 )}
-
-                              {/* Selection Button */}
-                              <div className="mt-5 flex justify-between items-center border-t border-white/10 pt-4">
-                                <span
-                                  className={`text-sm ${submission.is_selected
-                                    ? "text-green-400"
-                                    : "text-gray-400"
-                                    }`}
-                                >
-                                  {submission.is_selected
-                                    ? `✅ Selected on ${submission.selection_date ? new Date(submission.selection_date).toLocaleDateString() : "Unknown date"}`
-                                    : "❌ Not Selected"}
-                                </span>
-
-                                {/* <button
-                                  onClick={() =>
-                                    toggleCandidateSelection(
-                                      submission.id,
-                                      !submission.is_selected
-                                    )
-                                  }
-                                  className={`px-4 py-2 rounded-md font-medium transition-all ${submission.is_selected
-                                    ? "bg-red-600 hover:bg-red-700 text-white"
-                                    : "bg-green-600 hover:bg-green-700 text-white"
-                                    }`}
-                                >
-                                  {submission.is_selected ? "Unselect" : "Select Candidate"}
-                                </button> */}
-                              </div>
-                            </motion.div>
+                            </div>
                           ))}
                       </div>
                     ) : (
-                      <div className="text-center py-10 text-gray-400 text-sm">
-                        No submissions found for this filter.
+                      <div className="text-center py-12">
+                        <FileText className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
+                        <p className="text-[#8a8a82]">No submissions found for this filter.</p>
                       </div>
                     )}
-                  </motion.div>
-                </motion.div>
-              )}
-
-
-            </motion.div>
-          </section>
-        </>
-      )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
       <Toaster />
     </div>
-  )
+  );
 }
-
