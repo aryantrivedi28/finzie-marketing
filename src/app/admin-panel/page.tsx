@@ -2,8 +2,8 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
-import { motion, type Variants } from "framer-motion";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { motion, type Variants, AnimatePresence } from "framer-motion";
 import {
   Search,
   Download,
@@ -50,6 +50,11 @@ import {
   Shield,
   Zap,
   HelpCircle,
+  Menu,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  Check,
 } from "lucide-react";
 import { supabase } from "../../lib/SupabaseAuthClient";
 import { supabaseAdmin } from "../../lib/supabase-admin";
@@ -60,13 +65,13 @@ import MultiSelectFilter from "../../components/admin-panel/MultiSelectFilter";
 // Animation variants
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { 
-      duration: 0.6, 
-      ease: [0.6, -0.05, 0.01, 0.99] 
-    } 
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.6, -0.05, 0.01, 0.99]
+    }
   },
 };
 
@@ -83,15 +88,16 @@ const staggerContainer: Variants = {
 
 const scaleIn: Variants = {
   hidden: { opacity: 0, scale: 0.9 },
-  visible: { 
-    opacity: 1, 
-    scale: 1, 
-    transition: { 
-      duration: 0.5 
-    } 
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.5
+    }
   },
 };
 
+// Types
 type Freelancer = {
   id: string
   created_at: string
@@ -183,6 +189,11 @@ type CategoryOptions = {
     tools: Record<string, string[]>;
   };
 };
+
+// Constants
+const MOBILE_BREAKPOINT = 768;
+const INITIAL_FETCH_LIMIT = 50;
+const SCROLL_THRESHOLD = 200;
 
 const categoryOptions: CategoryOptions = {
   Development: {
@@ -356,32 +367,176 @@ const categoryOptions: CategoryOptions = {
   },
 }
 
-type SelectFilterOption = {
-  label: string;
-  value: string;
-};
+const mainCategoryOptions = ["Tech", "Design", "Non-Tech"];
 
-const mainCategoryOptions = [
-  "Tech",
-  "Design",
-  "Non-Tech",
+const passingYearOptions: string[] = [
+  "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030",
 ];
 
-type SelectFilterProps = {
+const experienceYearOptions: string[] = ["0", "1", "2", "3", "5"];
+
+const techStackOptions: string[] = [
+  "React", "Vue", "Angular", "Node.js", "Python", "Java", "PHP", "Flutter",
+  "React Native", "C++", "C#", "Rust", "Go",
+];
+
+const toolsOptions: string[] = [
+  "Git", "Docker", "Kubernetes", "VS Code", "Postman", "Figma", "Firebase",
+  "Jira", "AWS", "GCP", "Vercel", "Netlify",
+];
+
+const categoryOptionss: Record<string, string[]> = {
+  "Software Development": [
+    "Full Stack Development", "Full-Stack Development", "Fullstack Development",
+    "Frontend Development", "Front-End Development", "Backend Development",
+    "Web Development", "MERN Stack Development", "Machine Learning",
+    "Machine Learning and AI", "AI and Machine Learning", "AI Development",
+    "Data Science", "Data Analytics", "Data Science & Development",
+    "Embedded Systems", "Computer Vision", "MLOps and Cloud",
+    "Quality Assurance", "Java Development", "DevOps", "Not Mentioned",
+  ],
+  "Artificial Intelligence": ["Machine Learning", "AI Engineering"],
+  "Marketing & Content": ["Digital Marketing", "Performance Marketing", "Media Buying", "PPC Management"],
+  "E-commerce Marketing": ["Digital Marketing"],
+  "Video Editing": [
+    "Video Production", "Content Creation", "Motion Graphics", "Social Media Management",
+    "Visual Effects", "Editing", "Film Production", "Not Mentioned",
+  ],
+  "Content Creation": ["Video Production", "Video Editing"],
+  "Design": [
+    "Graphic Design", "Branding", "UI/UX Design", "Digital Art",
+    "Portfolio Presentation", "Illustration", "Design",
+  ],
+  "Graphic Design": ["Visual Design", "Portfolio Design", "Visual Arts", "Illustration", "Design", "Not Mentioned"],
+  "Creative": ["Social Media Management"],
+  "DevOps": ["Cloud Automation"],
+  "Data Engineering": ["Data Pipeline Design"],
+  "Photography": ["Not Mentioned"],
+  "Video Production": ["Not Mentioned"],
+  "Not Mentioned": ["Not Mentioned"],
+};
+
+const ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((r) => ({
+  label: r.toString(),
+  value: r.toString(),
+}));
+
+const availableStandardFields = [
+  { key: "name", label: "Full Name" },
+  { key: "email", label: "Email Address" },
+  { key: "phone", label: "Phone Number" },
+  { key: "portfolio_link", label: "Portfolio URL" },
+  { key: "github_link", label: "GitHub URL" },
+  { key: "resume_link", label: "Resume URL" },
+  { key: "years_experience", label: "Years of Experience" },
+  { key: "proposal_link", label: "Proposal/Cover Letter" },
+];
+
+// Components
+const LoadingSpinner = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
+  const sizeClasses = {
+    sm: "w-4 h-4 border-2",
+    md: "w-8 h-8 border-3",
+    lg: "w-12 h-12 border-4",
+  };
+
+  return (
+    <div className={`${sizeClasses[size]} border-[#44A194] border-t-transparent rounded-full animate-spin`} />
+  );
+};
+
+const StatCard = ({ value, label }: { value: number; label: string }) => (
+  <div className="bg-white p-4 sm:p-6">
+    <div className="font-display text-2xl sm:text-4xl font-light text-[#1C2321]">{value}</div>
+    <div className="text-[10px] sm:text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-1 sm:mt-2">
+      {label}
+    </div>
+  </div>
+);
+
+const TabButton = ({
+  active,
+  onClick,
+  children
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) => (
+  <button
+    onClick={onClick}
+    className={`pb-3 text-[10px] sm:text-xs tracking-[0.16em] uppercase transition-colors relative ${active
+      ? "text-[#44A194] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#44A194]"
+      : "text-[#8a8a82] hover:text-[#1C2321]"
+      }`}
+  >
+    {children}
+  </button>
+);
+
+const FilterSection = ({
+  title,
+  icon: Icon,
+  children,
+  defaultOpen = true
+}: {
+  title: string;
+  icon: React.ElementType;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border border-[#1C2321]/10 bg-white p-4 sm:p-6">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full text-left"
+      >
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#44A194]" />
+          <h2 className="font-display text-base sm:text-xl font-light text-[#1C2321]">{title}</h2>
+        </div>
+        {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="pt-4 sm:pt-6">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const SelectFilter = ({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder
+}: {
   label: string;
   value: string | undefined | number;
   onChange: (value: string) => void;
-  options: (string | SelectFilterOption)[];
+  options: (string | { label: string; value: string })[];
   placeholder?: string;
-};
-
-const SelectFilter = ({ label, value, onChange, options, placeholder }: SelectFilterProps) => (
-  <div className="space-y-2">
-    <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82]">{label}</label>
+}) => (
+  <div className="space-y-1 sm:space-y-2">
+    <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82]">
+      {label}
+    </label>
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] bg-white"
+      className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] bg-white"
     >
       <option value="">{placeholder || `All ${label}`}</option>
       {options.map((opt) => {
@@ -397,163 +552,64 @@ const SelectFilter = ({ label, value, onChange, options, placeholder }: SelectFi
   </div>
 );
 
-// 🎓 Passing Year options
-const passingYearOptions: string[] = [
-  "2020",
-  "2021",
-  "2022",
-  "2023",
-  "2024",
-  "2025",
-  "2026",
-  "2027",
-  "2028",
-  "2029",
-  "2030",
-];
+const SearchInput = ({
+  value,
+  onChange,
+  placeholder
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+}) => (
+  <div className="relative">
+    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#8a8a82]" />
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full border border-[#1C2321]/10 pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+    />
+  </div>
+);
 
-// 🧑‍💻 Experience Year options
-const experienceYearOptions: string[] = [
-  "0",
-  "1",
-  "2",
-  "3",
-  "5",
-];
+const Field = ({ label, value, highlight = false }: { label: string; value: string | number; highlight?: boolean }) => (
+  <div>
+    <p className="text-[#8a8a82] text-[10px] sm:text-xs mb-1">{label}:</p>
+    <p className={`text-xs sm:text-sm text-[#1C2321] ${highlight ? "font-semibold text-[#44A194]" : ""}`}>
+      {value}
+    </p>
+  </div>
+);
 
-// 🧰 Tech Stack options
-const techStackOptions: string[] = [
-  "React",
-  "Vue",
-  "Angular",
-  "Node.js",
-  "Python",
-  "Java",
-  "PHP",
-  "Flutter",
-  "React Native",
-  "C++",
-  "C#",
-  "Rust",
-  "Go",
-];
+const FieldLink = ({ label, href }: { label: string; href: string }) => (
+  <div>
+    <p className="text-[#8a8a82] text-[10px] sm:text-xs mb-1">{label}:</p>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-[#44A194] hover:text-[#38857a] transition-colors break-all text-xs sm:text-sm"
+    >
+      View {label}
+    </a>
+  </div>
+);
 
-// 🛠 Tools options
-const toolsOptions: string[] = [
-  "Git",
-  "Docker",
-  "Kubernetes",
-  "VS Code",
-  "Postman",
-  "Figma",
-  "Firebase",
-  "Jira",
-  "AWS",
-  "GCP",
-  "Vercel",
-  "Netlify",
-];
-
-const categoryOptionss: Record<string, string[]> = {
-  "Software Development": [
-    "Full Stack Development",
-    "Full-Stack Development",
-    "Fullstack Development",
-    "Frontend Development",
-    "Front-End Development",
-    "Backend Development",
-    "Web Development",
-    "MERN Stack Development",
-    "Machine Learning",
-    "Machine Learning and AI",
-    "AI and Machine Learning",
-    "AI Development",
-    "Data Science",
-    "Data Analytics",
-    "Data Science & Development",
-    "Embedded Systems",
-    "Computer Vision",
-    "MLOps and Cloud",
-    "Quality Assurance",
-    "Java Development",
-    "DevOps",
-    "Not Mentioned",
-  ],
-  "Artificial Intelligence": [
-    "Machine Learning",
-    "AI Engineering",
-  ],
-  "Marketing & Content": [
-    "Digital Marketing",
-    "Performance Marketing",
-    "Media Buying",
-    "PPC Management",
-  ],
-  "E-commerce Marketing": [
-    "Digital Marketing",
-  ],
-  "Video Editing": [
-    "Video Production",
-    "Content Creation",
-    "Motion Graphics",
-    "Social Media Management",
-    "Visual Effects",
-    "Editing",
-    "Film Production",
-    "Not Mentioned",
-  ],
-  "Content Creation": [
-    "Video Production",
-    "Video Editing",
-  ],
-  "Design": [
-    "Graphic Design",
-    "Branding",
-    "UI/UX Design",
-    "Digital Art",
-    "Portfolio Presentation",
-    "Illustration",
-    "Design",
-  ],
-  "Graphic Design": [
-    "Visual Design",
-    "Portfolio Design",
-    "Visual Arts",
-    "Illustration",
-    "Design",
-    "Not Mentioned",
-  ],
-  "Creative": [
-    "Social Media Management",
-  ],
-  "DevOps": [
-    "Cloud Automation",
-  ],
-  "Data Engineering": [
-    "Data Pipeline Design",
-  ],
-  "Photography": [
-    "Not Mentioned",
-  ],
-  "Video Production": [
-    "Not Mentioned",
-  ],
-  "Not Mentioned": ["Not Mentioned"],
-};
-
-// ⭐ Rating options
-const ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((r) => ({
-  label: r.toString(),
-  value: r.toString(),
-}))
-
+// Main Component
 export default function AdminPanel() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [activeTab, setActiveTab] = useState<"freelancers" | "forms">(
     (searchParams.get("tab") as "freelancers" | "forms") || "freelancers"
   );
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   // Freelancer search state
   const [filters, setFilters] = useState<SearchFilters>({
@@ -643,16 +699,31 @@ export default function AdminPanel() {
 
   const [filterType, setFilterType] = useState<"all" | "selected" | "not_selected">("all");
 
+  // Responsive detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Mount effect
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Tab change effect
   useEffect(() => {
     if (searchParams.get("tab") === "freelancers" || searchParams.get("tab") === "forms") {
       setActiveTab(searchParams.get("tab") as "freelancers" | "forms");
     }
   }, [searchParams]);
 
+  // Load data on mount
   useEffect(() => {
     if (mounted && typeof window !== "undefined") {
       if (activeTab === "freelancers") {
@@ -662,6 +733,37 @@ export default function AdminPanel() {
       }
     }
   }, [mounted, activeTab]);
+
+  // Infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          loadMoreFreelancers();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore, loading, freelancers.length]);
+
+  // Memoized filtered freelancers
+  const filteredFreelancers = useMemo(() => {
+    return freelancers;
+  }, [freelancers]);
+
+  // Memoized stats
+  const stats = useMemo(() => ({
+    totalFreelancers: freelancers.length,
+    totalForms: forms.length,
+    totalSubmissions: forms.reduce((sum, f) => sum + (f.submission_count || 0), 0),
+    activeAgreements: 0,
+  }), [freelancers.length, forms]);
 
   const toggleCandidateSelection = async (submissionId: string, isSelected: boolean) => {
     try {
@@ -694,11 +796,11 @@ export default function AdminPanel() {
           prev.map((sub) =>
             sub.id === submissionId
               ? {
-                  ...sub,
-                  is_selected: isSelected,
-                  selection_date: new Date().toISOString(),
-                  selected_by: result.data?.[0]?.selected_by ?? null,
-                }
+                ...sub,
+                is_selected: isSelected,
+                selection_date: new Date().toISOString(),
+                selected_by: result.data?.[0]?.selected_by ?? null,
+              }
               : sub
           )
         );
@@ -753,34 +855,45 @@ export default function AdminPanel() {
     }
   };
 
-  const availableStandardFields = [
-    { key: "name", label: "Full Name" },
-    { key: "email", label: "Email Address" },
-    { key: "phone", label: "Phone Number" },
-    { key: "portfolio_link", label: "Portfolio URL" },
-    { key: "github_link", label: "GitHub URL" },
-    { key: "resume_link", label: "Resume URL" },
-    { key: "years_experience", label: "Years of Experience" },
-    { key: "proposal_link", label: "Proposal/Cover Letter" },
-  ];
+  const validateUniqueIds = (data: any[], type: string) => {
+    const ids = data.map(item => item.id);
+    const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-12 h-12 border-4 border-[#44A194] border-t-transparent rounded-full"
-        />
-      </div>
-    );
-  }
+    if (duplicates.length > 0) {
+      console.warn(`Found ${duplicates.length} duplicate ${type} IDs:`, [...new Set(duplicates)]);
 
-  const handleSearch = async () => {
+      // Log the duplicate records for debugging
+      const duplicateRecords = data.filter(item =>
+        duplicates.includes(item.id)
+      );
+      console.warn('Duplicate records:', duplicateRecords);
+    }
+
+    return [...new Set(duplicates)];
+  };
+
+  // In your loadAllFreelancers and loadMoreFreelancers functions
+
+  // Add this utility function to remove duplicates
+  const removeDuplicates = (array: Freelancer[]) => {
+    const seen = new Set();
+    return array.filter(item => {
+      const duplicate = seen.has(item.id);
+      seen.add(item.id);
+      return !duplicate;
+    });
+  };
+
+  // Update your loadAllFreelancers function
+  const loadAllFreelancers = async () => {
     if (typeof window === "undefined") return;
 
     setLoading(true);
     setError(null);
+    setOffset(0);
+    setHasMore(true);
+
+
 
     try {
       if (!supabase) {
@@ -790,6 +903,47 @@ export default function AdminPanel() {
         return;
       }
 
+      const { data, error, count } = await supabase
+        .from("all-freelancer")
+        .select("*", { count: "exact" })
+        .range(0, INITIAL_FETCH_LIMIT - 1)
+        .order("created_at", { ascending: false });
+
+      if (data) {
+        validateUniqueIds(data, 'freelancer');
+        setFreelancers(data || []);
+      }
+
+      if (error) {
+        console.error("Error loading freelancers:", error);
+        setError("Error loading freelancers: " + error.message);
+        setFreelancers([]);
+      } else {
+        // Remove duplicates based on id
+        const uniqueData = removeDuplicates(data || []);
+        setFreelancers(uniqueData);
+        setHasMore((count || 0) > INITIAL_FETCH_LIMIT);
+        setOffset(INITIAL_FETCH_LIMIT);
+        if (!data || data.length === 0) {
+          setError("No freelancers found in the database");
+        }
+      }
+    } catch (err: any) {
+      console.error("Unexpected error:", err);
+      setError("Unexpected error occurred: " + (err.message || "Unknown error"));
+      setFreelancers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update loadMoreFreelancers
+  const loadMoreFreelancers = async () => {
+    if (!hasMore || loadingMore || loading) return;
+
+    setLoadingMore(true);
+
+    try {
       let query = supabase.from("all-freelancer").select("*");
 
       if (filters.category) {
@@ -831,7 +985,90 @@ export default function AdminPanel() {
       }
 
       const { data, error } = await query
-        .range(0, 2000)
+        .range(offset, offset + INITIAL_FETCH_LIMIT - 1)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error loading more freelancers:", error);
+      } else {
+        if (data && data.length > 0) {
+          // Remove duplicates when adding new data
+          const uniqueNewData = data.filter(
+            newItem => !freelancers.some(existing => existing.id === newItem.id)
+          );
+          setFreelancers((prev) => [...prev, ...uniqueNewData]);
+          setOffset((prev) => prev + data.length);
+          setHasMore(data.length === INITIAL_FETCH_LIMIT);
+        } else {
+          setHasMore(false);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading more freelancers:", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  // Update handleSearch function
+  const handleSearch = async () => {
+    if (typeof window === "undefined") return;
+
+    setLoading(true);
+    setError(null);
+    setOffset(0);
+    setHasMore(true);
+
+    try {
+      if (!supabase) {
+        setError("Database client is not initialized.");
+        setFreelancers([]);
+        setLoading(false);
+        return;
+      }
+
+      let query = supabase.from("all-freelancer").select("*", { count: "exact" });
+
+      if (filters.category) {
+        query = query.eq("category", filters.category);
+      }
+
+      if (filters.main_category) {
+        query = query.eq("main_category", filters.main_category);
+      }
+
+      if (filters.subcategory) {
+        query = query.contains("sub_category", [filters.subcategory]);
+      }
+
+      if (filters.passing_year) {
+        query = query.eq("passing_year", filters.passing_year);
+      }
+
+      if (filters.years_experience) {
+        query = query.eq("years_experience", filters.years_experience);
+      }
+
+      if (filters.tech_stack.length > 0) {
+        query = query.contains("tech_stack", filters.tech_stack);
+      }
+
+      if (filters.tools.length > 0) {
+        query = query.contains("tools", filters.tools);
+      }
+
+      if (filters.profile_rating && filters.profile_rating !== "All") {
+        query = query.eq("profile_rating", Number(filters.profile_rating));
+      }
+
+      if (filters.search_text.trim()) {
+        query = query.or(
+          `full_name.ilike.%${filters.search_text}%,email.ilike.%${filters.search_text}%`
+        );
+      }
+
+      const { data, error, count } = await query
+        .range(0, INITIAL_FETCH_LIMIT - 1)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -839,7 +1076,11 @@ export default function AdminPanel() {
         setError("Error fetching data from database: " + error.message);
         setFreelancers([]);
       } else {
-        setFreelancers(data || []);
+        // Remove duplicates
+        const uniqueData = removeDuplicates(data || []);
+        setFreelancers(uniqueData);
+        setHasMore((count || 0) > INITIAL_FETCH_LIMIT);
+        setOffset(INITIAL_FETCH_LIMIT);
         if (!data || data.length === 0) setError("No freelancers found matching your criteria");
       }
     } catch (err: any) {
@@ -850,51 +1091,6 @@ export default function AdminPanel() {
       setLoading(false);
     }
   };
-
-  const handleNavigation = (path: string) => {
-    setDashboard(path);
-    router.push(path);
-  };
-
-  const loadAllFreelancers = async () => {
-    if (typeof window === "undefined") return;
-
-    setLoading(true);
-    setError(null);
-    try {
-      if (!supabase) {
-        setError("Database client is not initialized.");
-        setFreelancers([]);
-        setLoading(false);
-        return;
-      }
-      const { data, error } = await supabase
-        .from("all-freelancer")
-        .select("*")
-        .limit(10000)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error loading freelancers:", error);
-        setError("Error loading freelancers: " + error.message);
-        setFreelancers([]);
-      } else {
-        if (data && data.length > 0) {
-          setFreelancers(data);
-        } else {
-          setFreelancers([]);
-          setError("No freelancers found in the database");
-        }
-      }
-    } catch (err: any) {
-      console.error("Unexpected error:", err);
-      setError("Unexpected error occurred: " + (err.message || "Unknown error"));
-      setFreelancers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const resetFilters = () => {
     setFilters({
       category: "",
@@ -910,7 +1106,7 @@ export default function AdminPanel() {
     });
   };
 
-  const downloadCSV = () => {
+  const downloadCSV = useCallback(() => {
     if (freelancers.length === 0) {
       toast.error("No data to download.");
       return;
@@ -931,7 +1127,9 @@ export default function AdminPanel() {
       "Resume",
       "Created At",
     ];
+
     const rows = [headers.join(",")];
+
     freelancers.forEach((f) => {
       const row = [
         `"${f.full_name || ""}"`,
@@ -950,16 +1148,17 @@ export default function AdminPanel() {
       ];
       rows.push(row.join(","));
     });
+
     const blob = new Blob([rows.join("\n")], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "freelancers.csv";
+    a.download = `freelancers_${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
+  }, [freelancers]);
 
   const handleCategoryChange = (category: string) => {
     if (category === "other") {
@@ -1025,10 +1224,14 @@ export default function AdminPanel() {
     if (value === "other") {
       setShowOtherTools(true);
     } else {
-      setSelectedTools((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
+      setSelectedTools((prev) =>
+        prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
+      );
       setNewForm((prev) => ({
         ...prev,
-        tools: prev.tools.includes(value) ? prev.tools.filter((item) => item !== value) : [...prev.tools, value],
+        tools: prev.tools.includes(value)
+          ? prev.tools.filter((item) => item !== value)
+          : [...prev.tools, value],
       }));
     }
   };
@@ -1082,11 +1285,13 @@ export default function AdminPanel() {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Failed to create form.");
 
+      toast.success("Form created successfully!");
       setForms((prev) => [{ ...result.data, submission_count: 0 }, ...prev]);
       resetFormFields();
       await loadForms();
     } catch (err: any) {
       setError(err.message);
+      toast.error(err.message);
     } finally {
       setCreateFormLoading(false);
     }
@@ -1211,7 +1416,7 @@ export default function AdminPanel() {
 
   const downloadCSVForForm = (formId: string, filter: "all" | "selected" | "not_selected" = "all") => {
     if (!formSubmissions.length) {
-      alert("No submissions available to download");
+      toast.error("No submissions available to download");
       return;
     }
 
@@ -1219,12 +1424,12 @@ export default function AdminPanel() {
       filter === "selected"
         ? sub.is_selected
         : filter === "not_selected"
-        ? !sub.is_selected
-        : true
+          ? !sub.is_selected
+          : true
     );
 
     if (!filteredSubmissions.length) {
-      alert(`No ${filter} submissions to download`);
+      toast.error(`No ${filter} submissions to download`);
       return;
     }
 
@@ -1275,7 +1480,7 @@ export default function AdminPanel() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `form_${formId}_${filter}_submissions.csv`;
+    link.download = `form_${formId}_${filter}_submissions_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -1284,6 +1489,7 @@ export default function AdminPanel() {
     const url = `${window.location.origin}/form/${formId}`;
     await navigator.clipboard.writeText(url);
     setCopiedFormId(formId);
+    toast.success("Form link copied to clipboard!");
     setTimeout(() => setCopiedFormId(null), 2000);
   };
 
@@ -1321,9 +1527,7 @@ export default function AdminPanel() {
   };
 
   const handleDeleteForm = async (formId: string, formName: string) => {
-    if (
-      !confirm(`Are you sure you want to delete "${formName}"? This will also delete all submissions for this form.`)
-    ) {
+    if (!confirm(`Are you sure you want to delete "${formName}"? This will also delete all submissions for this form.`)) {
       return;
     }
 
@@ -1341,6 +1545,7 @@ export default function AdminPanel() {
         throw new Error(data.error || "Failed to delete form");
       }
 
+      toast.success("Form deleted successfully");
       setForms((prev) => prev.filter((form) => form.id !== formId));
 
       if (selectedForm === formId) {
@@ -1348,6 +1553,7 @@ export default function AdminPanel() {
       }
     } catch (err: any) {
       setError("Error deleting form: " + err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -1385,9 +1591,11 @@ export default function AdminPanel() {
         throw new Error(data.error || "Failed to update form status");
       }
 
+      toast.success(`Form ${form.is_active ? "deactivated" : "activated"} successfully`);
       setForms((prev) => prev.map((f) => (f.id === form.id ? { ...f, is_active: !f.is_active } : f)));
     } catch (err: any) {
       setError("Error updating form status: " + err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -1457,6 +1665,7 @@ export default function AdminPanel() {
         throw new Error(data.error || "Failed to update form");
       }
 
+      toast.success("Form updated successfully");
       setForms((prev) =>
         prev.map((f) => (f.id === editingForm.id ? { ...data.form, submission_count: f.submission_count } : f))
       );
@@ -1483,6 +1692,7 @@ export default function AdminPanel() {
       setSelectedTools([]);
     } catch (err: any) {
       setError("Error updating form: " + err.message);
+      toast.error(err.message);
     } finally {
       setCreateFormLoading(false);
     }
@@ -1580,268 +1790,351 @@ export default function AdminPanel() {
     router.push("/admin-form-creation/dashboard");
   };
 
-  function Field({ label, value, highlight = false }: { label: string; value: string | number; highlight?: boolean }) {
+  if (!mounted) {
     return (
-      <div>
-        <p className="text-[#8a8a82] text-xs mb-1">{label}:</p>
-        <p className={`text-[#1C2321] ${highlight ? "font-semibold text-[#44A194]" : ""}`}>{value}</p>
-      </div>
-    );
-  }
-
-  function FieldLink({ label, href }: { label: string; href: string }) {
-    return (
-      <div>
-        <p className="text-[#8a8a82] text-xs mb-1">{label}:</p>
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[#44A194] hover:text-[#38857a] transition-colors break-all text-sm"
-        >
-          View {label}
-        </a>
+      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#F4F0E4]">
+      {/* Mobile Filter Button */}
+      {isMobile && activeTab === "freelancers" && (
+        <button
+          onClick={() => setShowMobileFilters(!showMobileFilters)}
+          className="fixed bottom-4 right-4 z-50 p-3 bg-[#44A194] text-white rounded-full shadow-lg"
+        >
+          <Filter className="w-5 h-5" />
+        </button>
+      )}
+
       {/* Top Bar */}
-      <div className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-8 py-4 flex items-center">
-        <div className="flex-1">
-          <h1 className="font-display text-2xl font-light text-[#1C2321]">
+      <div className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center">
+        <div className="flex-1 min-w-0">
+          <h1 className="font-display text-lg sm:text-xl md:text-2xl font-light text-[#1C2321] truncate">
             {activeTab === "freelancers" ? "Freelancer Database" : "Form Management"}
           </h1>
-          <p className="text-sm text-[#8a8a82] mt-1 tracking-[0.04em]">
-            {activeTab === "freelancers" 
+          <p className="text-xs sm:text-sm text-[#8a8a82] mt-0.5 sm:mt-1 tracking-[0.04em] truncate">
+            {activeTab === "freelancers"
               ? "Manage and search through your freelancer pool"
               : "Create and manage gig forms"}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 ml-2 sm:ml-4">
           {activeTab === "freelancers" ? (
             <button
               onClick={downloadCSV}
-              className="px-4 py-2 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors flex items-center gap-2"
+              disabled={freelancers.length === 0}
+              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#44A194] text-white text-[10px] sm:text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-1 sm:gap-2"
             >
-              <Download className="w-4 h-4" /> Export CSV
+              <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Export</span>
             </button>
           ) : (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="px-4 py-2 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors flex items-center gap-2"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#44A194] text-white text-[10px] sm:text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors flex items-center gap-1 sm:gap-2"
             >
-              <Plus className="w-4 h-4" /> New Form
+              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">New</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-8">
+      <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-[2px] bg-[#1C2321]/10 mb-8">
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">{freelancers.length}</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Freelancers</div>
-          </div>
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">{forms.length}</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Active Forms</div>
-          </div>
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">
-              {forms.reduce((sum, f) => sum + (f.submission_count || 0), 0)}
-            </div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Submissions</div>
-          </div>
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">0</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Active Agreements</div>
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-[1px] sm:gap-[2px] bg-[#1C2321]/10 mb-6 sm:mb-8">
+          <StatCard value={stats.totalFreelancers} label="Total Freelancers" />
+          <StatCard value={stats.totalForms} label="Active Forms" />
+          <StatCard value={stats.totalSubmissions} label="Total Submissions" />
+          <StatCard value={stats.activeAgreements} label="Active Agreements" />
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-8 border-b border-[#1C2321]/10 mb-8">
-          <button
+        <div className="flex gap-4 sm:gap-8 border-b border-[#1C2321]/10 mb-6 sm:mb-8 overflow-x-auto scrollbar-hide">
+          <TabButton
+            active={activeTab === "freelancers"}
             onClick={() => {
               setActiveTab("freelancers");
               router.push("/admin-panel?tab=freelancers");
             }}
-            className={`pb-3 text-xs tracking-[0.16em] uppercase transition-colors relative ${
-              activeTab === "freelancers" 
-                ? "text-[#44A194] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#44A194]" 
-                : "text-[#8a8a82] hover:text-[#1C2321]"
-            }`}
           >
             Freelancer Database
-          </button>
-          <button
+          </TabButton>
+          <TabButton
+            active={activeTab === "forms"}
             onClick={() => {
               setActiveTab("forms");
               router.push("/admin-panel?tab=forms");
             }}
-            className={`pb-3 text-xs tracking-[0.16em] uppercase transition-colors relative ${
-              activeTab === "forms" 
-                ? "text-[#44A194] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#44A194]" 
-                : "text-[#8a8a82] hover:text-[#1C2321]"
-            }`}
           >
             Form Management
-          </button>
+          </TabButton>
         </div>
 
         {/* Freelancer Tab Content */}
         {activeTab === "freelancers" ? (
           <>
-            {/* Search Filters */}
-            <div className="bg-white border border-[#1C2321]/10 p-6 mb-8">
-              <div className="flex items-center gap-3 mb-6">
-                <Filter className="w-5 h-5 text-[#44A194]" />
-                <h2 className="font-display text-xl font-light text-[#1C2321]">Search Filters</h2>
-              </div>
+            {/* Search Filters - Desktop */}
+            {!isMobile && (
+              <FilterSection title="Search Filters" icon={Filter}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                  <SelectFilter
+                    label="Main Category"
+                    value={filters.main_category || ""}
+                    onChange={(v) => setFilters({ ...filters, main_category: v })}
+                    options={mainCategoryOptions}
+                    placeholder="Main Categories"
+                  />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <SelectFilter
-                  label="Main Category"
-                  value={filters.main_category || ""}
-                  onChange={(v) => setFilters({ ...filters, main_category: v })}
-                  options={mainCategoryOptions}
-                  placeholder="Main Categories"
-                />
+                  <SelectFilter
+                    label="Category"
+                    value={filters.category || ""}
+                    onChange={(v) => setFilters({ ...filters, category: v })}
+                    options={Object.keys(categoryOptionss)}
+                    placeholder="Categories"
+                  />
 
-                <SelectFilter
-                  label="Category"
-                  value={filters.category || ""}
-                  onChange={(v) => setFilters({ ...filters, category: v })}
-                  options={Object.keys(categoryOptionss)}
-                  placeholder="Categories"
-                />
+                  <SelectFilter
+                    label="Subcategory"
+                    value={filters.subcategory || ""}
+                    onChange={(v) => setFilters({ ...filters, subcategory: v })}
+                    options={uniqueSubcategoriess}
+                    placeholder="Subcategories"
+                  />
 
-                <SelectFilter
-                  label="Subcategory"
-                  value={filters.subcategory || ""}
-                  onChange={(v) => setFilters({ ...filters, subcategory: v })}
-                  options={uniqueSubcategoriess}
-                  placeholder="Subcategories"
-                />
+                  <SelectFilter
+                    label="Passing Year"
+                    value={filters.passing_year || ""}
+                    onChange={(v) => setFilters({ ...filters, passing_year: v })}
+                    options={passingYearOptions}
+                    placeholder="Passout Years"
+                  />
 
-                <SelectFilter
-                  label="Passing Year"
-                  value={filters.passing_year || ""}
-                  onChange={(v) => setFilters({ ...filters, passing_year: v })}
-                  options={passingYearOptions}
-                  placeholder="Passout Years"
-                />
+                  <SelectFilter
+                    label="Years of Experience"
+                    value={filters.years_experience || ""}
+                    onChange={(v) => setFilters({ ...filters, years_experience: v })}
+                    options={experienceYearOptions}
+                    placeholder="Experience Levels"
+                  />
 
-                <SelectFilter
-                  label="Years of Experience"
-                  value={filters.years_experience || ""}
-                  onChange={(v) => setFilters({ ...filters, years_experience: v })}
-                  options={experienceYearOptions}
-                  placeholder="Experience Levels"
-                />
+                  <MultiSelectFilter
+                    label="Tech Stack"
+                    value={filters.tech_stack}
+                    onChange={(vals) => setFilters({ ...filters, tech_stack: vals })}
+                    options={techStackOptions}
+                  />
 
-                <MultiSelectFilter
-                  label="Tech Stack"
-                  value={filters.tech_stack}
-                  onChange={(vals) => setFilters({ ...filters, tech_stack: vals })}
-                  options={techStackOptions}
-                />
+                  <MultiSelectFilter
+                    label="Tools"
+                    value={filters.tools}
+                    onChange={(vals) => setFilters({ ...filters, tools: vals })}
+                    options={toolsOptions}
+                  />
 
-                <MultiSelectFilter
-                  label="Tools"
-                  value={filters.tools}
-                  onChange={(vals) => setFilters({ ...filters, tools: vals })}
-                  options={toolsOptions}
-                />
+                  <SelectFilter
+                    label="Profile Rating"
+                    value={filters.profile_rating || ""}
+                    onChange={(v) => setFilters({ ...filters, profile_rating: v })}
+                    options={ratingOptions}
+                    placeholder="All Ratings"
+                  />
+                </div>
 
-                <SelectFilter
-                  label="Profile Rating"
-                  value={filters.profile_rating || ""}
-                  onChange={(v) => setFilters({ ...filters, profile_rating: v })}
-                  options={ratingOptions}
-                  placeholder="All Ratings"
-                />
-              </div>
+                <div className="mb-4 sm:mb-6">
+                  <SearchInput
+                    value={filters.search_text}
+                    onChange={(v) => setFilters({ ...filters, search_text: v })}
+                    placeholder="Search by name or email..."
+                  />
+                </div>
 
-              <div className="mb-6">
-                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Search</label>
-                <input
-                  type="text"
-                  value={filters.search_text}
-                  onChange={(e) => setFilters({ ...filters, search_text: e.target.value })}
-                  placeholder="Search by name or email..."
-                  className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
-                />
-              </div>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-[#1C2321]/10">
+                  <button
+                    onClick={handleSearch}
+                    disabled={loading}
+                    className="flex-1 px-4 sm:px-6 py-2 sm:py-3 bg-[#44A194] text-white text-[10px] sm:text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <LoadingSpinner size="sm" />
+                        <span>Searching...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Search className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span>Search Freelancers</span>
+                      </>
+                    )}
+                  </button>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-[#1C2321]/10">
-                <button
-                  onClick={handleSearch}
-                  disabled={loading}
-                  className="flex-1 px-6 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  <button
+                    onClick={resetFilters}
+                    className="px-4 sm:px-6 py-2 sm:py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-[10px] sm:text-xs tracking-[0.16em] uppercase hover:border-[#44A194] transition-colors"
+                  >
+                    Reset Filters
+                  </button>
+                </div>
+              </FilterSection>
+            )}
+
+            {/* Mobile Filters Modal */}
+            {isMobile && showMobileFilters && (
+              <div className="fixed inset-0 z-50 bg-black/50 flex items-end">
+                <motion.div
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                  className="bg-white w-full max-h-[90vh] overflow-y-auto rounded-t-xl"
                 >
-                  {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Searching...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-4 h-4" />
-                      Search Freelancers
-                    </>
-                  )}
-                </button>
+                  <div className="sticky top-0 bg-white border-b border-[#1C2321]/10 p-4 flex justify-between items-center">
+                    <h3 className="font-display text-lg font-light text-[#1C2321]">Filters</h3>
+                    <button onClick={() => setShowMobileFilters(false)}>
+                      <X className="w-5 h-5 text-[#8a8a82]" />
+                    </button>
+                  </div>
+                  <div className="p-4 space-y-4">
+                    <SelectFilter
+                      label="Main Category"
+                      value={filters.main_category || ""}
+                      onChange={(v) => setFilters({ ...filters, main_category: v })}
+                      options={mainCategoryOptions}
+                      placeholder="Main Categories"
+                    />
 
-                <button
-                  onClick={resetFilters}
-                  className="px-6 py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-xs tracking-[0.16em] uppercase hover:border-[#44A194] transition-colors"
-                >
-                  Reset Filters
-                </button>
+                    <SelectFilter
+                      label="Category"
+                      value={filters.category || ""}
+                      onChange={(v) => setFilters({ ...filters, category: v })}
+                      options={Object.keys(categoryOptionss)}
+                      placeholder="Categories"
+                    />
+
+                    <SelectFilter
+                      label="Subcategory"
+                      value={filters.subcategory || ""}
+                      onChange={(v) => setFilters({ ...filters, subcategory: v })}
+                      options={uniqueSubcategoriess}
+                      placeholder="Subcategories"
+                    />
+
+                    <SelectFilter
+                      label="Passing Year"
+                      value={filters.passing_year || ""}
+                      onChange={(v) => setFilters({ ...filters, passing_year: v })}
+                      options={passingYearOptions}
+                      placeholder="Passout Years"
+                    />
+
+                    <SelectFilter
+                      label="Years of Experience"
+                      value={filters.years_experience || ""}
+                      onChange={(v) => setFilters({ ...filters, years_experience: v })}
+                      options={experienceYearOptions}
+                      placeholder="Experience Levels"
+                    />
+
+                    <MultiSelectFilter
+                      label="Tech Stack"
+                      value={filters.tech_stack}
+                      onChange={(vals) => setFilters({ ...filters, tech_stack: vals })}
+                      options={techStackOptions}
+                    />
+
+                    <MultiSelectFilter
+                      label="Tools"
+                      value={filters.tools}
+                      onChange={(vals) => setFilters({ ...filters, tools: vals })}
+                      options={toolsOptions}
+                    />
+
+                    <SelectFilter
+                      label="Profile Rating"
+                      value={filters.profile_rating || ""}
+                      onChange={(v) => setFilters({ ...filters, profile_rating: v })}
+                      options={ratingOptions}
+                      placeholder="All Ratings"
+                    />
+
+                    <SearchInput
+                      value={filters.search_text}
+                      onChange={(v) => setFilters({ ...filters, search_text: v })}
+                      placeholder="Search by name or email..."
+                    />
+
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        onClick={() => {
+                          handleSearch();
+                          setShowMobileFilters(false);
+                        }}
+                        className="flex-1 px-4 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase"
+                      >
+                        Apply Filters
+                      </button>
+                      <button
+                        onClick={() => {
+                          resetFilters();
+                          setShowMobileFilters(false);
+                        }}
+                        className="flex-1 px-4 py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-xs tracking-[0.16em] uppercase"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
-            </div>
+            )}
 
             {/* Error Message */}
             {error && (
-              <div className="mb-6 p-4 bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 text-[#EC8F8D]">
-                {error}
+              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 text-[#EC8F8D] text-xs sm:text-sm">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <p>{error}</p>
+                </div>
               </div>
             )}
 
             {/* Send Email Section */}
             {freelancers.length > 0 && (
-              <div className="bg-white border border-[#1C2321]/10 p-6 mb-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <Mail className="w-5 h-5 text-[#44A194]" />
-                  <h3 className="font-display text-xl font-light text-[#1C2321]">Send Email to Filtered Freelancers</h3>
+              <div className="bg-white border border-[#1C2321]/10 p-4 sm:p-6 mb-6 sm:mb-8">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-[#44A194]" />
+                  <h3 className="font-display text-lg sm:text-xl font-light text-[#1C2321]">
+                    Send Email to Filtered Freelancers
+                  </h3>
                 </div>
 
                 <textarea
                   value={emailMessage}
                   onChange={(e) => setEmailMessage(e.target.value)}
                   placeholder="Write your message here..."
-                  rows={5}
-                  className="w-full border border-[#1C2321]/10 p-4 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mb-4"
+                  rows={isMobile ? 4 : 5}
+                  className="w-full border border-[#1C2321]/10 p-3 sm:p-4 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mb-3 sm:mb-4"
                 />
 
                 <button
                   onClick={handleSendEmails}
                   disabled={sending}
-                  className="px-6 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {sending ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Sending...
+                      <LoadingSpinner size="sm" />
+                      <span>Sending...</span>
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4" />
-                      Send Email
+                      <Send className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span>Send Email</span>
                     </>
                   )}
                 </button>
@@ -1849,69 +2142,71 @@ export default function AdminPanel() {
             )}
 
             {/* Results */}
-            {freelancers.length > 0 ? (
+            {filteredFreelancers.length > 0 ? (
               <div className="space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-display text-xl font-light text-[#1C2321]">
-                    Found {freelancers.length} matching freelancers
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <h2 className="font-display text-base sm:text-xl font-light text-[#1C2321]">
+                    Found {filteredFreelancers.length} matching freelancers
                   </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {freelancers.map((f, i) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {filteredFreelancers.map((f, i) => (
                     <motion.div
                       key={f.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="bg-white border border-[#1C2321]/10 p-6 hover:border-[#44A194]/30 transition-colors relative overflow-hidden group"
+                      className="bg-white border border-[#1C2321]/10 p-4 sm:p-6 hover:border-[#44A194]/30 transition-colors relative overflow-hidden group"
                     >
                       {/* Top gradient line on hover */}
                       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] to-[#537D96] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
 
-                      <div className="space-y-4">
+                      <div className="space-y-3 sm:space-y-4">
                         {/* Header */}
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-medium text-[#1C2321] group-hover:text-[#44A194] transition-colors">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-sm sm:text-base text-[#1C2321] group-hover:text-[#44A194] transition-colors truncate">
                               {f.full_name}
                             </h3>
-                            <p className="text-sm text-[#8a8a82]">{f.email}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Calendar className="w-3 h-3 text-[#8a8a82]" />
-                              <span className="text-xs text-[#8a8a82]">{new Date(f.created_at).toLocaleDateString()}</span>
+                            <p className="text-xs sm:text-sm text-[#8a8a82] truncate">{f.email}</p>
+                            <div className="flex items-center gap-1 sm:gap-2 mt-1">
+                              <Calendar className="w-3 h-3 text-[#8a8a82] flex-shrink-0" />
+                              <span className="text-[10px] sm:text-xs text-[#8a8a82] truncate">
+                                {new Date(f.created_at).toLocaleDateString()}
+                              </span>
                             </div>
                           </div>
-                          <div className={`px-2 py-1 text-xs rounded-full ${getStatusColor(f.employment_status || "N/A")}`}>
+                          <div className={`px-2 py-1 text-[8px] sm:text-xs rounded-full whitespace-nowrap ${getStatusColor(f.employment_status || "N/A")}`}>
                             {f.employment_status || "N/A"}
                           </div>
                         </div>
 
                         {/* Category & Experience */}
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs rounded">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                          <span className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs rounded">
                             {f.category || "N/A"}
                           </span>
                           {f.experience_level && (
-                            <span className={`px-2 py-1 text-xs rounded ${getExperienceColor(f.experience_level)}`}>
+                            <span className={`px-2 py-1 text-[8px] sm:text-xs rounded ${getExperienceColor(f.experience_level)}`}>
                               {f.experience_level}
                             </span>
                           )}
                         </div>
 
                         {/* Skills */}
-                        <div className="space-y-2">
+                        <div className="space-y-1 sm:space-y-2">
                           {f.domains && f.domains.length > 0 && (
                             <div>
-                              <p className="text-xs text-[#8a8a82] mb-1">Domains:</p>
+                              <p className="text-[8px] sm:text-xs text-[#8a8a82] mb-1">Domains:</p>
                               <div className="flex flex-wrap gap-1">
                                 {f.domains.slice(0, 3).map((d, idx) => (
-                                  <span key={idx} className="px-2 py-1 bg-[#537D96]/10 text-[#537D96] text-xs rounded">
+                                  <span key={idx} className="px-2 py-1 bg-[#537D96]/10 text-[#537D96] text-[8px] sm:text-xs rounded">
                                     {d}
                                   </span>
                                 ))}
                                 {f.domains.length > 3 && (
-                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-xs rounded">
+                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-[8px] sm:text-xs rounded">
                                     +{f.domains.length - 3}
                                   </span>
                                 )}
@@ -1920,15 +2215,15 @@ export default function AdminPanel() {
                           )}
                           {f.tech_stack && f.tech_stack.length > 0 && (
                             <div>
-                              <p className="text-xs text-[#8a8a82] mb-1">Tech:</p>
+                              <p className="text-[8px] sm:text-xs text-[#8a8a82] mb-1">Tech:</p>
                               <div className="flex flex-wrap gap-1">
                                 {f.tech_stack.slice(0, 3).map((t, idx) => (
-                                  <span key={idx} className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs rounded">
+                                  <span key={idx} className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs rounded">
                                     {t}
                                   </span>
                                 ))}
                                 {f.tech_stack.length > 3 && (
-                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-xs rounded">
+                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-[8px] sm:text-xs rounded">
                                     +{f.tech_stack.length - 3}
                                   </span>
                                 )}
@@ -1938,30 +2233,30 @@ export default function AdminPanel() {
                         </div>
 
                         {/* Contact */}
-                        <div className="space-y-2 pt-4 border-t border-[#1C2321]/10">
+                        <div className="space-y-1 sm:space-y-2 pt-2 sm:pt-4 border-t border-[#1C2321]/10">
                           {f.phone && (
-                            <div className="flex items-center gap-2 text-sm text-[#8a8a82]">
-                              <Phone className="w-4 h-4" />
+                            <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-sm text-[#8a8a82]">
+                              <Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                               <span className="truncate">{f.phone}</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-2 text-sm text-[#8a8a82]">
-                            <Mail className="w-4 h-4" />
+                          <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-sm text-[#8a8a82]">
+                            <Mail className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                             <span className="truncate">{f.email}</span>
                           </div>
                         </div>
 
                         {/* Links */}
-                        <div className="flex gap-2 pt-2">
+                        <div className="flex flex-wrap gap-1 sm:gap-2 pt-1 sm:pt-2">
                           {f.portfolio_url && (
                             <a
                               href={f.portfolio_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 px-3 py-2 bg-[#44A194]/10 text-[#44A194] text-xs text-center hover:bg-[#44A194]/20 transition-colors flex items-center justify-center gap-1"
+                              className="flex-1 min-w-[80px] px-2 sm:px-3 py-1.5 sm:py-2 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs text-center hover:bg-[#44A194]/20 transition-colors flex items-center justify-center gap-1"
                             >
-                              <ExternalLink className="w-3 h-3" />
-                              Portfolio
+                              <ExternalLink className="w-2 h-2 sm:w-3 sm:h-3" />
+                              <span className="hidden xs:inline">Portfolio</span>
                             </a>
                           )}
                           {f.linkedin_url && (
@@ -1969,10 +2264,10 @@ export default function AdminPanel() {
                               href={f.linkedin_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 px-3 py-2 bg-[#537D96]/10 text-[#537D96] text-xs text-center hover:bg-[#537D96]/20 transition-colors flex items-center justify-center gap-1"
+                              className="flex-1 min-w-[80px] px-2 sm:px-3 py-1.5 sm:py-2 bg-[#537D96]/10 text-[#537D96] text-[8px] sm:text-xs text-center hover:bg-[#537D96]/20 transition-colors flex items-center justify-center gap-1"
                             >
-                              <Linkedin className="w-3 h-3" />
-                              LinkedIn
+                              <Linkedin className="w-2 h-2 sm:w-3 sm:h-3" />
+                              <span className="hidden xs:inline">LinkedIn</span>
                             </a>
                           )}
                           {f.resume_url && (
@@ -1980,10 +2275,10 @@ export default function AdminPanel() {
                               href={f.resume_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 px-3 py-2 bg-[#1C2321]/10 text-[#1C2321] text-xs text-center hover:bg-[#1C2321]/20 transition-colors flex items-center justify-center gap-1"
+                              className="flex-1 min-w-[80px] px-2 sm:px-3 py-1.5 sm:py-2 bg-[#1C2321]/10 text-[#1C2321] text-[8px] sm:text-xs text-center hover:bg-[#1C2321]/20 transition-colors flex items-center justify-center gap-1"
                             >
-                              <FileDown className="w-3 h-3" />
-                              Resume
+                              <FileDown className="w-2 h-2 sm:w-3 sm:h-3" />
+                              <span className="hidden xs:inline">Resume</span>
                             </a>
                           )}
                         </div>
@@ -1991,12 +2286,21 @@ export default function AdminPanel() {
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Infinite Scroll Loader */}
+                {hasMore && (
+                  <div ref={observerTarget} className="flex justify-center py-4">
+                    {loadingMore && <LoadingSpinner size="md" />}
+                  </div>
+                )}
               </div>
             ) : (
               !loading && (
-                <div className="text-center py-12">
-                  <Users className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
-                  <p className="text-[#8a8a82]">{error || "No freelancers found. Try adjusting your search filters."}</p>
+                <div className="text-center py-8 sm:py-12">
+                  <Users className="w-8 h-8 sm:w-12 sm:h-12 text-[#8a8a82] mx-auto mb-3 sm:mb-4" />
+                  <p className="text-xs sm:text-sm text-[#8a8a82]">
+                    {error || "No freelancers found. Try adjusting your search filters."}
+                  </p>
                 </div>
               )
             )}
@@ -2005,527 +2309,565 @@ export default function AdminPanel() {
           /* Form Management Tab Content */
           <>
             {/* Create Form Modal */}
-            {showCreateForm && (
-              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                <div className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                  <div className="p-6 border-b border-[#1C2321]/10 flex justify-between items-center">
-                    <h3 className="font-display text-xl font-light text-[#1C2321]">Create New Form</h3>
-                    <button onClick={() => setShowCreateForm(false)} className="text-[#8a8a82] hover:text-[#1C2321]">
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Form ID</label>
-                        <input
-                          type="text"
-                          value={newForm.form_id}
-                          onChange={(e) => setNewForm((prev) => ({ ...prev, form_id: e.target.value }))}
-                          placeholder="e.g., reactjs1, nodejs2"
-                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Form Name</label>
-                        <input
-                          type="text"
-                          value={newForm.form_name}
-                          onChange={(e) => setNewForm((prev) => ({ ...prev, form_name: e.target.value }))}
-                          placeholder="e.g., React.js Developer Position"
-                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Form Description</label>
-                        <input
-                          type="text"
-                          value={newForm.form_description}
-                          onChange={(e) => setNewForm((prev) => ({ ...prev, form_description: e.target.value }))}
-                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Industry</label>
-                        <input
-                          type="text"
-                          value={newForm.industry}
-                          onChange={(e) => setNewForm((prev) => ({ ...prev, industry: e.target.value }))}
-                          placeholder="e.g., Technology, Healthcare, Finance"
-                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Category</label>
-                        <select
-                          value={selectedCategory}
-                          onChange={(e) => handleCategoryChange(e.target.value)}
-                          className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] bg-white"
-                        >
-                          <option value="">Select Category</option>
-                          {Object.keys(categoryOptions).map((category) => (
-                            <option key={category} value={category}>
-                              {category}
-                            </option>
-                          ))}
-                          <option value="other">Other</option>
-                        </select>
-                        {showOtherCategory && (
-                          <input
-                            type="text"
-                            value={newForm.category}
-                            onChange={(e) => setNewForm((prev) => ({ ...prev, category: e.target.value }))}
-                            placeholder="Enter custom category"
-                            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Subcategories</label>
-                        <div className="border border-[#1C2321]/10 p-4 max-h-40 overflow-y-auto">
-                          {availableSubcategories.map((subcategory) => (
-                            <label key={subcategory} className="flex items-center gap-2 mb-2 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={selectedSubcategories.includes(subcategory)}
-                                onChange={() => handleSubcategoryChange(subcategory)}
-                                className="accent-[#44A194]"
-                              />
-                              <span className="text-sm text-[#1C2321]">{subcategory}</span>
-                            </label>
-                          ))}
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={showOtherSubcategory}
-                              onChange={() => setShowOtherSubcategory(!showOtherSubcategory)}
-                              className="accent-[#44A194]"
-                            />
-                            <span className="text-sm text-[#1C2321]">Other</span>
+            <AnimatePresence>
+              {showCreateForm && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-lg"
+                  >
+                    <div className="sticky top-0 bg-white p-4 sm:p-6 border-b border-[#1C2321]/10 flex justify-between items-center">
+                      <h3 className="font-display text-lg sm:text-xl font-light text-[#1C2321]">Create New Form</h3>
+                      <button onClick={() => setShowCreateForm(false)} className="text-[#8a8a82] hover:text-[#1C2321]">
+                        <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
+                    </div>
+                    <div className="p-4 sm:p-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div>
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Form ID
                           </label>
-                        </div>
-                        {showOtherSubcategory && (
                           <input
                             type="text"
-                            placeholder="Enter custom subcategory and press Enter"
-                            onKeyPress={(e) => {
-                              if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                                const customValue = e.currentTarget.value.trim();
-                                setSelectedSubcategories((prev) => [...prev, customValue]);
-                                setNewForm((prev) => ({
-                                  ...prev,
-                                  subcategory: [...(prev.subcategory || []), customValue],
-                                }));
-                                e.currentTarget.value = "";
-                              }
-                            }}
-                            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                            value={newForm.form_id}
+                            onChange={(e) => setNewForm((prev) => ({ ...prev, form_id: e.target.value }))}
+                            placeholder="e.g., reactjs1, nodejs2"
+                            className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
                           />
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Tech Stack</label>
-                        <div className="border border-[#1C2321]/10 p-4 max-h-40 overflow-y-auto">
-                          {availableTechStacks.map((techStack) => (
-                            <label key={techStack} className="flex items-center gap-2 mb-2 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={selectedTechStacks.includes(techStack)}
-                                onChange={() => handleTechStackChange(techStack)}
-                                className="accent-[#44A194]"
-                              />
-                              <span className="text-sm text-[#1C2321]">{techStack}</span>
-                            </label>
-                          ))}
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={showOtherTechStack}
-                              onChange={() => setShowOtherTechStack(!showOtherTechStack)}
-                              className="accent-[#44A194]"
-                            />
-                            <span className="text-sm text-[#1C2321]">Other</span>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Form Name
                           </label>
-                        </div>
-                        {showOtherTechStack && (
                           <input
                             type="text"
-                            placeholder="Enter custom tech stack and press Enter"
-                            onKeyPress={(e) => {
-                              if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                                const customValue = e.currentTarget.value.trim();
-                                const newTechStacks = [...selectedTechStacks, customValue];
-                                setSelectedTechStacks(newTechStacks);
-                                setNewForm((prev) => ({
-                                  ...prev,
-                                  tech_stack: newTechStacks,
-                                }));
-                                e.currentTarget.value = "";
-                              }
-                            }}
-                            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                            value={newForm.form_name}
+                            onChange={(e) => setNewForm((prev) => ({ ...prev, form_name: e.target.value }))}
+                            placeholder="e.g., React.js Developer Position"
+                            className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
                           />
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">Tools</label>
-                        <div className="border border-[#1C2321]/10 p-4 max-h-40 overflow-y-auto">
-                          {availableTools.map((tool) => (
-                            <label key={tool} className="flex items-center gap-2 mb-2 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={selectedTools.includes(tool)}
-                                onChange={() => handleToolsChange(tool)}
-                                className="accent-[#44A194]"
-                              />
-                              <span className="text-sm text-[#1C2321]">{tool}</span>
-                            </label>
-                          ))}
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={showOtherTools}
-                              onChange={() => setShowOtherTools(!showOtherTools)}
-                              className="accent-[#44A194]"
-                            />
-                            <span className="text-sm text-[#1C2321]">Other</span>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Form Description
                           </label>
-                        </div>
-                        {showOtherTools && (
                           <input
                             type="text"
-                            placeholder="Enter custom tool and press Enter"
-                            onKeyPress={(e) => {
-                              if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                                const customValue = e.currentTarget.value.trim();
-                                setSelectedTools((prev) => [...prev, customValue]);
-                                setNewForm((prev) => ({
-                                  ...prev,
-                                  tools: [...(prev.tools || []), customValue],
-                                }));
-                                e.currentTarget.value = "";
-                              }
-                            }}
-                            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                            value={newForm.form_description}
+                            onChange={(e) => setNewForm((prev) => ({ ...prev, form_description: e.target.value }))}
+                            className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
                           />
-                        )}
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2">
-                          Required Standard Fields
-                        </label>
-                        <div className="border border-[#1C2321]/10 p-4">
-                          <div className="grid grid-cols-2 gap-2">
-                            {availableStandardFields.map((field) => (
-                              <label key={field.key} className="flex items-center gap-2 cursor-pointer">
+                        </div>
+                        <div>
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Industry
+                          </label>
+                          <input
+                            type="text"
+                            value={newForm.industry}
+                            onChange={(e) => setNewForm((prev) => ({ ...prev, industry: e.target.value }))}
+                            placeholder="e.g., Technology, Healthcare, Finance"
+                            className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Category
+                          </label>
+                          <select
+                            value={selectedCategory}
+                            onChange={(e) => handleCategoryChange(e.target.value)}
+                            className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] bg-white"
+                          >
+                            <option value="">Select Category</option>
+                            {Object.keys(categoryOptions).map((category) => (
+                              <option key={category} value={category}>
+                                {category}
+                              </option>
+                            ))}
+                            <option value="other">Other</option>
+                          </select>
+                          {showOtherCategory && (
+                            <input
+                              type="text"
+                              value={newForm.category}
+                              onChange={(e) => setNewForm((prev) => ({ ...prev, category: e.target.value }))}
+                              placeholder="Enter custom category"
+                              className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Subcategories
+                          </label>
+                          <div className="border border-[#1C2321]/10 p-3 sm:p-4 max-h-32 sm:max-h-40 overflow-y-auto">
+                            {availableSubcategories.map((subcategory) => (
+                              <label key={subcategory} className="flex items-center gap-2 mb-2 cursor-pointer">
                                 <input
                                   type="checkbox"
-                                  checked={selectedRequiredFields.includes(field.key)}
-                                  onChange={() => handleRequiredFieldChange(field.key)}
+                                  checked={selectedSubcategories.includes(subcategory)}
+                                  onChange={() => handleSubcategoryChange(subcategory)}
                                   className="accent-[#44A194]"
                                 />
-                                <span className="text-sm text-[#1C2321]">{field.label}</span>
+                                <span className="text-xs sm:text-sm text-[#1C2321]">{subcategory}</span>
                               </label>
                             ))}
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={showOtherSubcategory}
+                                onChange={() => setShowOtherSubcategory(!showOtherSubcategory)}
+                                className="accent-[#44A194]"
+                              />
+                              <span className="text-xs sm:text-sm text-[#1C2321]">Other</span>
+                            </label>
+                          </div>
+                          {showOtherSubcategory && (
+                            <input
+                              type="text"
+                              placeholder="Enter custom subcategory and press Enter"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                                  const customValue = e.currentTarget.value.trim();
+                                  setSelectedSubcategories((prev) => [...prev, customValue]);
+                                  setNewForm((prev) => ({
+                                    ...prev,
+                                    subcategory: [...(prev.subcategory || []), customValue],
+                                  }));
+                                  e.currentTarget.value = "";
+                                }
+                              }}
+                              className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Tech Stack
+                          </label>
+                          <div className="border border-[#1C2321]/10 p-3 sm:p-4 max-h-32 sm:max-h-40 overflow-y-auto">
+                            {availableTechStacks.map((techStack) => (
+                              <label key={techStack} className="flex items-center gap-2 mb-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedTechStacks.includes(techStack)}
+                                  onChange={() => handleTechStackChange(techStack)}
+                                  className="accent-[#44A194]"
+                                />
+                                <span className="text-xs sm:text-sm text-[#1C2321]">{techStack}</span>
+                              </label>
+                            ))}
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={showOtherTechStack}
+                                onChange={() => setShowOtherTechStack(!showOtherTechStack)}
+                                className="accent-[#44A194]"
+                              />
+                              <span className="text-xs sm:text-sm text-[#1C2321]">Other</span>
+                            </label>
+                          </div>
+                          {showOtherTechStack && (
+                            <input
+                              type="text"
+                              placeholder="Enter custom tech stack and press Enter"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                                  const customValue = e.currentTarget.value.trim();
+                                  const newTechStacks = [...selectedTechStacks, customValue];
+                                  setSelectedTechStacks(newTechStacks);
+                                  setNewForm((prev) => ({
+                                    ...prev,
+                                    tech_stack: newTechStacks,
+                                  }));
+                                  e.currentTarget.value = "";
+                                }
+                              }}
+                              className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Tools
+                          </label>
+                          <div className="border border-[#1C2321]/10 p-3 sm:p-4 max-h-32 sm:max-h-40 overflow-y-auto">
+                            {availableTools.map((tool) => (
+                              <label key={tool} className="flex items-center gap-2 mb-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedTools.includes(tool)}
+                                  onChange={() => handleToolsChange(tool)}
+                                  className="accent-[#44A194]"
+                                />
+                                <span className="text-xs sm:text-sm text-[#1C2321]">{tool}</span>
+                              </label>
+                            ))}
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={showOtherTools}
+                                onChange={() => setShowOtherTools(!showOtherTools)}
+                                className="accent-[#44A194]"
+                              />
+                              <span className="text-xs sm:text-sm text-[#1C2321]">Other</span>
+                            </label>
+                          </div>
+                          {showOtherTools && (
+                            <input
+                              type="text"
+                              placeholder="Enter custom tool and press Enter"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                                  const customValue = e.currentTarget.value.trim();
+                                  setSelectedTools((prev) => [...prev, customValue]);
+                                  setNewForm((prev) => ({
+                                    ...prev,
+                                    tools: [...(prev.tools || []), customValue],
+                                  }));
+                                  e.currentTarget.value = "";
+                                }
+                              }}
+                              className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] mt-2"
+                            />
+                          )}
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                            Required Standard Fields
+                          </label>
+                          <div className="border border-[#1C2321]/10 p-3 sm:p-4">
+                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-2">
+                              {availableStandardFields.map((field) => (
+                                <label key={field.key} className="flex items-center gap-2 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedRequiredFields.includes(field.key)}
+                                    onChange={() => handleRequiredFieldChange(field.key)}
+                                    className="accent-[#44A194]"
+                                  />
+                                  <span className="text-xs sm:text-sm text-[#1C2321]">{field.label}</span>
+                                </label>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex gap-4 mt-6 pt-6 border-t border-[#1C2321]/10">
-                      <button
-                        onClick={handleCreateForm}
-                        disabled={createFormLoading}
-                        className="px-6 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-2"
-                      >
-                        {createFormLoading ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Creating...
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="w-4 h-4" />
-                            Create Form
-                          </>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => setShowCreateForm(false)}
-                        className="px-6 py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-xs tracking-[0.16em] uppercase hover:border-[#44A194] transition-colors"
-                      >
-                        Cancel
-                      </button>
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-[#1C2321]/10">
+                        <button
+                          onClick={handleCreateForm}
+                          disabled={createFormLoading}
+                          className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {createFormLoading ? (
+                            <>
+                              <LoadingSpinner size="sm" />
+                              <span>Creating...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span>Create Form</span>
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setShowCreateForm(false)}
+                          className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-xs tracking-[0.16em] uppercase hover:border-[#44A194] transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
-              </div>
-            )}
+              )}
+            </AnimatePresence>
 
             {/* Forms List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {forms.map((form, index) => (
-                <motion.div
-                  key={form.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="bg-white border border-[#1C2321]/10 p-6 hover:border-[#44A194]/30 transition-colors relative overflow-hidden group"
-                >
-                  {/* Top gradient line on hover */}
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] to-[#537D96] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+            {forms.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {forms.map((form, index) => (
+                  <motion.div
+                    key={form.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-white border border-[#1C2321]/10 p-4 sm:p-6 hover:border-[#44A194]/30 transition-colors relative overflow-hidden group"
+                  >
+                    {/* Top gradient line on hover */}
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] to-[#537D96] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
 
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-[#1C2321] group-hover:text-[#44A194] transition-colors">
-                          {form.form_name}
-                        </h3>
-                        <p className="text-xs text-[#8a8a82]">ID: {form.form_id}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Calendar className="w-3 h-3 text-[#8a8a82]" />
-                          <span className="text-xs text-[#8a8a82]">
-                            {new Date(form.created_at).toLocaleDateString()}
+                    <div className="space-y-3 sm:space-y-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-sm sm:text-base text-[#1C2321] group-hover:text-[#44A194] transition-colors truncate">
+                            {form.form_name}
+                          </h3>
+                          <p className="text-[10px] sm:text-xs text-[#8a8a82]">ID: {form.form_id}</p>
+                          <div className="flex items-center gap-1 sm:gap-2 mt-1">
+                            <Calendar className="w-3 h-3 text-[#8a8a82] flex-shrink-0" />
+                            <span className="text-[8px] sm:text-xs text-[#8a8a82] truncate">
+                              {new Date(form.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1 sm:gap-2">
+                          <div className="px-2 py-0.5 sm:px-2 sm:py-1 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs rounded whitespace-nowrap">
+                            {form.submission_count || 0} subs
+                          </div>
+                          <div className={`px-2 py-0.5 sm:px-2 sm:py-1 text-[8px] sm:text-xs rounded whitespace-nowrap ${form.is_active
+                            ? "bg-[#44A194]/10 text-[#44A194]"
+                            : "bg-[#EC8F8D]/10 text-[#EC8F8D]"
+                            }`}>
+                            {form.is_active ? "Active" : "Inactive"}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1 sm:space-y-2">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                          <span className="px-2 py-0.5 sm:px-2 sm:py-1 bg-[#537D96]/10 text-[#537D96] text-[8px] sm:text-xs rounded">
+                            {form.category}
+                          </span>
+                          <span className="px-2 py-0.5 sm:px-2 sm:py-1 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs rounded truncate max-w-[150px]">
+                            {form.subcategory}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="px-2 py-0.5 sm:px-2 sm:py-1 bg-[#1C2321]/10 text-[#1C2321] text-[8px] sm:text-xs rounded">
+                            {form.industry}
                           </span>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <div className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs rounded">
-                          {form.submission_count || 0} submissions
-                        </div>
-                        <div className={`px-2 py-1 text-xs rounded ${
-                          form.is_active
-                            ? "bg-[#44A194]/10 text-[#44A194]"
-                            : "bg-[#EC8F8D]/10 text-[#EC8F8D]"
-                        }`}>
-                          {form.is_active ? "Active" : "Inactive"}
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 bg-[#537D96]/10 text-[#537D96] text-xs rounded">
-                          {form.category}
-                        </span>
-                        <span className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs rounded">
-                          {form.subcategory}
-                        </span>
+                      <div className="flex flex-wrap gap-1 sm:gap-2 pt-2 sm:pt-4 border-t border-[#1C2321]/10">
+                        <button
+                          onClick={() => copyFormLink(form.id)}
+                          className="flex-1 min-w-[60px] px-2 sm:px-3 py-1.5 sm:py-2 bg-[#537D96]/10 text-[#537D96] text-[8px] sm:text-xs hover:bg-[#537D96]/20 transition-colors flex items-center justify-center gap-1"
+                        >
+                          {copiedFormId === form.id ? (
+                            <>
+                              <Check className="w-2 h-2 sm:w-3 sm:h-3" />
+                              <span className="hidden xs:inline">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-2 h-2 sm:w-3 sm:h-3" />
+                              <span className="hidden xs:inline">Copy</span>
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedForm(form.id);
+                            loadFormSubmissions(form.id);
+                          }}
+                          className="flex-1 min-w-[60px] px-2 sm:px-3 py-1.5 sm:py-2 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs hover:bg-[#44A194]/20 transition-colors flex items-center justify-center gap-1"
+                        >
+                          <Eye className="w-2 h-2 sm:w-3 sm:h-3" />
+                          <span className="hidden xs:inline">View</span>
+                        </button>
                       </div>
-                      <div>
-                        <span className="px-2 py-1 bg-[#1C2321]/10 text-[#1C2321] text-xs rounded">
-                          {form.industry}
-                        </span>
-                      </div>
-                    </div>
 
-                    <div className="flex gap-2 pt-4 border-t border-[#1C2321]/10">
-                      <button
-                        onClick={() => copyFormLink(form.id)}
-                        className="flex-1 px-3 py-2 bg-[#537D96]/10 text-[#537D96] text-xs hover:bg-[#537D96]/20 transition-colors flex items-center justify-center gap-1"
-                      >
-                        {copiedFormId === form.id ? (
-                          <>
-                            <CheckCircle className="w-3 h-3" />
-                            Copied!
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3 h-3" />
-                            Copy Link
-                          </>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedForm(form.id);
-                          loadFormSubmissions(form.id);
-                        }}
-                        className="flex-1 px-3 py-2 bg-[#44A194]/10 text-[#44A194] text-xs hover:bg-[#44A194]/20 transition-colors flex items-center justify-center gap-1"
-                      >
-                        <Eye className="w-3 h-3" />
-                        View
-                      </button>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleToggleFormStatus(form)}
-                        className={`flex-1 px-3 py-2 text-xs transition-colors flex items-center justify-center gap-1 ${
-                          form.is_active
+                      <div className="flex flex-wrap gap-1 sm:gap-2">
+                        <button
+                          onClick={() => handleToggleFormStatus(form)}
+                          className={`flex-1 min-w-[60px] px-2 sm:px-3 py-1.5 sm:py-2 text-[8px] sm:text-xs transition-colors flex items-center justify-center gap-1 ${form.is_active
                             ? "bg-[#EC8F8D]/10 text-[#EC8F8D] hover:bg-[#EC8F8D]/20"
                             : "bg-[#44A194]/10 text-[#44A194] hover:bg-[#44A194]/20"
-                        }`}
-                      >
-                        {form.is_active ? (
-                          <>
-                            <X className="w-3 h-3" />
-                            Deactivate
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle className="w-3 h-3" />
-                            Activate
-                          </>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleEditForm(form)}
-                        className="flex-1 px-3 py-2 bg-[#1C2321]/10 text-[#1C2321] text-xs hover:bg-[#1C2321]/20 transition-colors flex items-center justify-center gap-1"
-                      >
-                        <Edit className="w-3 h-3" />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteForm(form.id, form.form_name)}
-                        className="flex-1 px-3 py-2 bg-[#EC8F8D]/10 text-[#EC8F8D] text-xs hover:bg-[#EC8F8D]/20 transition-colors flex items-center justify-center gap-1"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                        Delete
-                      </button>
+                            }`}
+                        >
+                          {form.is_active ? (
+                            <>
+                              <X className="w-2 h-2 sm:w-3 sm:h-3" />
+                              <span className="hidden xs:inline">Deactivate</span>
+                            </>
+                          ) : (
+                            <>
+                              <Check className="w-2 h-2 sm:w-3 sm:h-3" />
+                              <span className="hidden xs:inline">Activate</span>
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleEditForm(form)}
+                          className="flex-1 min-w-[60px] px-2 sm:px-3 py-1.5 sm:py-2 bg-[#1C2321]/10 text-[#1C2321] text-[8px] sm:text-xs hover:bg-[#1C2321]/20 transition-colors flex items-center justify-center gap-1"
+                        >
+                          <Edit className="w-2 h-2 sm:w-3 sm:h-3" />
+                          <span className="hidden xs:inline">Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteForm(form.id, form.form_name)}
+                          className="flex-1 min-w-[60px] px-2 sm:px-3 py-1.5 sm:py-2 bg-[#EC8F8D]/10 text-[#EC8F8D] text-[8px] sm:text-xs hover:bg-[#EC8F8D]/20 transition-colors flex items-center justify-center gap-1"
+                        >
+                          <Trash2 className="w-2 h-2 sm:w-3 sm:h-3" />
+                          <span className="hidden xs:inline">Delete</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              !loading && (
+                <div className="text-center py-8 sm:py-12">
+                  <FileText className="w-8 h-8 sm:w-12 sm:h-12 text-[#8a8a82] mx-auto mb-3 sm:mb-4" />
+                  <p className="text-xs sm:text-sm text-[#8a8a82]">No forms created yet. Click "New Form" to create one.</p>
+                </div>
+              )
+            )}
 
             {/* Form Submissions Modal */}
-            {selectedForm && (
-              <div
-                className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-                onClick={() => setSelectedForm(null)}
-              >
+            <AnimatePresence>
+              {selectedForm && (
                 <div
-                  className="bg-white max-w-6xl w-full max-h-[90vh] overflow-y-auto"
-                  onClick={(e) => e.stopPropagation()}
+                  className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+                  onClick={() => setSelectedForm(null)}
                 >
-                  <div className="p-6 border-b border-[#1C2321]/10 flex justify-between items-center">
-                    <h3 className="font-display text-xl font-light text-[#1C2321]">Form Submissions</h3>
-                    <div className="flex items-center gap-3">
-                      <select
-                        value={filterType}
-                        onChange={(e) => setFilterType(e.target.value as "all" | "selected" | "not_selected")}
-                        className="border border-[#1C2321]/10 px-3 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
-                      >
-                        <option value="all">All</option>
-                        <option value="selected">Selected</option>
-                        <option value="not_selected">Not Selected</option>
-                      </select>
-                      <button
-                        onClick={() => downloadCSVForForm(selectedForm, "selected")}
-                        className="px-3 py-2 bg-[#44A194] text-white text-xs hover:bg-[#38857a] transition-colors flex items-center gap-1"
-                      >
-                        <Download className="w-3 h-3" />
-                        Selected CSV
-                      </button>
-                      <button
-                        onClick={() => setSelectedForm(null)}
-                        className="text-[#8a8a82] hover:text-[#1C2321]"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="bg-white max-w-6xl w-full max-h-[90vh] overflow-y-auto rounded-lg"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="sticky top-0 bg-white p-4 sm:p-6 border-b border-[#1C2321]/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                      <h3 className="font-display text-lg sm:text-xl font-light text-[#1C2321]">Form Submissions</h3>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                        <select
+                          value={filterType}
+                          onChange={(e) => setFilterType(e.target.value as "all" | "selected" | "not_selected")}
+                          className="flex-1 sm:flex-none border border-[#1C2321]/10 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                        >
+                          <option value="all">All</option>
+                          <option value="selected">Selected</option>
+                          <option value="not_selected">Not Selected</option>
+                        </select>
+                        <button
+                          onClick={() => downloadCSVForForm(selectedForm, "selected")}
+                          className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 bg-[#44A194] text-white text-xs hover:bg-[#38857a] transition-colors flex items-center justify-center gap-1"
+                        >
+                          <Download className="w-3 h-3" />
+                          <span className="hidden xs:inline">Selected</span>
+                        </button>
+                        <button
+                          onClick={() => setSelectedForm(null)}
+                          className="p-1.5 sm:p-2 text-[#8a8a82] hover:text-[#1C2321]"
+                        >
+                          <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="p-6">
-                    {formSubmissions.filter((sub) =>
-                      filterType === "selected"
-                        ? sub.is_selected
-                        : filterType === "not_selected"
-                        ? !sub.is_selected
-                        : true
-                    ).length > 0 ? (
-                      <div className="space-y-4">
-                        {formSubmissions
-                          .filter((sub) =>
-                            filterType === "selected"
-                              ? sub.is_selected
-                              : filterType === "not_selected"
-                              ? !sub.is_selected
-                              : true
-                          )
-                          .map((submission, index) => (
-                            <div
-                              key={submission.id}
-                              className={`p-6 border ${
-                                submission.is_selected
+                    <div className="p-4 sm:p-6">
+                      {formSubmissions.filter((sub) =>
+                        filterType === "selected"
+                          ? sub.is_selected
+                          : filterType === "not_selected"
+                            ? !sub.is_selected
+                            : true
+                      ).length > 0 ? (
+                        <div className="space-y-3 sm:space-y-4">
+                          {formSubmissions
+                            .filter((sub) =>
+                              filterType === "selected"
+                                ? sub.is_selected
+                                : filterType === "not_selected"
+                                  ? !sub.is_selected
+                                  : true
+                            )
+                            .map((submission, index) => (
+                              <div
+                                key={submission.id}
+                                className={`p-4 sm:p-6 border ${submission.is_selected
                                   ? "border-[#44A194]/30 bg-[#44A194]/5"
                                   : "border-[#1C2321]/10 bg-white"
-                              }`}
-                            >
-                              <div className="flex justify-between mb-4">
-                                <h4 className="font-medium text-[#1C2321]">Submission {index + 1}</h4>
-                                <span className="text-xs text-[#8a8a82]">
-                                  {new Date(submission.created_at).toLocaleString()}
-                                </span>
-                              </div>
-
-                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <Field label="Name" value={submission.name} />
-                                <Field label="Email" value={submission.email} />
-                                <Field label="Phone" value={submission.phone || "N/A"} />
-
-                                {submission.years_experience != null && (
-                                  <Field
-                                    label="Years of Experience"
-                                    value={submission.years_experience}
-                                  />
-                                )}
-
-                                {submission.profile_rating && (
-                                  <Field
-                                    label="Profile Rating"
-                                    value={`⭐ ${submission.profile_rating.toFixed(1)} / 10`}
-                                    highlight
-                                  />
-                                )}
-
-                                {submission.portfolio_link && (
-                                  <FieldLink label="Portfolio" href={submission.portfolio_link} />
-                                )}
-
-                                {submission.github_link && (
-                                  <FieldLink label="GitHub" href={submission.github_link} />
-                                )}
-
-                                {submission.resume_link && (
-                                  <FieldLink label="Resume" href={submission.resume_link} />
-                                )}
-                              </div>
-
-                              {submission.proposal_link && (
-                                <div className="mt-4">
-                                  <p className="text-[#8a8a82] text-xs mb-1">Proposal:</p>
-                                  <p className="text-sm text-[#1C2321]">{submission.proposal_link}</p>
+                                  }`}
+                              >
+                                <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-2">
+                                  <h4 className="font-medium text-xs sm:text-sm text-[#1C2321]">
+                                    Submission {index + 1}
+                                  </h4>
+                                  <span className="text-[8px] sm:text-xs text-[#8a8a82]">
+                                    {new Date(submission.created_at).toLocaleString()}
+                                  </span>
                                 </div>
-                              )}
 
-                              {submission.custom_responses &&
-                                Object.keys(submission.custom_responses).length > 0 && (
-                                  <div className="mt-4 pt-4 border-t border-[#1C2321]/10">
-                                    <p className="text-[#8a8a82] text-xs mb-2">Custom Responses:</p>
-                                    <div className="space-y-1">
-                                      {Object.entries(submission.custom_responses).map(([key, value]) => (
-                                        <p key={key} className="text-sm text-[#1C2321]">
-                                          <span className="text-[#8a8a82]">{key}:</span> {String(value)}
-                                        </p>
-                                      ))}
-                                    </div>
+                                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                                  <Field label="Name" value={submission.name} />
+                                  <Field label="Email" value={submission.email} />
+                                  <Field label="Phone" value={submission.phone || "N/A"} />
+
+                                  {submission.years_experience != null && (
+                                    <Field
+                                      label="Years of Experience"
+                                      value={submission.years_experience}
+                                    />
+                                  )}
+
+                                  {submission.profile_rating && (
+                                    <Field
+                                      label="Profile Rating"
+                                      value={`⭐ ${submission.profile_rating.toFixed(1)} / 10`}
+                                      highlight
+                                    />
+                                  )}
+
+                                  {submission.portfolio_link && (
+                                    <FieldLink label="Portfolio" href={submission.portfolio_link} />
+                                  )}
+
+                                  {submission.github_link && (
+                                    <FieldLink label="GitHub" href={submission.github_link} />
+                                  )}
+
+                                  {submission.resume_link && (
+                                    <FieldLink label="Resume" href={submission.resume_link} />
+                                  )}
+                                </div>
+
+                                {submission.proposal_link && (
+                                  <div className="mt-3 sm:mt-4">
+                                    <p className="text-[#8a8a82] text-[10px] sm:text-xs mb-1">Proposal:</p>
+                                    <p className="text-xs sm:text-sm text-[#1C2321] break-words">
+                                      {submission.proposal_link}
+                                    </p>
                                   </div>
                                 )}
-                            </div>
-                          ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <FileText className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
-                        <p className="text-[#8a8a82]">No submissions found for this filter.</p>
-                      </div>
-                    )}
-                  </div>
+
+                                {submission.custom_responses &&
+                                  Object.keys(submission.custom_responses).length > 0 && (
+                                    <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[#1C2321]/10">
+                                      <p className="text-[#8a8a82] text-[10px] sm:text-xs mb-2">Custom Responses:</p>
+                                      <div className="space-y-1">
+                                        {Object.entries(submission.custom_responses).map(([key, value]) => (
+                                          <p key={key} className="text-xs sm:text-sm text-[#1C2321] break-words">
+                                            <span className="text-[#8a8a82]">{key}:</span> {String(value)}
+                                          </p>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                              </div>
+                            ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 sm:py-12">
+                          <FileText className="w-8 h-8 sm:w-12 sm:h-12 text-[#8a8a82] mx-auto mb-3 sm:mb-4" />
+                          <p className="text-xs sm:text-sm text-[#8a8a82]">No submissions found for this filter.</p>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
                 </div>
-              </div>
-            )}
+              )}
+            </AnimatePresence>
           </>
         )}
       </div>

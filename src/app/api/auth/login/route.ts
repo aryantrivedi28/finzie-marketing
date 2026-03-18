@@ -7,7 +7,6 @@ const ALLOWED_DOMAIN = process.env.EMAIL_AUTH || "@finzie.in";
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
-
     if (!email || typeof email !== "string") {
       return NextResponse.json({ message: "Email is required" }, { status: 400 });
     }

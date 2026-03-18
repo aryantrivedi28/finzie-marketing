@@ -23,7 +23,11 @@ import {
   Tag,
   Eye,
   Edit,
-  AlertCircle
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  MapPin,
+  Users
 } from "lucide-react";
 
 // Animation variants
@@ -69,6 +73,9 @@ const slideIn: Variants = {
   },
 };
 
+// Responsive breakpoint
+const MOBILE_BREAKPOINT = 768;
+
 type Client = {
   id: string
   email?: string | null
@@ -111,6 +118,131 @@ type HiringRequest = {
   created_at?: string | null
 }
 
+// Reusable Components
+const StatCard = ({ value, label, icon: Icon }: { value: number; label: string; icon: React.ElementType }) => (
+  <div className="bg-white p-4 sm:p-6">
+    <div className="flex items-center gap-3 sm:gap-4">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#44A194]/10 flex items-center justify-center rounded-lg">
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#44A194]" />
+      </div>
+      <div>
+        <div className="font-display text-xl sm:text-2xl md:text-4xl font-light text-[#1C2321]">{value}</div>
+        <div className="text-[8px] sm:text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-0.5 sm:mt-1">{label}</div>
+      </div>
+    </div>
+  </div>
+);
+
+const TabButton = ({ 
+  active, 
+  onClick, 
+  icon: Icon, 
+  children,
+  count 
+}: { 
+  active: boolean; 
+  onClick: () => void; 
+  icon: React.ElementType;
+  children: React.ReactNode;
+  count: number;
+}) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 text-[8px] sm:text-xs tracking-[0.16em] uppercase transition-all whitespace-nowrap ${
+      active
+        ? "bg-[#44A194] text-white"
+        : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
+    }`}
+  >
+    <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
+    <span className="hidden xs:inline">{children}</span>
+    <span className={`ml-1 px-1.5 py-0.5 text-[8px] rounded-full ${
+      active ? "bg-white text-[#44A194]" : "bg-[#44A194]/10 text-[#44A194]"
+    }`}>
+      {count}
+    </span>
+  </button>
+);
+
+const InfoRow = ({ icon: Icon, children, href }: { icon: React.ElementType; children: React.ReactNode; href?: string }) => {
+  const content = (
+    <div className="flex items-center gap-1 sm:gap-2 text-[#8a8a82] min-w-0">
+      <Icon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+      <span className="text-[10px] sm:text-sm truncate">{children}</span>
+    </div>
+  );
+
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-[#44A194] transition-colors">
+        {content}
+      </a>
+    );
+  }
+
+  return content;
+};
+
+const ExpandableSection = ({ 
+  title, 
+  children,
+  defaultOpen = false 
+}: { 
+  title: string; 
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-t border-[#1C2321]/10 mt-3 pt-3">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between text-left"
+      >
+        <span className="text-[10px] sm:text-xs text-[#8a8a82] font-medium">{title}</span>
+        {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="pt-2">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const ArrayTags = ({ items, color = "default" }: { items: string[]; color?: "green" | "blue" | "default" }) => {
+  const colorClasses = {
+    green: "bg-[#44A194]/10 text-[#44A194]",
+    blue: "bg-[#537D96]/10 text-[#537D96]",
+    default: "bg-[#1C2321]/10 text-[#1C2321]",
+  };
+
+  return (
+    <div className="flex flex-wrap gap-1 mt-1">
+      {items.slice(0, 3).map((item, idx) => (
+        <span key={idx} className={`px-2 py-0.5 text-[8px] sm:text-xs rounded ${colorClasses[color]}`}>
+          {item}
+        </span>
+      ))}
+      {items.length > 3 && (
+        <span className="px-2 py-0.5 bg-[#8a8a82]/10 text-[#8a8a82] text-[8px] sm:text-xs rounded">
+          +{items.length - 3}
+        </span>
+      )}
+    </div>
+  );
+};
+
 // Date formatter
 function formatDate(dateString?: string | null) {
   if (!dateString) return "";
@@ -139,9 +271,11 @@ function StatusBadge({ status }: { status?: string | null }) {
   const Icon = config.icon;
 
   return (
-    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border ${config.color}`}>
-      <Icon className="w-3 h-3" />
-      {status ? status.charAt(0).toUpperCase() + status.slice(1) : "Pending"}
+    <span className={`inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-xs font-medium border ${config.color}`}>
+      <Icon className="w-2 h-2 sm:w-3 sm:h-3" />
+      <span className="truncate max-w-[60px] sm:max-w-none">
+        {status ? status.charAt(0).toUpperCase() + status.slice(1) : "Pending"}
+      </span>
     </span>
   );
 }
@@ -160,52 +294,33 @@ const RoleBadge = ({ roleType }: { roleType: string | null | undefined }) => {
                 { color: "bg-[#8a8a82]/10 text-[#8a8a82]", label: roleType, icon: "👤" };
 
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] sm:text-xs font-medium ${config.color}`}>
       <span>{config.icon}</span>
-      {config.label}
+      <span className="truncate max-w-[60px] sm:max-w-none">{config.label}</span>
     </span>
   );
 };
 
-// Array display component for better handling
-const ArrayDisplay = ({ items, label, icon, maxItems = 3 }: { 
-  items: any[] | null | undefined, 
-  label: string, 
-  icon: string,
-  maxItems?: number 
-}) => {
-  if (!items || items.length === 0) return null;
-
-  return (
-    <div className="flex items-start gap-2 mb-2">
-      <span className="text-[#8a8a82] mt-1 text-sm">{icon}</span>
-      <div className="flex flex-wrap gap-1">
-        <span className="text-xs text-[#8a8a82] font-medium">{label}:</span>
-        {items.slice(0, maxItems).map((item, index) => (
-          <span
-            key={index}
-            className="text-xs bg-[#F4F0E4] text-[#1C2321] px-2 py-1"
-          >
-            {item}
-          </span>
-        ))}
-        {items.length > maxItems && (
-          <span className="text-xs text-[#8a8a82]">
-            +{items.length - maxItems} more
-          </span>
-        )}
-      </div>
-    </div>
-  );
-};
-
 export default function NotificationsPage() {
+  const [isMobile, setIsMobile] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
   const [clientRequests, setClientRequests] = useState<ClientRequest[]>([]);
   const [hiringRequests, setHiringRequests] = useState<HiringRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"clients" | "clientRequests" | "hiringRequests">("clients");
+
+  // Responsive detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -250,112 +365,102 @@ export default function NotificationsPage() {
       {/* Top Bar */}
       <motion.div 
         variants={fadeUp}
-        className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-8 py-4 flex items-center"
+        className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center"
       >
         <button
           onClick={() => window.history.back()}
-          className="flex items-center gap-2 text-[#8a8a82] hover:text-[#1C2321] transition-colors mr-4"
+          className="flex items-center gap-1 sm:gap-2 text-[#8a8a82] hover:text-[#1C2321] transition-colors mr-2 sm:mr-4"
+          aria-label="Go back"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-xs tracking-[0.16em] uppercase">Back</span>
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="text-[10px] sm:text-xs tracking-[0.16em] uppercase hidden xs:inline">Back</span>
         </button>
-        <div className="flex-1">
-          <h1 className="font-display text-2xl font-light text-[#1C2321]">Notifications</h1>
-          <p className="text-sm text-[#8a8a82] mt-1 tracking-[0.04em]">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-display text-lg sm:text-xl md:text-2xl font-light text-[#1C2321] truncate">
+            Notifications
+          </h1>
+          <p className="text-xs sm:text-sm text-[#8a8a82] mt-0.5 sm:mt-1 tracking-[0.04em] truncate">
             Track all client and hiring activity
           </p>
         </div>
         <button
           onClick={loadData}
           disabled={loading}
-          className="px-4 py-2 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#44A194] text-white text-[10px] sm:text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-1 sm:gap-2 ml-2 sm:ml-4"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          {loading ? "Loading..." : "Refresh"}
+          <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${loading ? "animate-spin" : ""}`} />
+          <span className="hidden xs:inline">{loading ? "Loading..." : "Refresh"}</span>
         </button>
       </motion.div>
 
       {/* Content */}
-      <div className="p-8 max-w-6xl mx-auto">
+      <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 max-w-6xl mx-auto">
         {/* Stats Cards */}
         <motion.div 
           variants={fadeUp}
-          className="grid grid-cols-1 md:grid-cols-3 gap-[2px] bg-[#1C2321]/10 mb-8"
+          className="grid grid-cols-1 xs:grid-cols-3 gap-[1px] sm:gap-[2px] bg-[#1C2321]/10 mb-6 sm:mb-8"
         >
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">{clients.length}</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Clients</div>
-          </div>
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">{clientRequests.length}</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Client Requests</div>
-          </div>
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">{hiringRequests.length}</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Hiring Requests</div>
-          </div>
+          <StatCard value={clients.length} label="Total Clients" icon={Users} />
+          <StatCard value={clientRequests.length} label="Client Requests" icon={Mail} />
+          <StatCard value={hiringRequests.length} label="Hiring Requests" icon={Briefcase} />
         </motion.div>
 
-        {/* Tabs */}
-        <motion.div variants={fadeUp} className="mb-8">
-          <div className="flex gap-2">
-            <button
+        {/* Tabs - Scrollable on mobile */}
+        <motion.div variants={fadeUp} className="mb-6 sm:mb-8 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex gap-1 sm:gap-2 min-w-max">
+            <TabButton
+              active={activeTab === "clients"}
               onClick={() => setActiveTab("clients")}
-              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
-                activeTab === "clients"
-                  ? "bg-[#44A194] text-white"
-                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
-              }`}
+              icon={User}
+              count={clients.length}
             >
-              <User className="w-4 h-4 inline mr-2" />
-              Clients ({clients.length})
-            </button>
-            <button
+              Clients
+            </TabButton>
+            <TabButton
+              active={activeTab === "clientRequests"}
               onClick={() => setActiveTab("clientRequests")}
-              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
-                activeTab === "clientRequests"
-                  ? "bg-[#44A194] text-white"
-                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
-              }`}
+              icon={Mail}
+              count={clientRequests.length}
             >
-              <Mail className="w-4 h-4 inline mr-2" />
-              Client Requests ({clientRequests.length})
-            </button>
-            <button
+              Client Requests
+            </TabButton>
+            <TabButton
+              active={activeTab === "hiringRequests"}
               onClick={() => setActiveTab("hiringRequests")}
-              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
-                activeTab === "hiringRequests"
-                  ? "bg-[#44A194] text-white"
-                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
-              }`}
+              icon={Briefcase}
+              count={hiringRequests.length}
             >
-              <Briefcase className="w-4 h-4 inline mr-2" />
-              Hiring Requests ({hiringRequests.length})
-            </button>
+              Hiring Requests
+            </TabButton>
           </div>
         </motion.div>
 
         {/* Error Message */}
-        {error && (
-          <motion.div 
-            variants={fadeUp}
-            className="mb-6 p-4 bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 text-[#EC8F8D]"
-          >
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              <p className="text-sm">{error}</p>
-            </div>
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div 
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-4 sm:mb-6 p-3 sm:p-4 bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 text-[#EC8F8D] text-xs sm:text-sm rounded"
+            >
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <p>{error}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Loading State */}
         {loading && (
           <motion.div 
             variants={fadeUp}
-            className="text-center py-12"
+            className="text-center py-8 sm:py-12"
           >
-            <div className="inline-block w-8 h-8 border-2 border-[#44A194] border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-sm text-[#8a8a82] mt-4">Loading notifications...</p>
+            <div className="inline-block w-6 h-6 sm:w-8 sm:h-8 border-2 border-[#44A194] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-xs sm:text-sm text-[#8a8a82] mt-3 sm:mt-4">Loading notifications...</p>
           </motion.div>
         )}
 
@@ -370,12 +475,12 @@ export default function NotificationsPage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="space-y-4"
+                className="space-y-3 sm:space-y-4"
               >
                 {clients.length === 0 ? (
-                  <div className="text-center py-12 bg-white border border-[#1C2321]/10">
-                    <User className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
-                    <p className="text-[#8a8a82]">No clients found</p>
+                  <div className="text-center py-8 sm:py-12 bg-white border border-[#1C2321]/10">
+                    <User className="w-8 h-8 sm:w-12 sm:h-12 text-[#8a8a82] mx-auto mb-3 sm:mb-4" />
+                    <p className="text-xs sm:text-sm text-[#8a8a82]">No clients found</p>
                   </div>
                 ) : (
                   clients.map((client) => (
@@ -383,63 +488,58 @@ export default function NotificationsPage() {
                       key={client.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-white border border-[#1C2321]/10 p-6 hover:border-[#44A194]/30 transition-colors"
+                      className="bg-white border border-[#1C2321]/10 p-4 sm:p-6 hover:border-[#44A194]/30 transition-colors"
                     >
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-4">
-                            <h3 className="font-medium text-[#1C2321]">{client.name || "Unnamed Client"}</h3>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 flex-wrap">
+                            <h3 className="font-medium text-sm sm:text-base text-[#1C2321] truncate">
+                              {client.name || "Unnamed Client"}
+                            </h3>
                             <StatusBadge status="active" />
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                          <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3">
                             {client.email && (
-                              <div className="flex items-center gap-2 text-[#8a8a82]">
-                                <Mail className="w-4 h-4" />
+                              <InfoRow icon={Mail}>
                                 <span className="truncate">{client.email}</span>
-                              </div>
+                              </InfoRow>
                             )}
                             {client.phone && (
-                              <div className="flex items-center gap-2 text-[#8a8a82]">
-                                <Phone className="w-4 h-4" />
+                              <InfoRow icon={Phone}>
                                 {client.phone}
-                              </div>
+                              </InfoRow>
                             )}
                             {client.company_name && (
-                              <div className="flex items-center gap-2 text-[#8a8a82]">
-                                <Building className="w-4 h-4" />
-                                {client.company_name}
-                              </div>
+                              <InfoRow icon={Building}>
+                                <span className="truncate">{client.company_name}</span>
+                              </InfoRow>
                             )}
                             {client.industry && (
-                              <div className="flex items-center gap-2 text-[#8a8a82]">
-                                <Factory className="w-4 h-4" />
-                                {client.industry}
-                              </div>
+                              <InfoRow icon={Factory}>
+                                <span className="truncate">{client.industry}</span>
+                              </InfoRow>
+                            )}
+                            {client.country && (
+                              <InfoRow icon={MapPin}>
+                                <span className="truncate">{client.country}</span>
+                              </InfoRow>
                             )}
                             {client.website && (
-                              <div className="flex items-center gap-2 text-[#8a8a82]">
-                                <Globe className="w-4 h-4" />
-                                <a 
-                                  href={client.website} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer" 
-                                  className="text-[#44A194] hover:underline"
-                                >
-                                  {client.website.replace(/^https?:\/\//, '')}
-                                </a>
-                              </div>
+                              <InfoRow icon={Globe} href={client.website}>
+                                <span className="truncate">{client.website.replace(/^https?:\/\//, '')}</span>
+                              </InfoRow>
                             )}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="flex justify-between items-center pt-4 border-t border-[#1C2321]/10">
-                        <span className="text-xs text-[#8a8a82] flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
+                      <div className="flex flex-col xs:flex-row xs:justify-between xs:items-center gap-2 pt-3 sm:pt-4 border-t border-[#1C2321]/10 mt-3 sm:mt-4">
+                        <span className="text-[8px] sm:text-xs text-[#8a8a82] flex items-center gap-1">
+                          <Calendar className="w-2 h-2 sm:w-3 sm:h-3" />
                           Joined: {formatDate(client.created_at)}
                         </span>
-                        <span className="text-xs text-[#8a8a82]">
+                        <span className="text-[8px] sm:text-xs text-[#8a8a82] truncate">
                           ID: {client.id.slice(0, 8)}...
                         </span>
                       </div>
@@ -457,12 +557,12 @@ export default function NotificationsPage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="space-y-4"
+                className="space-y-3 sm:space-y-4"
               >
                 {clientRequests.length === 0 ? (
-                  <div className="text-center py-12 bg-white border border-[#1C2321]/10">
-                    <Mail className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
-                    <p className="text-[#8a8a82]">No client requests found</p>
+                  <div className="text-center py-8 sm:py-12 bg-white border border-[#1C2321]/10">
+                    <Mail className="w-8 h-8 sm:w-12 sm:h-12 text-[#8a8a82] mx-auto mb-3 sm:mb-4" />
+                    <p className="text-xs sm:text-sm text-[#8a8a82]">No client requests found</p>
                   </div>
                 ) : (
                   clientRequests.map((request) => (
@@ -470,70 +570,76 @@ export default function NotificationsPage() {
                       key={request.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-white border border-[#1C2321]/10 p-6 hover:border-[#44A194]/30 transition-colors"
+                      className="bg-white border border-[#1C2321]/10 p-4 sm:p-6 hover:border-[#44A194]/30 transition-colors"
                     >
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <h3 className="font-medium text-[#1C2321]">{request.full_name}</h3>
-                            <StatusBadge status={request.status} />
-                          </div>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm mb-3">
-                            <div className="flex items-center gap-2 text-[#8a8a82]">
-                              <Mail className="w-4 h-4" />
-                              {request.email}
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                              <h3 className="font-medium text-sm sm:text-base text-[#1C2321] truncate">
+                                {request.full_name}
+                              </h3>
+                              <StatusBadge status={request.status} />
                             </div>
-                            {request.phone && (
-                              <div className="flex items-center gap-2 text-[#8a8a82]">
-                                <Phone className="w-4 h-4" />
-                                {request.phone}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="bg-[#F4F0E4] p-4 mb-3">
-                            <p className="text-sm text-[#1C2321]">
-                              <span className="font-medium">Requirement:</span> {request.requirement}
-                            </p>
-                          </div>
-
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {request.budget && (
-                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#44A194]/10 text-[#44A194] text-xs">
-                                <DollarSign className="w-3 h-3" />
-                                {request.budget}
-                              </span>
-                            )}
-                            {request.timeline && (
-                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#537D96]/10 text-[#537D96] text-xs">
-                                <Calendar className="w-3 h-3" />
-                                {request.timeline}
-                              </span>
-                            )}
-                          </div>
-
-                          {request.services && request.services.length > 0 && (
-                            <ArrayDisplay items={request.services} label="Services" icon="🎯" />
-                          )}
-                          
-                          {request.notes && (
-                            <div className="mt-3 p-3 bg-[#F4F0E4] text-sm text-[#1C2321]">
-                              <strong>Notes:</strong> {request.notes}
+                            
+                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-1 sm:gap-2 mb-2">
+                              <InfoRow icon={Mail}>
+                                <span className="truncate">{request.email}</span>
+                              </InfoRow>
+                              {request.phone && (
+                                <InfoRow icon={Phone}>
+                                  {request.phone}
+                                </InfoRow>
+                              )}
                             </div>
-                          )}
+
+                            <div className="bg-[#F4F0E4] p-3 sm:p-4 mb-2">
+                              <p className="text-xs sm:text-sm text-[#1C2321]">
+                                <span className="font-medium">Requirement:</span> {request.requirement}
+                              </p>
+                            </div>
+
+                            <div className="flex flex-wrap gap-1 sm:gap-2 mb-2">
+                              {request.budget && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs rounded">
+                                  <DollarSign className="w-2 h-2 sm:w-3 sm:h-3" />
+                                  <span className="truncate max-w-[80px] sm:max-w-none">{request.budget}</span>
+                                </span>
+                              )}
+                              {request.timeline && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#537D96]/10 text-[#537D96] text-[8px] sm:text-xs rounded">
+                                  <Calendar className="w-2 h-2 sm:w-3 sm:h-3" />
+                                  <span className="truncate max-w-[80px] sm:max-w-none">{request.timeline}</span>
+                                </span>
+                              )}
+                            </div>
+
+                            {request.services && request.services.length > 0 && (
+                              <ExpandableSection title="Services">
+                                <ArrayTags items={request.services} color="green" />
+                              </ExpandableSection>
+                            )}
+                            
+                            {request.notes && (
+                              <ExpandableSection title="Notes">
+                                <p className="text-xs sm:text-sm text-[#1C2321] bg-[#F4F0E4] p-2 sm:p-3">
+                                  {request.notes}
+                                </p>
+                              </ExpandableSection>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex justify-between items-center pt-4 border-t border-[#1C2321]/10">
-                        <span className="text-xs text-[#8a8a82] flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          Submitted: {formatDate(request.created_at)}
-                        </span>
-                        <button className="text-xs text-[#44A194] hover:underline flex items-center gap-1">
-                          <Eye className="w-3 h-3" />
-                          View Details
-                        </button>
+
+                        <div className="flex flex-col xs:flex-row xs:justify-between xs:items-center gap-2 pt-3 border-t border-[#1C2321]/10">
+                          <span className="text-[8px] sm:text-xs text-[#8a8a82] flex items-center gap-1">
+                            <Calendar className="w-2 h-2 sm:w-3 sm:h-3" />
+                            Submitted: {formatDate(request.created_at)}
+                          </span>
+                          <button className="text-[8px] sm:text-xs text-[#44A194] hover:underline flex items-center gap-1 self-end xs:self-auto">
+                            <Eye className="w-2 h-2 sm:w-3 sm:h-3" />
+                            View Details
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   ))
@@ -549,12 +655,12 @@ export default function NotificationsPage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="space-y-4"
+                className="space-y-3 sm:space-y-4"
               >
                 {hiringRequests.length === 0 ? (
-                  <div className="text-center py-12 bg-white border border-[#1C2321]/10">
-                    <Briefcase className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
-                    <p className="text-[#8a8a82]">No hiring requests found</p>
+                  <div className="text-center py-8 sm:py-12 bg-white border border-[#1C2321]/10">
+                    <Briefcase className="w-8 h-8 sm:w-12 sm:h-12 text-[#8a8a82] mx-auto mb-3 sm:mb-4" />
+                    <p className="text-xs sm:text-sm text-[#8a8a82]">No hiring requests found</p>
                   </div>
                 ) : (
                   hiringRequests.map((request) => (
@@ -562,105 +668,70 @@ export default function NotificationsPage() {
                       key={request.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-white border border-[#1C2321]/10 p-6 hover:border-[#44A194]/30 transition-colors"
+                      className="bg-white border border-[#1C2321]/10 p-4 sm:p-6 hover:border-[#44A194]/30 transition-colors"
                     >
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <h3 className="font-medium text-[#1C2321]">
-                              {request.job_title || "Untitled Position"}
-                            </h3>
-                            <RoleBadge roleType={request.role_type} />
-                            <StatusBadge status={request.status} />
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                              <h3 className="font-medium text-sm sm:text-base text-[#1C2321] truncate">
+                                {request.job_title || "Untitled Position"}
+                              </h3>
+                              <div className="flex flex-wrap gap-1">
+                                {request.role_type && <RoleBadge roleType={request.role_type} />}
+                                <StatusBadge status={request.status} />
+                              </div>
+                            </div>
+
+                            <p className="text-xs sm:text-sm text-[#8a8a82] mb-2 line-clamp-2">
+                              {request.description || "No description provided"}
+                            </p>
+
+                            {request.budget_range && (
+                              <div className="mb-2">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs rounded">
+                                  <DollarSign className="w-2 h-2 sm:w-3 sm:h-3" />
+                                  Budget: {request.budget_range}
+                                </span>
+                              </div>
+                            )}
+
+                            {request.category && request.category.length > 0 && (
+                              <ExpandableSection title="Categories">
+                                <ArrayTags items={request.category} color="blue" />
+                              </ExpandableSection>
+                            )}
+
+                            {request.subcategory && request.subcategory.length > 0 && (
+                              <ExpandableSection title="Subcategories">
+                                <ArrayTags items={request.subcategory} color="green" />
+                              </ExpandableSection>
+                            )}
+
+                            {request.tools && request.tools.length > 0 && (
+                              <ExpandableSection title="Tools">
+                                <ArrayTags items={request.tools} />
+                              </ExpandableSection>
+                            )}
                           </div>
-
-                          <p className="text-sm text-[#8a8a82] mb-3">
-                            {request.description || "No description provided"}
-                          </p>
-
-                          {request.budget_range && (
-                            <div className="mb-3">
-                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#44A194]/10 text-[#44A194] text-xs">
-                                <DollarSign className="w-3 h-3" />
-                                Budget: {request.budget_range}
-                              </span>
-                            </div>
-                          )}
-
-                          {/* Categories */}
-                          {request.category && request.category.length > 0 && (
-                            <div className="mb-2">
-                              <span className="text-xs text-[#8a8a82] mr-2">Categories:</span>
-                              <div className="inline-flex flex-wrap gap-1">
-                                {request.category.slice(0, 3).map((cat: string, idx: number) => (
-                                  <span key={idx} className="px-2 py-1 bg-[#537D96]/10 text-[#537D96] text-xs">
-                                    {cat}
-                                  </span>
-                                ))}
-                                {request.category.length > 3 && (
-                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-xs">
-                                    +{request.category.length - 3}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Subcategories */}
-                          {request.subcategory && request.subcategory.length > 0 && (
-                            <div className="mb-2">
-                              <span className="text-xs text-[#8a8a82] mr-2">Subcategories:</span>
-                              <div className="inline-flex flex-wrap gap-1">
-                                {request.subcategory.slice(0, 3).map((sub: string, idx: number) => (
-                                  <span key={idx} className="px-2 py-1 bg-[#44A194]/10 text-[#44A194] text-xs">
-                                    {sub}
-                                  </span>
-                                ))}
-                                {request.subcategory.length > 3 && (
-                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-xs">
-                                    +{request.subcategory.length - 3}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Tools */}
-                          {request.tools && request.tools.length > 0 && (
-                            <div>
-                              <span className="text-xs text-[#8a8a82] mr-2">Tools:</span>
-                              <div className="inline-flex flex-wrap gap-1">
-                                {request.tools.slice(0, 3).map((tool: string, idx: number) => (
-                                  <span key={idx} className="px-2 py-1 bg-[#1C2321]/10 text-[#1C2321] text-xs">
-                                    {tool}
-                                  </span>
-                                ))}
-                                {request.tools.length > 3 && (
-                                  <span className="px-2 py-1 bg-[#8a8a82]/10 text-[#8a8a82] text-xs">
-                                    +{request.tools.length - 3}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          )}
                         </div>
-                      </div>
 
-                      <div className="flex justify-between items-center pt-4 border-t border-[#1C2321]/10">
-                        <span className="text-xs text-[#8a8a82] flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          Created: {formatDate(request.created_at)}
-                        </span>
-                        
-                        <div className="flex gap-2">
-                          <button className="text-xs text-[#44A194] hover:underline flex items-center gap-1">
-                            <Eye className="w-3 h-3" />
-                            View
-                          </button>
-                          <button className="text-xs text-[#8a8a82] hover:text-[#1C2321] flex items-center gap-1">
-                            <Edit className="w-3 h-3" />
-                            Edit
-                          </button>
+                        <div className="flex flex-col xs:flex-row xs:justify-between xs:items-center gap-2 pt-3 border-t border-[#1C2321]/10">
+                          <span className="text-[8px] sm:text-xs text-[#8a8a82] flex items-center gap-1">
+                            <Calendar className="w-2 h-2 sm:w-3 sm:h-3" />
+                            Created: {formatDate(request.created_at)}
+                          </span>
+                          
+                          <div className="flex gap-2 self-end xs:self-auto">
+                            <button className="text-[8px] sm:text-xs text-[#44A194] hover:underline flex items-center gap-1">
+                              <Eye className="w-2 h-2 sm:w-3 sm:h-3" />
+                              View
+                            </button>
+                            <button className="text-[8px] sm:text-xs text-[#8a8a82] hover:text-[#1C2321] flex items-center gap-1">
+                              <Edit className="w-2 h-2 sm:w-3 sm:h-3" />
+                              Edit
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </motion.div>

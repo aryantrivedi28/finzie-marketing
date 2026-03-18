@@ -1,8 +1,8 @@
 // app/admin-panel/agreements/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, type Variants } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, type Variants, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   FileText,
@@ -22,6 +22,11 @@ import {
   DollarSign,
   Send,
   Plus,
+  Menu,
+  X,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
 } from "lucide-react";
 import { InvoiceForm } from "../../../components/admin-panel/invoice-form";
 import { ClientAgreementForm } from "../../../components/admin-panel/client-agreement-form";
@@ -52,7 +57,19 @@ const staggerContainer: Variants = {
   },
 };
 
-// Define proper TypeScript interfaces
+const slideIn: Variants = {
+  hidden: { x: -20, opacity: 0 },
+  visible: { 
+    x: 0, 
+    opacity: 1,
+    transition: { duration: 0.4 }
+  },
+};
+
+// Responsive breakpoints
+const MOBILE_BREAKPOINT = 768;
+
+// Define proper TypeScript interfaces - RENAME Document to DocumentItem
 interface BaseDocument {
   id: string
   created_at: string
@@ -100,7 +117,8 @@ interface Invoice extends BaseDocument {
 }
 
 type Agreement = ClientAgreement | FreelancerAgreement
-type Document = Agreement | Invoice
+// FIX: Renamed from Document to DocumentItem to avoid conflict with global Document
+type DocumentItem = Agreement | Invoice
 
 interface FormData {
   client_name: string
@@ -130,7 +148,443 @@ interface FormData {
   ownership?: string
 }
 
+// Reusable Components
+const StatCard = ({ value, label }: { value: number | string; label: string }) => (
+  <div className="bg-white p-4 sm:p-6">
+    <div className="font-display text-2xl sm:text-4xl font-light text-[#1C2321]">{value}</div>
+    <div className="text-[10px] sm:text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-1 sm:mt-2">
+      {label}
+    </div>
+  </div>
+);
+
+const TabButton = ({ 
+  active, 
+  onClick, 
+  icon: Icon, 
+  children 
+}: { 
+  active: boolean; 
+  onClick: () => void; 
+  icon: React.ElementType;
+  children: React.ReactNode;
+}) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 text-[10px] sm:text-xs tracking-[0.16em] uppercase transition-all whitespace-nowrap ${
+      active
+        ? "bg-[#44A194] text-white"
+        : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
+    }`}
+  >
+    <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
+    <span className="hidden xs:inline">{children}</span>
+  </button>
+);
+
+const LoadingSpinner = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
+  const sizeClasses = {
+    sm: "w-4 h-4 border-2",
+    md: "w-6 h-6 sm:w-8 sm:h-8 border-3",
+    lg: "w-8 h-8 sm:w-12 sm:h-12 border-4",
+  };
+  
+  return (
+    <div className={`${sizeClasses[size]} border-[#44A194] border-t-transparent rounded-full animate-spin`} />
+  );
+};
+
+const StatusBadge = ({ status }: { status: string }) => {
+  const statusConfig: Record<string, { color: string; icon: any }> = {
+    pending: { color: "bg-[#EC8F8D]/10 text-[#EC8F8D] border-[#EC8F8D]/20", icon: Clock },
+    sent: { color: "bg-[#537D96]/10 text-[#537D96] border-[#537D96]/20", icon: Send },
+    signed: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: CheckCircle },
+    completed: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: CheckCircle },
+    paid: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: DollarSign },
+  };
+  const config = statusConfig[status?.toLowerCase()] || statusConfig.pending;
+  const Icon = config.icon;
+
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[8px] sm:text-xs font-medium border ${config.color}`}>
+      <Icon className="w-2 h-2 sm:w-3 sm:h-3" />
+      <span className="truncate max-w-[60px] sm:max-w-none">{status}</span>
+    </span>
+  );
+};
+
+// FIX: Updated DocumentActions with renamed type and fixed typo
+const DocumentActions = ({ 
+  document, 
+  onView, 
+  onDownload, 
+  onEdit, 
+  onDelete, 
+  onRecreate 
+}: { 
+  document: DocumentItem;  // Changed from Document to DocumentItem
+  onView: () => void;
+  onDownload?: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onRecreate?: () => void;
+}) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+window.document.addEventListener('mousedown', handleClickOutside);
+return () => window.document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="flex items-center gap-1 sm:gap-2">
+      <button
+        onClick={onView}
+        className="p-1.5 sm:p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
+        title="View/Download PDF"
+      >
+        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+      </button>
+      
+      {onDownload && (
+        <button
+          onClick={onDownload}
+          className="p-1.5 sm:p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
+          title="Download"
+        >
+          <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+        </button>
+      )}
+
+      <div className="relative" ref={dropdownRef}>
+        <button
+          onClick={() => setShowDropdown(!showDropdown)}
+          className="p-1.5 sm:p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
+          title="More options"
+        >
+          <MoreVertical className="w-3 h-3 sm:w-4 sm:h-4" />
+        </button>
+        
+        <AnimatePresence>
+          {showDropdown && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              transition={{ duration: 0.1 }}
+              className="absolute right-0 mt-1 w-36 sm:w-48 bg-white border border-[#1C2321]/10 shadow-lg rounded-md z-50"
+            >
+              <button
+                onClick={() => {
+                  onEdit();
+                  setShowDropdown(false);
+                }}
+                className="w-full px-3 sm:px-4 py-2 text-left text-[10px] sm:text-xs text-[#1C2321] hover:bg-[#F4F0E4] flex items-center gap-2"
+              >
+                <Pencil className="w-3 h-3" />
+                Edit
+              </button>
+              
+              {onRecreate && (
+                <button
+                  onClick={() => {
+                    onRecreate();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full px-3 sm:px-4 py-2 text-left text-[10px] sm:text-xs text-[#1C2321] hover:bg-[#F4F0E4] flex items-center gap-2"
+                >
+                  <Copy className="w-3 h-3" />
+                  Recreate
+                </button>
+              )}
+              
+              <button
+                onClick={() => {
+                  onDelete();
+                  setShowDropdown(false);
+                }}
+                className="w-full px-3 sm:px-4 py-2 text-left text-[10px] sm:text-xs text-[#EC8F8D] hover:bg-[#F4F0E4] flex items-center gap-2"
+              >
+                <Trash2 className="w-3 h-3" />
+                Delete
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
+// FIX: Updated DocumentCard with renamed type
+const DocumentCard = ({ 
+  document, 
+  onView, 
+  onDownload, 
+  onEdit, 
+  onDelete, 
+  onRecreate,
+  getAmount 
+}: { 
+  document: DocumentItem;  // Changed from Document to DocumentItem
+  onView: () => void;
+  onDownload?: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onRecreate?: () => void;
+  getAmount: (doc: DocumentItem) => number;  // Changed from Document to DocumentItem
+}) => {
+  const amount = getAmount(document);
+  const currency = 'currency' in document && (document as any).currency ? (document as any).currency : 'USD';
+  
+  return (
+    <motion.div
+      variants={slideIn}
+      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-[#F4F0E4] hover:bg-[#ece8d8] transition-colors gap-3 sm:gap-4"
+    >
+      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#44A194]/10 flex items-center justify-center flex-shrink-0">
+          {document.document_type === "invoice" ? (
+            <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-[#44A194]" />
+          ) : (
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[#44A194]" />
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="font-medium text-xs sm:text-sm text-[#1C2321] truncate">
+            {document.project_title ||
+              document.work_type ||
+              ("invoice_number" in document ? document.invoice_number : "Untitled")}
+          </h3>
+          <p className="text-[10px] sm:text-xs text-[#8a8a82] truncate">
+            {document.client_name || document.freelancer_name || 'N/A'} • {document.document_type}
+            {document.type && ` (${document.type})`}
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4">
+        {amount > 0 && (
+          <span className="text-[10px] sm:text-xs text-[#44A194] font-medium whitespace-nowrap">
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: currency,
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(amount)}
+          </span>
+        )}
+
+        <StatusBadge status={document.status} />
+
+        <DocumentActions
+          document={document}
+          onView={onView}
+          onDownload={onDownload}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onRecreate={onRecreate}
+        />
+      </div>
+    </motion.div>
+  );
+};
+
+// Delete Confirmation Modal (no changes needed)
+const DeleteConfirmationModal = ({ 
+  isOpen, 
+  onClose, 
+  onConfirm, 
+  documentName 
+}: { 
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  documentName: string;
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="bg-white max-w-md w-full rounded-lg"
+      >
+        <div className="p-4 sm:p-6">
+          <h3 className="font-display text-lg sm:text-xl font-light text-[#1C2321] mb-4">
+            Delete Document
+          </h3>
+          <p className="text-xs sm:text-sm text-[#8a8a82] mb-6">
+            Are you sure you want to delete "{documentName}"? This action cannot be undone.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={onConfirm}
+              className="flex-1 px-4 py-2 sm:py-3 bg-[#EC8F8D] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#d87a78] transition-colors"
+            >
+              Delete
+            </button>
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2 sm:py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-xs tracking-[0.16em] uppercase hover:border-[#44A194] transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Edit Modal - FIX: Updated with renamed type
+const EditModal = ({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  document, 
+  formData, 
+  setFormData 
+}: { 
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  document: DocumentItem | null;  // Changed from Document to DocumentItem
+  formData: any;
+  setFormData: (data: any) => void;
+}) => {
+  if (!isOpen || !document) return null;
+
+  const isInvoice = document.document_type === "invoice";
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-lg"
+      >
+        <div className="sticky top-0 bg-white p-4 sm:p-6 border-b border-[#1C2321]/10">
+          <h3 className="font-display text-lg sm:text-xl font-light text-[#1C2321]">
+            Edit {isInvoice ? 'Invoice' : 'Agreement'}
+          </h3>
+        </div>
+        
+        <div className="p-4 sm:p-6 space-y-4">
+          {isInvoice ? (
+            // Invoice edit fields
+            <>
+              <div>
+                <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                  Invoice Number
+                </label>
+                <input
+                  type="text"
+                  value={formData.invoice_number || ''}
+                  onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
+                  className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  value={formData.amount || ''}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                  Status
+                </label>
+                <select
+                  value={formData.status || ''}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="sent">Sent</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
+            </>
+          ) : (
+            // Agreement edit fields
+            <>
+              <div>
+                <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                  Project Title
+                </label>
+                <input
+                  type="text"
+                  value={formData.project_title || ''}
+                  onChange={(e) => setFormData({ ...formData, project_title: e.target.value })}
+                  className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                  Client Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.client_name || ''}
+                  onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
+                  className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-1 sm:mb-2">
+                  Status
+                </label>
+                <select
+                  value={formData.status || ''}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194]"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="sent">Sent</option>
+                  <option value="signed">Signed</option>
+                </select>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="sticky bottom-0 bg-white p-4 sm:p-6 border-t border-[#1C2321]/10 flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={onSave}
+            className="flex-1 px-4 py-2 sm:py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors"
+          >
+            Save Changes
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 sm:py-3 bg-white border border-[#1C2321]/10 text-[#1C2321] text-xs tracking-[0.16em] uppercase hover:border-[#44A194] transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Main Component
 function AgreementAutomationPageContent() {
+  const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [agreements, setAgreements] = useState<Agreement[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -146,8 +600,21 @@ function AgreementAutomationPageContent() {
         : () => { };
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  // FIX: Updated state type
+  const [selectedDocument, setSelectedDocument] = useState<DocumentItem | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
+
+  // Responsive detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const defaultFreelancerTerms = `
 **1. Professional Conduct & Communication**
@@ -512,20 +979,30 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
   };
 
   const downloadFile = async (url: string, filename: string) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(blobUrl);
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      toast({
+        title: "Error",
+        description: "Failed to download file",
+        variant: "destructive",
+      });
+    }
   };
 
   const generatePDF = async (agreementId: string, type: "client" | "freelancer") => {
     try {
+      setLoading(true);
       const response = await fetch("/api/agreements/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -543,11 +1020,19 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
     } catch (error) {
       console.error("Error generating PDF:", error);
       setError("Failed to generate PDF");
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const generateInvoicePDF = async (invoiceId: string) => {
     try {
+      setLoading(true);
       const response = await fetch("/api/invoices/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -568,29 +1053,18 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
     } catch (error) {
       console.error("Error generating invoice PDF:", error);
       setError("Failed to generate invoice PDF");
+      toast({
+        title: "Error",
+        description: "Failed to generate invoice PDF",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { color: string; icon: any }> = {
-      pending: { color: "bg-[#EC8F8D]/10 text-[#EC8F8D] border-[#EC8F8D]/20", icon: Clock },
-      sent: { color: "bg-[#537D96]/10 text-[#537D96] border-[#537D96]/20", icon: Send },
-      signed: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: CheckCircle },
-      completed: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: CheckCircle },
-      paid: { color: "bg-[#44A194]/10 text-[#44A194] border-[#44A194]/20", icon: DollarSign },
-    };
-    const config = statusConfig[status?.toLowerCase()] || statusConfig.pending;
-    const Icon = config.icon;
-
-    return (
-      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border ${config.color}`}>
-        <Icon className="w-3 h-3" />
-        {status}
-      </span>
-    );
-  };
-
-  const getDocumentAmount = (document: Document): number => {
+  // FIX: Updated function signature
+  const getDocumentAmount = (document: DocumentItem): number => {
     const toNumber = (val: unknown) => {
       const num = typeof val === "number" ? val : Number.parseFloat(String(val));
       return Number.isFinite(num) ? num : 0;
@@ -608,7 +1082,8 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
     return 0;
   };
 
-  const allDocuments = [
+  // FIX: Updated type
+  const allDocuments: DocumentItem[] = [
     ...agreements.map((a) => ({ ...a, document_type: "agreement" as const })),
     ...invoices.map((i) => ({ ...i, document_type: "invoice" as const })),
   ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -656,7 +1131,8 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
     }
   };
 
-  const handleDelete = async (docParam?: Document) => {
+  // FIX: Updated function signature
+  const handleDelete = async (docParam?: DocumentItem) => {
     const doc = docParam ?? selectedDocument;
     if (!doc) return;
 
@@ -807,10 +1283,17 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
     }
   };
 
-  const openEditDialog = (document: Document) => {
+  // FIX: Updated function signature
+  const openEditDialog = (document: DocumentItem) => {
     setSelectedDocument(document);
     setEditFormData({ ...document });
     setEditDialogOpen(true);
+  };
+
+  // FIX: Updated function signature
+  const openDeleteDialog = (document: DocumentItem) => {
+    setSelectedDocument(document);
+    setDeleteDialogOpen(true);
   };
 
   return (
@@ -823,111 +1306,95 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
       {/* Top Bar */}
       <motion.div 
         variants={fadeUp}
-        className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-8 py-4 flex items-center"
+        className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center"
       >
         <button
           onClick={() => window.history.back()}
-          className="flex items-center gap-2 text-[#8a8a82] hover:text-[#1C2321] transition-colors mr-4"
+          className="flex items-center gap-1 sm:gap-2 text-[#8a8a82] hover:text-[#1C2321] transition-colors mr-2 sm:mr-4"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-xs tracking-[0.16em] uppercase">Back</span>
+          <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="text-[10px] sm:text-xs tracking-[0.16em] uppercase">Back</span>
         </button>
-        <div className="flex-1">
-          <h1 className="font-display text-2xl font-light text-[#1C2321]">Agreement Automation</h1>
-          <p className="text-sm text-[#8a8a82] mt-1 tracking-[0.04em]">
+        <div className="flex-1 min-w-0">
+          <h1 className="font-display text-lg sm:text-xl md:text-2xl font-light text-[#1C2321] truncate">
+            Agreement Automation
+          </h1>
+          <p className="text-xs sm:text-sm text-[#8a8a82] mt-0.5 sm:mt-1 tracking-[0.04em] truncate">
             Manage agreements, invoices & document signing
           </p>
         </div>
       </motion.div>
 
       {/* Content */}
-      <div className="p-8">
+      <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
         {/* Stats Cards */}
         <motion.div 
           variants={fadeUp}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2px] bg-[#1C2321]/10 mb-8"
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-[1px] sm:gap-[2px] bg-[#1C2321]/10 mb-6 sm:mb-8"
         >
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">{stats.total}</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Documents</div>
-          </div>
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">{stats.pending}</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Pending</div>
-          </div>
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">{stats.signed}</div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Completed</div>
-          </div>
-          <div className="bg-white p-6">
-            <div className="font-display text-4xl font-light text-[#1C2321]">
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-                minimumFractionDigits: 0,
-              }).format(stats.revenue)}
-            </div>
-            <div className="text-xs tracking-[0.18em] uppercase text-[#8a8a82] mt-2">Total Revenue</div>
-          </div>
+          <StatCard value={stats.total} label="Total Documents" />
+          <StatCard value={stats.pending} label="Pending" />
+          <StatCard value={stats.signed} label="Completed" />
+          <StatCard 
+            value={new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(stats.revenue)}
+            label="Total Revenue" 
+          />
         </motion.div>
 
         {/* Error Message */}
-        {error && (
-          <motion.div 
-            variants={fadeUp}
-            className="mb-6 p-4 bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 text-[#EC8F8D]"
-          >
-            <p>{error}</p>
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div 
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-4 sm:mb-6 p-3 sm:p-4 bg-[#EC8F8D]/10 border border-[#EC8F8D]/20 text-[#EC8F8D] text-xs sm:text-sm rounded"
+            >
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <p>{error}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Tabs */}
+        {/* Tabs - Scrollable on mobile */}
         <motion.div variants={fadeUp}>
-          <div className="flex gap-2 mb-8">
-            <button
+          <div className="flex gap-1 sm:gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2 scrollbar-hide">
+            <TabButton
+              active={activeTab === "dashboard"}
               onClick={() => setActiveTab("dashboard")}
-              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
-                activeTab === "dashboard"
-                  ? "bg-[#44A194] text-white"
-                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
-              }`}
+              icon={FileText}
             >
-              <FileText className="w-4 h-4 inline mr-2" />
               Dashboard
-            </button>
-            <button
+            </TabButton>
+            <TabButton
+              active={activeTab === "client-agreement"}
               onClick={() => setActiveTab("client-agreement")}
-              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
-                activeTab === "client-agreement"
-                  ? "bg-[#44A194] text-white"
-                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
-              }`}
+              icon={User}
             >
-              <User className="w-4 h-4 inline mr-2" />
               Client
-            </button>
-            <button
+            </TabButton>
+            <TabButton
+              active={activeTab === "freelancer-agreement"}
               onClick={() => setActiveTab("freelancer-agreement")}
-              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
-                activeTab === "freelancer-agreement"
-                  ? "bg-[#44A194] text-white"
-                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
-              }`}
+              icon={Briefcase}
             >
-              <Briefcase className="w-4 h-4 inline mr-2" />
               Freelancer
-            </button>
-            <button
+            </TabButton>
+            <TabButton
+              active={activeTab === "invoice"}
               onClick={() => setActiveTab("invoice")}
-              className={`px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors ${
-                activeTab === "invoice"
-                  ? "bg-[#44A194] text-white"
-                  : "bg-white text-[#8a8a82] hover:text-[#1C2321] border border-[#1C2321]/10"
-              }`}
+              icon={CreditCard}
             >
-              <CreditCard className="w-4 h-4 inline mr-2" />
               Invoice
-            </button>
+            </TabButton>
           </div>
         </motion.div>
 
@@ -937,122 +1404,40 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
             variants={fadeUp}
             className="bg-white border border-[#1C2321]/10"
           >
-            <div className="p-6 border-b border-[#1C2321]/10">
-              <h2 className="font-display text-xl font-light text-[#1C2321]">Recent Documents</h2>
+            <div className="p-4 sm:p-6 border-b border-[#1C2321]/10">
+              <h2 className="font-display text-lg sm:text-xl font-light text-[#1C2321]">Recent Documents</h2>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-6 h-6 animate-spin text-[#44A194]" />
+                <div className="flex items-center justify-center py-8 sm:py-12">
+                  <LoadingSpinner size="md" />
                 </div>
               ) : allDocuments.length === 0 ? (
-                <div className="text-center py-12">
-                  <FileText className="w-12 h-12 text-[#8a8a82] mx-auto mb-4" />
-                  <p className="text-[#8a8a82]">No documents found. Create your first document to get started.</p>
+                <div className="text-center py-8 sm:py-12">
+                  <FileText className="w-8 h-8 sm:w-12 sm:h-12 text-[#8a8a82] mx-auto mb-3 sm:mb-4" />
+                  <p className="text-xs sm:text-sm text-[#8a8a82]">
+                    No documents found. Create your first document to get started.
+                  </p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {allDocuments.map((document) => (
-                    <div
+                    <DocumentCard
                       key={`${document.document_type}-${document.id}`}
-                      className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-[#F4F0E4] hover:bg-[#ece8d8] transition-colors"
-                    >
-                      <div className="flex items-center gap-4 mb-3 md:mb-0">
-                        <div className="w-10 h-10 bg-[#44A194]/10 flex items-center justify-center">
-                          {document.document_type === "invoice" ? (
-                            <CreditCard className="w-5 h-5 text-[#44A194]" />
-                          ) : (
-                            <FileText className="w-5 h-5 text-[#44A194]" />
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-[#1C2321]">
-                            {document.project_title ||
-                              document.work_type ||
-                              ("invoice_number" in document ? document.invoice_number : "Untitled")}
-                          </h3>
-                          <p className="text-sm text-[#8a8a82]">
-                            {document.client_name || document.freelancer_name} • {document.document_type}
-                            {document.type && ` (${document.type})`}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
-                        {getDocumentAmount(document) > 0 && (
-                          <span className="text-[#44A194] font-medium text-sm">
-                            {new Intl.NumberFormat("en-US", {
-                              style: "currency",
-                              currency: "currency" in document && (document as any).currency ? (document as any).currency : "USD",
-                              minimumFractionDigits: 2,
-                            }).format(getDocumentAmount(document))}
-                          </span>
-                        )}
-
-                        {getStatusBadge(document.status)}
-
-                        <div className="flex gap-2">
-                          <button
-                            className="p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
-                            onClick={() => {
-                              if (document.document_type === "invoice") {
-                                generateInvoicePDF(document.id);
-                              } else {
-                                generatePDF(document.id, (document as Agreement).type);
-                              }
-                            }}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          {document.pdf_url && (
-                            <button
-                              className="p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
-                              onClick={() =>
-                                downloadFile(document.pdf_url!, `${document.document_type}-${document.id}.pdf`)
-                              }
-                            >
-                              <Download className="w-4 h-4" />
-                            </button>
-                          )}
-
-                          <div className="relative">
-                            <button
-                              className="p-2 text-[#8a8a82] hover:text-[#44A194] transition-colors"
-                              onClick={() => {
-                                // Toggle dropdown - you can add dropdown state management if needed
-                              }}
-                            >
-                              <MoreVertical className="w-4 h-4" />
-                            </button>
-                            {/* Simple dropdown menu - you can enhance this with proper dropdown component */}
-                            <div className="absolute right-0 mt-2 w-48 bg-white border border-[#1C2321]/10 shadow-lg hidden group-hover:block">
-                              <button
-                                onClick={() => openEditDialog(document)}
-                                className="w-full px-4 py-2 text-left text-sm text-[#1C2321] hover:bg-[#F4F0E4] flex items-center gap-2"
-                              >
-                                <Pencil className="w-4 h-4" />
-                                Edit
-                              </button>
-                              {document.document_type === "invoice" && (
-                                <button
-                                  onClick={() => handleRecreate(document as Invoice)}
-                                  className="w-full px-4 py-2 text-left text-sm text-[#1C2321] hover:bg-[#F4F0E4] flex items-center gap-2"
-                                >
-                                  <Copy className="w-4 h-4" />
-                                  Recreate
-                                </button>
-                              )}
-                              <button
-                                onClick={() => handleDelete(document)}
-                                className="w-full px-4 py-2 text-left text-sm text-[#EC8F8D] hover:bg-[#F4F0E4] flex items-center gap-2"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Delete
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      document={document}
+                      onView={() => {
+                        if (document.document_type === "invoice") {
+                          generateInvoicePDF(document.id);
+                        } else {
+                          generatePDF(document.id, (document as Agreement).type);
+                        }
+                      }}
+                      onDownload={document.pdf_url ? () => downloadFile(document.pdf_url!, `${document.document_type}-${document.id}.pdf`) : undefined}
+                      onEdit={() => openEditDialog(document)}
+                      onDelete={() => openDeleteDialog(document)}
+                      onRecreate={document.document_type === "invoice" ? () => handleRecreate(document as Invoice) : undefined}
+                      getAmount={getDocumentAmount}
+                    />
                   ))}
                 </div>
               )}
@@ -1092,6 +1477,38 @@ Freelancers waive any rights to reuse, reproduce, or republish any part of the w
           </motion.div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setSelectedDocument(null);
+        }}
+        onConfirm={() => handleDelete()}
+        documentName={
+          selectedDocument
+            ? (selectedDocument as any).project_title ||
+              (selectedDocument as any).work_type ||
+              (selectedDocument as any).invoice_number ||
+              'document'
+            : 'document'
+        }
+      />
+
+      {/* Edit Modal */}
+      <EditModal
+        isOpen={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedDocument(null);
+          setEditFormData({});
+        }}
+        onSave={handleEdit}
+        document={selectedDocument}
+        formData={editFormData}
+        setFormData={setEditFormData}
+      />
     </motion.div>
   );
 }

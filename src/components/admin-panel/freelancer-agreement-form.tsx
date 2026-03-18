@@ -1,8 +1,8 @@
 // components/admin-panel/freelancer-agreement-form.tsx
 "use client";
 
-import { useState } from "react";
-import { motion, type Variants } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, type Variants, AnimatePresence } from "framer-motion";
 import {
   User,
   Mail,
@@ -15,6 +15,8 @@ import {
   Sparkles,
   DollarSign,
   Clock,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 // Animation variants
@@ -29,6 +31,9 @@ const fadeUp: Variants = {
     } 
   },
 };
+
+// Responsive breakpoint
+const MOBILE_BREAKPOINT = 768;
 
 interface FreelancerAgreementFormData {
   freelancer_name: string
@@ -50,6 +55,121 @@ interface FreelancerAgreementFormProps {
   onGenerateAITerms: (type: "freelancer") => Promise<void>
   aiLoading: boolean
 }
+
+// Reusable Components
+const FormSection = ({ 
+  title, 
+  icon: Icon, 
+  children,
+  defaultOpen = true 
+}: { 
+  title: string; 
+  icon: React.ElementType; 
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border border-[#1C2321]/10 bg-white mb-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between text-left"
+        type="button"
+      >
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-[#44A194]" />
+          <h3 className="text-xs sm:text-sm tracking-[0.16em] uppercase text-[#44A194]">{title}</h3>
+        </div>
+        {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 sm:px-6 pb-4 sm:pb-6">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const InputField = ({ 
+  label, 
+  icon: Icon, 
+  value, 
+  onChange, 
+  placeholder, 
+  type = "text",
+  rows,
+  required = false
+}: { 
+  label: string; 
+  icon: React.ElementType; 
+  value: string; 
+  onChange: (value: string) => void; 
+  placeholder: string;
+  type?: string;
+  rows?: number;
+  required?: boolean;
+}) => (
+  <div className="space-y-1 sm:space-y-2">
+    <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] flex items-center gap-1">
+      <Icon className="w-3 h-3" />
+      {label}
+      {required && <span className="text-[#EC8F8D]">*</span>}
+    </label>
+    {rows ? (
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={rows}
+        className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors resize-none"
+        placeholder={placeholder}
+        required={required}
+      />
+    ) : (
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
+        placeholder={placeholder}
+        required={required}
+      />
+    )}
+  </div>
+);
+
+const AIButton = ({ 
+  onClick, 
+  loading, 
+  children 
+}: { 
+  onClick: () => void; 
+  loading: boolean; 
+  children: React.ReactNode;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={loading}
+    className="px-2 sm:px-3 py-1 bg-[#44A194]/10 text-[#44A194] text-[8px] sm:text-xs tracking-[0.16em] uppercase hover:bg-[#44A194]/20 transition-colors disabled:opacity-50 flex items-center gap-1 whitespace-nowrap"
+  >
+    {loading ? (
+      <Loader2 className="w-2 h-2 sm:w-3 sm:h-3 animate-spin" />
+    ) : (
+      <Sparkles className="w-2 h-2 sm:w-3 sm:h-3" />
+    )}
+    {children}
+  </button>
+);
 
 // Clean, well-formatted default terms
 const DEFAULT_FREELANCER_TERMS = `1. PROFESSIONAL CONDUCT & COMMUNICATION
@@ -94,6 +214,8 @@ export function FreelancerAgreementForm({
   onGenerateAITerms,
   aiLoading,
 }: FreelancerAgreementFormProps) {
+  const [isMobile, setIsMobile] = useState(false);
+  
   const [formData, setFormData] = useState<FreelancerAgreementFormData>({
     freelancer_name: "",
     freelancer_email: "",
@@ -107,6 +229,18 @@ export function FreelancerAgreementForm({
     currency: "USD",
     project_duration: "",
   });
+
+  // Responsive detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleInputChange = (field: keyof FreelancerAgreementFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -136,94 +270,74 @@ export function FreelancerAgreementForm({
       className="bg-white border border-[#1C2321]/10"
     >
       {/* Header */}
-      <div className="p-6 border-b border-[#1C2321]/10">
-        <h2 className="font-display text-xl font-light text-[#1C2321] flex items-center gap-2">
-          <Briefcase className="w-5 h-5 text-[#44A194]" />
+      <div className="p-4 sm:p-6 border-b border-[#1C2321]/10">
+        <h2 className="font-display text-lg sm:text-xl font-light text-[#1C2321] flex items-center gap-2">
+          <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-[#44A194]" />
           Create Freelancer Agreement
         </h2>
       </div>
 
       {/* Content */}
-      <div className="p-6 space-y-8">
-        {/* Basic Information */}
-        <div>
-          <h3 className="text-sm tracking-[0.16em] uppercase text-[#44A194] mb-4">Basic Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        {/* Basic Information - Collapsible on mobile */}
+        <FormSection title="Basic Information" icon={User} defaultOpen={!isMobile}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Left Column */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-1">
-                  <User className="w-3 h-3" />
-                  Freelancer Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.freelancer_name}
-                  onChange={(e) => handleInputChange("freelancer_name", e.target.value)}
-                  className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
-                  placeholder="Enter freelancer name"
-                />
-              </div>
-              <div>
-                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-1">
-                  <Mail className="w-3 h-3" />
-                  Freelancer Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.freelancer_email}
-                  onChange={(e) => handleInputChange("freelancer_email", e.target.value)}
-                  className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
-                  placeholder="freelancer@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-1">
-                  <User className="w-3 h-3" />
-                  Client Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.client_name}
-                  onChange={(e) => handleInputChange("client_name", e.target.value)}
-                  className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
-                  placeholder="Enter client name"
-                />
-              </div>
-              <div>
-                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-1">
-                  <Mail className="w-3 h-3" />
-                  Client Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.client_email}
-                  onChange={(e) => handleInputChange("client_email", e.target.value)}
-                  className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
-                  placeholder="client@example.com"
-                />
-              </div>
+            <div className="space-y-3 sm:space-y-4">
+              <InputField
+                label="Freelancer Name"
+                icon={User}
+                value={formData.freelancer_name}
+                onChange={(v) => handleInputChange("freelancer_name", v)}
+                placeholder="Enter freelancer name"
+                required
+              />
+              <InputField
+                label="Freelancer Email"
+                icon={Mail}
+                value={formData.freelancer_email}
+                onChange={(v) => handleInputChange("freelancer_email", v)}
+                placeholder="freelancer@example.com"
+                type="email"
+                required
+              />
+              <InputField
+                label="Client Name"
+                icon={User}
+                value={formData.client_name}
+                onChange={(v) => handleInputChange("client_name", v)}
+                placeholder="Enter client name"
+                required
+              />
+              <InputField
+                label="Client Email"
+                icon={Mail}
+                value={formData.client_email}
+                onChange={(v) => handleInputChange("client_email", v)}
+                placeholder="client@example.com"
+                type="email"
+              />
             </div>
 
             {/* Right Column */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-1">
+                <label className="block text-[10px] sm:text-xs tracking-[0.16em] uppercase text-[#8a8a82] flex items-center gap-1 mb-1 sm:mb-2">
                   <Coins className="w-3 h-3" />
                   Rate
                 </label>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:flex gap-2 sm:gap-3">
                   <input
                     type="number"
                     value={formData.rate_amount}
                     onChange={(e) => handleInputChange("rate_amount", e.target.value)}
-                    className="w-full sm:w-1/3 border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
+                    className="w-full xs:col-span-1 border border-[#1C2321]/10 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
                     placeholder="0.00"
                   />
                   <select
                     value={formData.currency}
                     onChange={(e) => handleInputChange("currency", e.target.value)}
-                    className="w-full sm:w-1/3 border border-[#1C2321]/10 px-3 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors bg-white"
+                    className="w-full xs:col-span-1 border border-[#1C2321]/10 px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors bg-white"
                   >
                     <option value="USD">USD ($)</option>
                     <option value="EUR">EUR (€)</option>
@@ -236,7 +350,7 @@ export function FreelancerAgreementForm({
                   <select
                     value={formData.rate_type}
                     onChange={(e) => handleInputChange("rate_type", e.target.value)}
-                    className="w-full sm:w-1/3 border border-[#1C2321]/10 px-3 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors bg-white"
+                    className="w-full xs:col-span-2 sm:w-auto border border-[#1C2321]/10 px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors bg-white"
                   >
                     <option value="hour">Per Hour</option>
                     <option value="day">Per Day</option>
@@ -248,92 +362,76 @@ export function FreelancerAgreementForm({
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
-                  Project Duration
-                </label>
-                <input
-                  type="text"
-                  value={formData.project_duration}
-                  onChange={(e) => handleInputChange("project_duration", e.target.value)}
-                  className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
-                  placeholder="e.g., 3 months, 40 hours"
-                />
-              </div>
+              <InputField
+                label="Project Duration"
+                icon={Calendar}
+                value={formData.project_duration}
+                onChange={(v) => handleInputChange("project_duration", v)}
+                placeholder="e.g., 3 months, 40 hours"
+              />
 
-              <div>
-                <label className="block text-xs tracking-[0.16em] uppercase text-[#8a8a82] mb-2 flex items-center gap-1">
-                  <Briefcase className="w-3 h-3" />
-                  Work Type
-                </label>
-                <input
-                  type="text"
-                  value={formData.work_type}
-                  onChange={(e) => handleInputChange("work_type", e.target.value)}
-                  className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors"
-                  placeholder="e.g., Web Development, Design"
-                />
-              </div>
+              <InputField
+                label="Work Type"
+                icon={Briefcase}
+                value={formData.work_type}
+                onChange={(v) => handleInputChange("work_type", v)}
+                placeholder="e.g., Web Development, Design"
+              />
             </div>
           </div>
-        </div>
+        </FormSection>
 
         {/* Scope of Work */}
-        <div>
-          <h3 className="text-sm tracking-[0.16em] uppercase text-[#44A194] mb-4">Scope of Work</h3>
-          <textarea
+        <FormSection title="Scope of Work" icon={Briefcase} defaultOpen={!isMobile}>
+          <InputField
+            label="Scope of Work"
+            icon={Briefcase}
             value={formData.scope}
-            onChange={(e) => handleInputChange("scope", e.target.value)}
-            rows={3}
-            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors resize-none"
+            onChange={(v) => handleInputChange("scope", v)}
             placeholder="Describe the scope of work, responsibilities, and deliverables"
+            rows={3}
           />
-        </div>
+        </FormSection>
 
         {/* Terms & Conditions */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm tracking-[0.16em] uppercase text-[#44A194]">Terms & Conditions</h3>
-            <button
-              type="button"
-              onClick={() => onGenerateAITerms("freelancer")}
-              disabled={aiLoading}
-              className="px-3 py-1 bg-[#44A194]/10 text-[#44A194] text-xs tracking-[0.16em] uppercase hover:bg-[#44A194]/20 transition-colors disabled:opacity-50 flex items-center gap-1"
-            >
-              {aiLoading ? (
-                <Loader2 className="w-3 h-3 animate-spin" />
-              ) : (
-                <Sparkles className="w-3 h-3" />
-              )}
-              AI Generate
-            </button>
+        <FormSection title="Terms & Conditions" icon={Shield} defaultOpen={!isMobile}>
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex justify-end">
+              <AIButton
+                onClick={() => onGenerateAITerms("freelancer")}
+                loading={aiLoading}
+              >
+                AI Generate
+              </AIButton>
+            </div>
+            <InputField
+              label="Terms & Conditions"
+              icon={Shield}
+              value={formData.terms}
+              onChange={(v) => handleInputChange("terms", v)}
+              placeholder="Enter terms and conditions"
+              rows={isMobile ? 6 : 8}
+            />
           </div>
-          <textarea
-            value={formData.terms}
-            onChange={(e) => handleInputChange("terms", e.target.value)}
-            rows={8}
-            className="w-full border border-[#1C2321]/10 px-4 py-2 text-sm text-[#1C2321] focus:outline-none focus:border-[#44A194] transition-colors resize-none font-mono"
-            placeholder="Enter terms and conditions"
-          />
-        </div>
+        </FormSection>
 
         {/* Submit Button */}
         <div className="pt-4 border-t border-[#1C2321]/10">
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full px-6 py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-[#44A194] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            type="button"
           >
             {loading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Creating...
+                <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+                <span>Creating...</span>
               </>
             ) : (
               <>
-                <FileSignature className="w-4 h-4" />
-                Create Agreement
+                <FileSignature className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span>Create Agreement</span>
               </>
             )}
           </button>
