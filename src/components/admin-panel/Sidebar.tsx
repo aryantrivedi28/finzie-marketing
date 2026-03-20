@@ -36,12 +36,12 @@ const navigation: NavigationItem[] = [
   { name: "Dashboard", href: "/admin-panel", icon: LayoutDashboard },
   { name: "Freelancers", href: "/admin-panel?tab=freelancers", icon: Users },
   { name: "Forms", href: "/admin-panel?tab=forms", icon: FileText },
-  { name: "Agreements", href: "/admin-panel/agreements", icon: FileCheck },
-  { name: "Generate Form", href: "/admin-panel/generate-form", icon: Sparkles },
-  { name: "Bulk Mail", href: "/admin-panel/bulk-mail-send", icon: Send, badge: 3 },
-  { name: "Notifications", href: "/admin-panel/notifications", icon: Bell },
-  { name: "Analyze", href: "/analyze", icon: BarChart3 },
-  { name: "Settings", href: "/settings", icon: Settings },
+  // { name: "Agreements", href: "/admin-panel/agreements", icon: FileCheck },
+  // { name: "Generate Form", href: "/admin-panel/generate-form", icon: Sparkles },
+  // { name: "Bulk Mail", href: "/admin-panel/bulk-mail-send", icon: Send, badge: 3 },
+  // { name: "Notifications", href: "/admin-panel/notifications", icon: Bell },
+  // { name: "Analyze", href: "/analyze", icon: BarChart3 },
+  // { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 // Responsive breakpoints
@@ -341,20 +341,3 @@ export function Sidebar() {
   );
 }
 
-// Add this to your global CSS file for scrollbar styling
-// styles/globals.css:
-/*
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
-}
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-*/
