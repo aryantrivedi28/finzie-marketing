@@ -17,9 +17,9 @@ const jost = Jost({
 })
 
 export const metadata: Metadata = {
-  title: 'ExecuMarketing - AI Matching for Marketing Talent',
+  title: 'AI Marketing Talent Platform | ExecuMarketing',
   description:
-    'AI-powered matching platform connecting businesses with verified marketing specialists.',
+    'Hire pre-vetted marketing talent in under 2 hours. No noise, no bidding—just execution. AI-powered matching, interviews, and delivery via WhatsApp.',
 
   icons: {
     icon: '/exeicon.png',          // standard favicon
