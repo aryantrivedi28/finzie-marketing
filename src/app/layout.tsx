@@ -1,56 +1,69 @@
-import type { Metadata } from 'next'
-import { Cormorant_Garamond, Jost } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
+// app/layout.tsx
+'use client'
+
+import { usePathname, useRouter } from 'next/navigation'
 import './globals.css'
-
-const cormorant = Cormorant_Garamond({
-  weight: ['300', '400', '500'],
-  style: ['normal', 'italic'],
-  subsets: ['latin'],
-  variable: '--font-display',
-})
-
-const jost = Jost({
-  weight: ['300', '400', '500'],
-  subsets: ['latin'],
-  variable: '--font-body',
-})
-
-export const metadata: Metadata = {
-  title: 'AI Marketing Talent Platform | ExecuMarketing',
-  description:
-    'Hire pre-vetted marketing talent in under 2 hours. No noise, no bidding—just execution. AI-powered matching, interviews, and delivery via WhatsApp.',
-
-  icons: {
-    icon: '/exeicon.png',          // standard favicon
-    shortcut: '/favicon.ico',      // optional
-    apple: '/apple-touch-icon.png' // for iOS devices
-  },
-
-  openGraph: {
-    title: 'ExecuMarketing',
-    description: 'AI-powered matching for marketing specialists',
-  },
-}
-
+import { Header } from '../components/Header'
+import { Footer } from '../components/Footer'
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
+  const pathname = usePathname()
+  const router = useRouter()
+
+  // Determine current page from URL path
+  const getCurrentPageFromPath = () => {
+    const path = pathname || '/'
+    if (path === '/') return 'home'
+    if (path === '/business') return 'business'
+    if (path === '/freelancers') return 'freelancers'
+    if (path === '/about') return 'about'
+    if (path === '/systems') return 'systems'
+    if (path === '/how') return 'how'
+    if (path === '/pricing') return 'pricing'
+    return 'home'
+  }
+
+  const currentPage = getCurrentPageFromPath()
+
+  const handleNavigation = (page: string) => {
+    if (page === 'home') {
+      router.push('/')
+    } else if (page === 'business') {
+      router.push('/business')
+    } else if (page === 'freelancers') {
+      router.push('/freelancers')
+    } else if (page === 'about') {
+      router.push('/about')
+    } else if (page === 'systems') {
+      router.push('/systems')
+    } else if (page === 'how') {
+      router.push('/how')
+    } else if (page === 'pricing') {
+      router.push('/pricing')
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
-    <html
-      lang="en"
-      style={{
-        '--font-display': cormorant.style.fontFamily,
-        '--font-body': jost.style.fontFamily,
-      } as React.CSSProperties}
-      suppressHydrationWarning={true}  // Add this line
-    >
-      <body className="font-body antialiased bg-cream text-night">
-        {children}
-        <Analytics />
+    <html lang="en">
+      <head>
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" 
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        <div className="flex flex-col min-h-screen bg-[#F4F0E4]">
+          <Header activePage={currentPage} onNavClick={handleNavigation} />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </div>
       </body>
     </html>
   )
