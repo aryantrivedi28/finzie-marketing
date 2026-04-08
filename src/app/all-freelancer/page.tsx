@@ -20,9 +20,10 @@ import {
   Shield,
   AlertCircle,
   X,
-  Plus,
   Check,
-  ChevronDown
+  ChevronDown,
+  DollarSign,
+  IndianRupee
 } from "lucide-react"
 
 type Payload = {
@@ -36,7 +37,10 @@ type Payload = {
   subcategories: string[]
   subcategory_other: string
   experience_years: string
-  why_join: string
+  pricing_min: number
+  pricing_max: number
+  pricing_type: string
+  freelancer_description: string
   terms_accepted: boolean
 }
 
@@ -59,7 +63,10 @@ export default function FreelancerOnboardingPage() {
     subcategories: [],
     subcategory_other: "",
     experience_years: "",
-    why_join: "",
+    pricing_min: 0,
+    pricing_max: 0,
+    pricing_type: "project",
+    freelancer_description: "",
     terms_accepted: false,
   })
 
@@ -82,7 +89,7 @@ export default function FreelancerOnboardingPage() {
     { id: "social", name: "Social Media", icon: "📱", description: "Content creation, community management, strategy" },
   ]
 
-  // Subcategories based on selected category - MULTIPLE SELECTION READY
+  // Subcategories based on selected category
   const subcategoriesMap: Record<string, { id: string; name: string; description: string }[]> = {
     shopify: [
       { id: "store_setup", name: "Store Setup & Migration", description: "Shopify store setup, product migration, data transfer" },
@@ -144,12 +151,19 @@ export default function FreelancerOnboardingPage() {
     { id: "7_plus", name: "7+ years", range: "7+" },
   ]
 
+  // Pricing types
+  const pricingTypes = [
+    { id: "project", name: "Per Project", icon: "📋", description: "Fixed price per project" },
+    { id: "hourly", name: "Per Hour", icon: "⏰", description: "Hourly rate" },
+    { id: "monthly", name: "Monthly Retainer", icon: "📅", description: "Monthly subscription/retainer" },
+  ]
+
   // Progress calculation
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
     let filled = 0
-    let total = 11 // Base required fields
+    let total = 12 // Base required fields
     
     if (payload.full_name) filled++
     if (payload.email) filled++
@@ -159,7 +173,8 @@ export default function FreelancerOnboardingPage() {
     if (payload.category) filled++
     if (payload.subcategories.length > 0) filled++
     if (payload.experience_years) filled++
-    if (payload.why_join.length > 20) filled++
+    if (payload.pricing_min > 0) filled++
+    if (payload.pricing_max > 0) filled++
     if (payload.terms_accepted) filled++
     
     setProgress(Math.round((filled / total) * 100))
@@ -181,25 +196,22 @@ export default function FreelancerOnboardingPage() {
     setPayload((p) => ({
       ...p,
       category: categoryId,
-      subcategories: [], // Reset subcategories when category changes
+      subcategories: [],
       subcategory_other: "",
     }))
     setIsCategoryDropdownOpen(false)
     setError(null)
   }
 
-  // Toggle subcategory selection (MULTIPLE SELECTION)
   const toggleSubcategory = (subcategoryId: string, subcategoryName: string) => {
     setPayload((p) => {
       const currentSubcategories = p.subcategories
       if (currentSubcategories.includes(subcategoryName)) {
-        // Remove if already selected
         return {
           ...p,
           subcategories: currentSubcategories.filter(s => s !== subcategoryName)
         }
       } else {
-        // Add if not selected
         return {
           ...p,
           subcategories: [...currentSubcategories, subcategoryName]
@@ -209,7 +221,6 @@ export default function FreelancerOnboardingPage() {
     setError(null)
   }
 
-  // Get selected subcategories objects
   const getSelectedSubcategoriesObjects = () => {
     if (!payload.category || !subcategoriesMap[payload.category]) return []
     return subcategoriesMap[payload.category].filter(sub => 
@@ -241,12 +252,20 @@ export default function FreelancerOnboardingPage() {
         }
         break
       case 3:
-        if (!payload.experience_years || !payload.why_join || !payload.terms_accepted) {
-          setError("Please fill all required fields and accept the terms")
+        if (!payload.experience_years) {
+          setError("Please select your years of experience")
           return false
         }
-        if (payload.why_join.length < 20) {
-          setError("Please provide a more detailed response (minimum 20 characters)")
+        if (payload.pricing_min <= 0 || payload.pricing_max <= 0) {
+          setError("Please enter your pricing range")
+          return false
+        }
+        if (payload.pricing_min > payload.pricing_max) {
+          setError("Minimum price cannot be greater than maximum price")
+          return false
+        }
+        if (!payload.terms_accepted) {
+          setError("Please accept the terms and conditions")
           return false
         }
         break
@@ -281,7 +300,7 @@ export default function FreelancerOnboardingPage() {
       sessionStorage.setItem('application_id', data.application_id)
       sessionStorage.setItem('ai_score', data.ai_score)
       
-      router.push('/all-freelancer/thank-you')
+      router.push('/freelancer/thank-you')
       
     } catch (err) {
       console.error('Submission error:', err)
@@ -468,11 +487,10 @@ export default function FreelancerOnboardingPage() {
                 </div>
                 
                 <div className="p-4 sm:p-6 md:p-8 space-y-6">
-                  {/* Category Selection - Mobile Optimized */}
+                  {/* Category Selection */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-[#1C2321]">Primary Category *</label>
                     
-                    {/* Mobile Dropdown */}
                     {isMobile ? (
                       <div className="relative">
                         <button
@@ -513,7 +531,6 @@ export default function FreelancerOnboardingPage() {
                         </AnimatePresence>
                       </div>
                     ) : (
-                      /* Desktop Grid */
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {categories.map((cat) => (
                           <motion.button
@@ -537,7 +554,6 @@ export default function FreelancerOnboardingPage() {
                       </div>
                     )}
 
-                    {/* Selected Category Badge (Mobile) */}
                     {payload.category && isMobile && (
                       <div className="mt-2 flex flex-wrap gap-2">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[rgba(68,161,148,0.1)] text-[#44A194] rounded-full text-xs">
@@ -595,7 +611,6 @@ export default function FreelancerOnboardingPage() {
                         ))}
                       </div>
 
-                      {/* Selected Subcategories Summary */}
                       {payload.subcategories.length > 0 && (
                         <div className="mt-4 p-3 sm:p-4 bg-[#F4F0E4] rounded-xl">
                           <p className="text-xs font-medium text-[#1C2321] mb-2">Selected Specializations:</p>
@@ -649,7 +664,7 @@ export default function FreelancerOnboardingPage() {
               </motion.div>
             )}
 
-            {/* Step 3: Experience & Submit */}
+            {/* Step 3: Experience, Pricing & Submit */}
             {step === 3 && (
               <motion.div
                 key="step3"
@@ -660,9 +675,9 @@ export default function FreelancerOnboardingPage() {
               >
                 <div className="p-4 sm:p-6 md:p-8 border-b border-[rgba(28,35,33,0.08)] bg-[#F4F0E4]/30">
                   <h2 className="font-['Cormorant_Garamond',serif] text-lg sm:text-xl font-medium text-[#1C2321]">
-                    Experience & Final Steps
+                    Experience & Pricing
                   </h2>
-                  <p className="text-[10px] sm:text-xs text-[#8a8a82] mt-1">Tell us about your experience</p>
+                  <p className="text-[10px] sm:text-xs text-[#8a8a82] mt-1">Tell us about your experience and rates</p>
                 </div>
                 
                 <div className="p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6">
@@ -688,22 +703,78 @@ export default function FreelancerOnboardingPage() {
                     </div>
                   </div>
 
-                  {/* Why Join */}
+                  {/* Pricing Section */}
+                  <div className="space-y-4">
+                    <label className="block text-sm font-medium text-[#1C2321]">Pricing *</label>
+                    
+                    {/* Pricing Type Selection */}
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                      {pricingTypes.map((type) => (
+                        <motion.button
+                          key={type.id}
+                          onClick={() => setPayload(p => ({ ...p, pricing_type: type.id }))}
+                          className={`p-3 rounded-xl border-2 text-center transition-all duration-300 ${
+                            payload.pricing_type === type.id
+                              ? "border-[#44A194] bg-[rgba(68,161,148,0.05)]"
+                              : "border-[rgba(28,35,33,0.12)] bg-white hover:border-[#44A194]/50"
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div className="text-xl mb-1">{type.icon}</div>
+                          <div className="text-xs sm:text-sm font-medium text-[#1C2321]">{type.name}</div>
+                          <div className="text-[9px] sm:text-[10px] text-[#8a8a82] mt-0.5">{type.description}</div>
+                        </motion.button>
+                      ))}
+                    </div>
+
+                    {/* Price Range Inputs */}
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                      <div className="relative">
+                        <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8a8a82] w-4 h-4" />
+                        <input
+                          name="pricing_min"
+                          type="number"
+                          required
+                          value={payload.pricing_min || ""}
+                          onChange={(e) => setPayload(p => ({ ...p, pricing_min: parseInt(e.target.value) || 0 }))}
+                          placeholder="Min Price *"
+                          className="w-full pl-9 pr-3 py-2.5 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] placeholder:text-[#8a8a82] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300"
+                        />
+                      </div>
+                      <div className="relative">
+                        <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8a8a82] w-4 h-4" />
+                        <input
+                          name="pricing_max"
+                          type="number"
+                          required
+                          value={payload.pricing_max || ""}
+                          onChange={(e) => setPayload(p => ({ ...p, pricing_max: parseInt(e.target.value) || 0 }))}
+                          placeholder="Max Price *"
+                          className="w-full pl-9 pr-3 py-2.5 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] placeholder:text-[#8a8a82] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[10px] sm:text-xs text-[#8a8a82]">
+                      Enter your rate range in INR (Indian Rupees)
+                    </p>
+                  </div>
+
+                  {/* Freelancer Description (Optional - renamed from Why Join) */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-[#1C2321]">
-                      Why do you want to join ExecuMarketing? *
+                      Your Description
                     </label>
                     <textarea
-                      name="why_join"
-                      required
-                      value={payload.why_join}
+                      name="freelancer_description"
+                      value={payload.freelancer_description}
                       onChange={change}
                       rows={4}
-                      placeholder="Tell us what makes you different and why you'd be a great fit for our curated network..."
+                      placeholder="Tell us about yourself, your expertise, and what makes you unique... (Optional)"
                       className="w-full px-4 py-3 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] placeholder:text-[#8a8a82] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300 resize-none"
                     />
                     <p className="text-[10px] sm:text-xs text-[#8a8a82]">
-                      Minimum 20 characters. {payload.why_join.length}/20
+                      This will help clients understand your expertise better (Optional)
                     </p>
                   </div>
 
@@ -717,8 +788,7 @@ export default function FreelancerOnboardingPage() {
                       className="mt-0.5 w-4 h-4 rounded border-[rgba(28,35,33,0.12)] text-[#44A194] focus:ring-[#44A194] focus:ring-offset-0"
                     />
                     <span className="text-xs sm:text-sm text-[#8a8a82] leading-relaxed">
-                      I confirm that all information provided is accurate. I understand that ExecuMarketing 
-                      verifies all applicants and only accepts <span className="text-[#44A194]">top 10% of freelancers</span>. *
+                      I confirm that all information provided is accurate.*
                     </span>
                   </label>
                 </div>
@@ -735,12 +805,12 @@ export default function FreelancerOnboardingPage() {
                   </motion.button>
                   <motion.button
                     onClick={submit}
-                    disabled={!payload.terms_accepted || !payload.experience_years || !payload.why_join || isSubmitting}
+                    disabled={!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || isSubmitting}
                     className={`bg-gradient-to-r from-[#44A194] to-[#537D96] hover:from-[#38857a] hover:to-[#3d6b82] text-white font-['Jost',sans-serif] text-[10px] sm:text-[11px] tracking-[0.18em] uppercase px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl transition-all duration-300 flex items-center gap-2 ${
-                      (!payload.terms_accepted || !payload.experience_years || !payload.why_join || isSubmitting) ? "opacity-50 cursor-not-allowed" : ""
+                      (!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || isSubmitting) ? "opacity-50 cursor-not-allowed" : ""
                     }`}
-                    whileHover={(!payload.terms_accepted || !payload.experience_years || !payload.why_join || isSubmitting) ? {} : { scale: 1.02 }}
-                    whileTap={(!payload.terms_accepted || !payload.experience_years || !payload.why_join || isSubmitting) ? {} : { scale: 0.98 }}
+                    whileHover={(!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || isSubmitting) ? {} : { scale: 1.02 }}
+                    whileTap={(!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || isSubmitting) ? {} : { scale: 0.98 }}
                   >
                     {isSubmitting ? (
                       <>
@@ -760,7 +830,7 @@ export default function FreelancerOnboardingPage() {
           </AnimatePresence>
         </div>
 
-        {/* Trust Indicators - Mobile Optimized */}
+        {/* Trust Indicators */}
         <div className="mt-6 text-center">
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-[#8a8a82] font-['Jost',sans-serif]">
             <span className="flex items-center gap-1">

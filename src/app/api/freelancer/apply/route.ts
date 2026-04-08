@@ -1,6 +1,5 @@
 // app/api/freelancer/apply/route.ts
-
-import { supabase } from '@/src/lib/SupabaseAuthClient'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -18,15 +17,18 @@ export async function POST(request: Request) {
       subcategories,
       subcategory_other,
       experience_years,
-      why_join,
+      pricing_min,
+      pricing_max,
+      pricing_type,
+      freelancer_description,
       terms_accepted,
     } = body
 
     // Validate required fields
-    const requiredFields = ['full_name', 'email', 'phone', 'portfolio_url', 'category', 'subcategories', 'experience_years', 'why_join']
+    const requiredFields = ['full_name', 'email', 'phone', 'portfolio_url', 'category', 'subcategories', 'experience_years', 'pricing_min', 'pricing_max', 'pricing_type']
     
     for (const field of requiredFields) {
-      if (!body[field]) {
+      if (!body[field] && body[field] !== 0) {
         return NextResponse.json(
           { error: `Missing required field: ${field}` },
           { status: 400 }
@@ -38,6 +40,21 @@ export async function POST(request: Request) {
     if (!Array.isArray(subcategories) || subcategories.length === 0) {
       return NextResponse.json(
         { error: 'Please select at least one specialization' },
+        { status: 400 }
+      )
+    }
+
+    // Validate pricing
+    if (pricing_min <= 0 || pricing_max <= 0) {
+      return NextResponse.json(
+        { error: 'Please enter valid pricing range' },
+        { status: 400 }
+      )
+    }
+
+    if (pricing_min > pricing_max) {
+      return NextResponse.json(
+        { error: 'Minimum price cannot be greater than maximum price' },
         { status: 400 }
       )
     }
@@ -58,9 +75,22 @@ export async function POST(request: Request) {
       )
     }
 
-
+    // Initialize Supabase client
+    const supabase = createRouteHandlerClient({ cookies })
     
+    // Check if freelancer already applied
+    const { data: existing, error: checkError } = await supabase
+      .from('all-freelancer')
+      .select('email')
+      .eq('email', email)
+      .maybeSingle()
 
+    if (existing) {
+      return NextResponse.json(
+        { error: 'You have already submitted an application. Please check your email for updates.' },
+        { status: 409 }
+      )
+    }
 
     // Calculate AI pre-vetting score
     const aiScore = calculateAIScore(body)
@@ -74,11 +104,14 @@ export async function POST(request: Request) {
       resume_url: resume_url || null,
       portfolio_url,
       category,
-      subcategories_array: subcategories, // Store as array
-      subcategory: subcategories[0] || null, // First one for backward compatibility
+      subcategories_array: subcategories,
+      subcategory: subcategories[0] || null,
       subcategory_other: subcategory_other || null,
       experience_years,
-      why_join,
+      pricing_min,
+      pricing_max,
+      pricing_type,
+      freelancer_description: freelancer_description || null,
       terms_accepted,
       status: 'pending_review',
       ai_score: aiScore,
@@ -124,9 +157,9 @@ export async function POST(request: Request) {
 function calculateAIScore(data: any): number {
   let score = 0
 
-  // LinkedIn presence (15 points)
+  // LinkedIn presence (10 points)
   if (data.linkedin_url && data.linkedin_url.includes('linkedin.com')) {
-    score += 15
+    score += 10
   }
 
   // Portfolio quality (20 points)
@@ -155,31 +188,33 @@ function calculateAIScore(data: any): number {
     }
   }
 
-  // Experience level (25 points)
+  // Experience level (20 points)
   const experienceMap: Record<string, number> = {
-    '7+ years': 25,
-    '5-7 years': 22,
-    '3-5 years': 18,
-    '1-3 years': 12,
-    'Less than 1 year': 6,
+    '7+ years': 20,
+    '5-7 years': 18,
+    '3-5 years': 15,
+    '1-3 years': 10,
+    'Less than 1 year': 5,
   }
   score += experienceMap[data.experience_years] || 0
 
-  // Why join quality (15 points)
-  if (data.why_join) {
-    const whyJoinLength = data.why_join.length
-    if (whyJoinLength > 100) {
-      score += 15
-    } else if (whyJoinLength > 50) {
-      score += 10
-    } else if (whyJoinLength > 20) {
-      score += 5
+  // Pricing reasonableness (15 points)
+  if (data.pricing_min && data.pricing_max) {
+    const avgPrice = (data.pricing_min + data.pricing_max) / 2
+    if (avgPrice >= 5000 && avgPrice <= 50000) {
+      score += 15 // Reasonable range
+    } else if (avgPrice > 50000) {
+      score += 10 // Premium range
+    } else if (avgPrice > 0) {
+      score += 5 // Low range
     }
-    
-    // Bonus for specific keywords
-    const keywords = ['experience', 'portfolio', 'clients', 'results', 'growth', 'conversion', 'roi', 'strategy']
-    const keywordCount = keywords.filter(kw => data.why_join.toLowerCase().includes(kw)).length
-    score += Math.min(keywordCount * 1.5, 10)
+  }
+
+  // Description presence (10 points - optional but rewarded)
+  if (data.freelancer_description && data.freelancer_description.length > 50) {
+    score += 10
+  } else if (data.freelancer_description && data.freelancer_description.length > 20) {
+    score += 5
   }
 
   // Resume presence (10 points)
