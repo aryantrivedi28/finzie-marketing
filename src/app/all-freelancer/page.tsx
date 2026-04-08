@@ -300,7 +300,7 @@ export default function FreelancerOnboardingPage() {
       sessionStorage.setItem('application_id', data.application_id)
       sessionStorage.setItem('ai_score', data.ai_score)
       
-      router.push('/freelancer/thank-you')
+      router.push('/all-freelancer/thank-you')
       
     } catch (err) {
       console.error('Submission error:', err)
