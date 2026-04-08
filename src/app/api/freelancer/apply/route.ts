@@ -1,5 +1,5 @@
 // app/api/freelancer/apply/route.ts
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/src/lib/SupabaseAuthClient'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     }
 
     // Initialize Supabase client
-    const supabase = createRouteHandlerClient({ cookies })
+
     
     // Check if freelancer already applied
     const { data: existing, error: checkError } = await supabase
