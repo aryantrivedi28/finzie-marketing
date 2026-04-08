@@ -1,7 +1,7 @@
 'use client'
 
 import type React from "react"
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
@@ -22,8 +22,10 @@ import {
   X,
   Check,
   ChevronDown,
-  DollarSign,
-  IndianRupee
+  IndianRupee,
+  Clock as ClockIcon,
+  Video,
+  Sparkles
 } from "lucide-react"
 
 type Payload = {
@@ -41,6 +43,10 @@ type Payload = {
   pricing_max: number
   pricing_type: string
   freelancer_description: string
+  availability_from: string
+  availability_to: string
+  availability_notes: string
+  best_project_url: string
   terms_accepted: boolean
 }
 
@@ -67,6 +73,10 @@ export default function FreelancerOnboardingPage() {
     pricing_max: 0,
     pricing_type: "project",
     freelancer_description: "",
+    availability_from: "",
+    availability_to: "",
+    availability_notes: "",
+    best_project_url: "",
     terms_accepted: false,
   })
 
@@ -163,7 +173,7 @@ export default function FreelancerOnboardingPage() {
 
   useEffect(() => {
     let filled = 0
-    let total = 12 // Base required fields
+    let total = 14 // Base required fields
     
     if (payload.full_name) filled++
     if (payload.email) filled++
@@ -175,6 +185,7 @@ export default function FreelancerOnboardingPage() {
     if (payload.experience_years) filled++
     if (payload.pricing_min > 0) filled++
     if (payload.pricing_max > 0) filled++
+    if (payload.availability_from && payload.availability_to) filled++
     if (payload.terms_accepted) filled++
     
     setProgress(Math.round((filled / total) * 100))
@@ -264,6 +275,10 @@ export default function FreelancerOnboardingPage() {
           setError("Minimum price cannot be greater than maximum price")
           return false
         }
+        if (!payload.availability_from || !payload.availability_to) {
+          setError("Please select your daily availability hours")
+          return false
+        }
         if (!payload.terms_accepted) {
           setError("Please accept the terms and conditions")
           return false
@@ -285,10 +300,7 @@ export default function FreelancerOnboardingPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...payload,
-          subcategories: payload.subcategories,
-        }),
+        body: JSON.stringify(payload),
       })
       
       const data = await response.json()
@@ -298,7 +310,6 @@ export default function FreelancerOnboardingPage() {
       }
       
       sessionStorage.setItem('application_id', data.application_id)
-      sessionStorage.setItem('ai_score', data.ai_score)
       
       router.push('/all-freelancer/thank-you')
       
@@ -664,7 +675,7 @@ export default function FreelancerOnboardingPage() {
               </motion.div>
             )}
 
-            {/* Step 3: Experience, Pricing & Submit */}
+            {/* Step 3: Experience, Pricing, Availability & Submit (Merged) */}
             {step === 3 && (
               <motion.div
                 key="step3"
@@ -675,9 +686,9 @@ export default function FreelancerOnboardingPage() {
               >
                 <div className="p-4 sm:p-6 md:p-8 border-b border-[rgba(28,35,33,0.08)] bg-[#F4F0E4]/30">
                   <h2 className="font-['Cormorant_Garamond',serif] text-lg sm:text-xl font-medium text-[#1C2321]">
-                    Experience & Pricing
+                    Experience, Pricing & Availability
                   </h2>
-                  <p className="text-[10px] sm:text-xs text-[#8a8a82] mt-1">Tell us about your experience and rates</p>
+                  <p className="text-[10px] sm:text-xs text-[#8a8a82] mt-1">Tell us about your experience, rates, and availability</p>
                 </div>
                 
                 <div className="p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6">
@@ -760,7 +771,7 @@ export default function FreelancerOnboardingPage() {
                     </p>
                   </div>
 
-                  {/* Freelancer Description (Optional - renamed from Why Join) */}
+                  {/* Your Description (Optional) */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-[#1C2321]">
                       Your Description
@@ -769,17 +780,81 @@ export default function FreelancerOnboardingPage() {
                       name="freelancer_description"
                       value={payload.freelancer_description}
                       onChange={change}
-                      rows={4}
+                      rows={3}
                       placeholder="Tell us about yourself, your expertise, and what makes you unique... (Optional)"
                       className="w-full px-4 py-3 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] placeholder:text-[#8a8a82] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300 resize-none"
                     />
+                  </div>
+
+                  {/* Daily Availability */}
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-[#1C2321]">
+                      What is your daily availability? *
+                    </label>
+                    
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                      <div className="relative">
+                        <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8a8a82] w-4 h-4" />
+                        <input
+                          name="availability_from"
+                          type="time"
+                          required
+                          value={payload.availability_from}
+                          onChange={change}
+                          className="w-full pl-9 pr-3 py-2.5 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300"
+                        />
+                      </div>
+                      <div className="relative">
+                        <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8a8a82] w-4 h-4" />
+                        <input
+                          name="availability_to"
+                          type="time"
+                          required
+                          value={payload.availability_to}
+                          onChange={change}
+                          className="w-full pl-9 pr-3 py-2.5 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Availability Notes (Optional) */}
+                    <textarea
+                      name="availability_notes"
+                      value={payload.availability_notes}
+                      onChange={change}
+                      rows={2}
+                      placeholder="Anything else we should know about your availability? (Optional) - e.g., part-time, weekends only, specific timezone, current commitments"
+                      className="w-full px-4 py-3 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] placeholder:text-[#8a8a82] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300 resize-none"
+                    />
+                  </div>
+
+                  {/* Want Faster Matching? (Optional) */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-[#44A194]" />
+                      <label className="text-sm font-medium text-[#1C2321]">
+                        Want faster matching?
+                      </label>
+                      <span className="text-[10px] text-[#8a8a82]">(Optional)</span>
+                    </div>
+                    
+                    <div className="relative">
+                      <Video className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8a8a82] w-4 h-4" />
+                      <input
+                        name="best_project_url"
+                        value={payload.best_project_url}
+                        onChange={change}
+                        placeholder="Drop a link/description of your best project / case study / Loom explaining your work"
+                        className="w-full pl-9 pr-3 py-2.5 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] placeholder:text-[#8a8a82] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300"
+                      />
+                    </div>
                     <p className="text-[10px] sm:text-xs text-[#8a8a82]">
-                      This will help clients understand your expertise better (Optional)
+                      Share a link to your best work – this helps us match you faster with relevant projects
                     </p>
                   </div>
 
                   {/* Terms & Conditions */}
-                  <label className="flex items-start gap-3 cursor-pointer pt-2">
+                  <label className="flex items-start gap-3 cursor-pointer pt-4">
                     <input
                       type="checkbox"
                       name="terms_accepted"
@@ -788,7 +863,8 @@ export default function FreelancerOnboardingPage() {
                       className="mt-0.5 w-4 h-4 rounded border-[rgba(28,35,33,0.12)] text-[#44A194] focus:ring-[#44A194] focus:ring-offset-0"
                     />
                     <span className="text-xs sm:text-sm text-[#8a8a82] leading-relaxed">
-                      I confirm that all information provided is accurate.*
+                      I confirm that all information provided is accurate. I understand that ExecuMarketing 
+                      verifies all applicants and only accepts qualified freelancers. *
                     </span>
                   </label>
                 </div>
@@ -805,12 +881,12 @@ export default function FreelancerOnboardingPage() {
                   </motion.button>
                   <motion.button
                     onClick={submit}
-                    disabled={!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || isSubmitting}
+                    disabled={!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || !payload.availability_from || !payload.availability_to || isSubmitting}
                     className={`bg-gradient-to-r from-[#44A194] to-[#537D96] hover:from-[#38857a] hover:to-[#3d6b82] text-white font-['Jost',sans-serif] text-[10px] sm:text-[11px] tracking-[0.18em] uppercase px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl transition-all duration-300 flex items-center gap-2 ${
-                      (!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || isSubmitting) ? "opacity-50 cursor-not-allowed" : ""
+                      (!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || !payload.availability_from || !payload.availability_to || isSubmitting) ? "opacity-50 cursor-not-allowed" : ""
                     }`}
-                    whileHover={(!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || isSubmitting) ? {} : { scale: 1.02 }}
-                    whileTap={(!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || isSubmitting) ? {} : { scale: 0.98 }}
+                    whileHover={(!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || !payload.availability_from || !payload.availability_to || isSubmitting) ? {} : { scale: 1.02 }}
+                    whileTap={(!payload.terms_accepted || !payload.experience_years || payload.pricing_min <= 0 || payload.pricing_max <= 0 || !payload.availability_from || !payload.availability_to || isSubmitting) ? {} : { scale: 0.98 }}
                   >
                     {isSubmitting ? (
                       <>
@@ -835,15 +911,15 @@ export default function FreelancerOnboardingPage() {
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-[#8a8a82] font-['Jost',sans-serif]">
             <span className="flex items-center gap-1">
               <CheckCircle className="w-3 h-3 text-[#44A194]" />
-              AI-Powered Vetting
+              Quality Vetting
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3 text-[#44A194]" />
-              Response within 48h
+              Quick Response
             </span>
             <span className="flex items-center gap-1">
               <Star className="w-3 h-3 text-[#44A194]" />
-              Top 10% Only
+              Top Talent Only
             </span>
           </div>
         </div>

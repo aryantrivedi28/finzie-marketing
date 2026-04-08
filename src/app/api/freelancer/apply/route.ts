@@ -21,11 +21,20 @@ export async function POST(request: Request) {
       pricing_max,
       pricing_type,
       freelancer_description,
+      availability_from,
+      availability_to,
+      availability_notes,
+      best_project_url,
       terms_accepted,
     } = body
 
     // Validate required fields
-    const requiredFields = ['full_name', 'email', 'phone', 'portfolio_url', 'category', 'subcategories', 'experience_years', 'pricing_min', 'pricing_max', 'pricing_type']
+    const requiredFields = [
+      'full_name', 'email', 'phone', 'portfolio_url', 
+      'category', 'subcategories', 'experience_years', 
+      'pricing_min', 'pricing_max', 'pricing_type',
+      'availability_from', 'availability_to'
+    ]
     
     for (const field of requiredFields) {
       if (!body[field] && body[field] !== 0) {
@@ -76,7 +85,6 @@ export async function POST(request: Request) {
     }
 
     // Initialize Supabase client
-
     
     // Check if freelancer already applied
     const { data: existing, error: checkError } = await supabase
@@ -85,12 +93,12 @@ export async function POST(request: Request) {
       .eq('email', email)
       .maybeSingle()
 
-    if (existing) {
-      return NextResponse.json(
-        { error: 'You have already submitted an application. Please check your email for updates.' },
-        { status: 409 }
-      )
-    }
+    // if (existing) {
+    //   return NextResponse.json(
+    //     { error: 'You have already submitted an application. Please check your email for updates.' },
+    //     { status: 409 }
+    //   )
+    // }
 
     // Calculate AI pre-vetting score
     const aiScore = calculateAIScore(body)
@@ -112,6 +120,10 @@ export async function POST(request: Request) {
       pricing_max,
       pricing_type,
       freelancer_description: freelancer_description || null,
+      availability_from,
+      availability_to,
+      availability_notes: availability_notes || null,
+      best_project_url: best_project_url || null,
       terms_accepted,
       status: 'pending_review',
       ai_score: aiScore,
@@ -153,16 +165,16 @@ export async function POST(request: Request) {
   }
 }
 
-// AI Pre-vetting Score Calculator
+// AI Pre-vetting Score Calculator (Updated)
 function calculateAIScore(data: any): number {
   let score = 0
 
-  // LinkedIn presence (10 points)
+  // LinkedIn presence (8 points)
   if (data.linkedin_url && data.linkedin_url.includes('linkedin.com')) {
-    score += 10
+    score += 8
   }
 
-  // Portfolio quality (20 points)
+  // Portfolio quality (15 points)
   if (data.portfolio_url) {
     const portfolioUrl = data.portfolio_url.toLowerCase()
     if (portfolioUrl.includes('github') || 
@@ -170,56 +182,71 @@ function calculateAIScore(data: any): number {
         portfolioUrl.includes('dribbble') ||
         portfolioUrl.includes('medium') ||
         portfolioUrl.includes('personal')) {
-      score += 20
+      score += 15
     } else {
-      score += 10
+      score += 8
     }
   }
 
-  // Multiple subcategories bonus (15 points)
+  // Multiple subcategories bonus (12 points)
   if (data.subcategories && Array.isArray(data.subcategories)) {
     const subcategoryCount = data.subcategories.length
     if (subcategoryCount >= 3) {
-      score += 15
+      score += 12
     } else if (subcategoryCount === 2) {
-      score += 10
+      score += 8
     } else if (subcategoryCount === 1) {
-      score += 5
+      score += 4
     }
   }
 
-  // Experience level (20 points)
+  // Experience level (15 points)
   const experienceMap: Record<string, number> = {
-    '7+ years': 20,
-    '5-7 years': 18,
-    '3-5 years': 15,
-    '1-3 years': 10,
-    'Less than 1 year': 5,
+    '7+ years': 15,
+    '5-7 years': 13,
+    '3-5 years': 10,
+    '1-3 years': 7,
+    'Less than 1 year': 3,
   }
   score += experienceMap[data.experience_years] || 0
 
-  // Pricing reasonableness (15 points)
+  // Pricing reasonableness (10 points)
   if (data.pricing_min && data.pricing_max) {
     const avgPrice = (data.pricing_min + data.pricing_max) / 2
     if (avgPrice >= 5000 && avgPrice <= 50000) {
-      score += 15 // Reasonable range
+      score += 10
     } else if (avgPrice > 50000) {
-      score += 10 // Premium range
+      score += 7
     } else if (avgPrice > 0) {
-      score += 5 // Low range
+      score += 3
     }
   }
 
-  // Description presence (10 points - optional but rewarded)
+  // Availability (10 points)
+  if (data.availability_from && data.availability_to) {
+    score += 10
+  }
+
+  // Best project URL (10 points - bonus for faster matching)
+  if (data.best_project_url) {
+    score += 10
+  }
+
+  // Description presence (10 points)
   if (data.freelancer_description && data.freelancer_description.length > 50) {
     score += 10
   } else if (data.freelancer_description && data.freelancer_description.length > 20) {
     score += 5
   }
 
-  // Resume presence (10 points)
+  // Availability notes (5 points)
+  if (data.availability_notes && data.availability_notes.length > 10) {
+    score += 5
+  }
+
+  // Resume presence (5 points)
   if (data.resume_url) {
-    score += 10
+    score += 5
   }
 
   return Math.min(Math.round(score), 100)
