@@ -769,7 +769,7 @@ export default function FreelancerOnboardingPage() {
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-[#1C2321]">
                       Your Availability
-                      <span className="text-[#8a8a82] text-xs ml-2 font-normal">(Optional)</span>
+                      <span className="text-[#8a8a82] text-xs ml-2 font-normal"></span>
                     </label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8a8a82] w-4 h-4" />
@@ -781,9 +781,6 @@ export default function FreelancerOnboardingPage() {
                         className="w-full pl-9 pr-3 py-2.5 bg-white border border-[rgba(28,35,33,0.12)] rounded-xl text-[#1C2321] placeholder:text-[#8a8a82] text-sm focus:outline-none focus:border-[#44A194] transition-all duration-300"
                       />
                     </div>
-                    <p className="text-[10px] sm:text-xs text-[#8a8a82]">
-                      Tell us your availability - part-time, full-time, specific hours, timezone, etc.
-                    </p>
                   </div>
 
                   {/* Tell us more about your expertise - Optional */}
