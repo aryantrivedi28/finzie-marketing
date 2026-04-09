@@ -88,47 +88,58 @@ export default function FreelancerOnboardingPage() {
   }, [])
 
   // Categories
-  const categories = [
-    { id: "shopify", name: "Shopify", icon: "🛍️", description: "Store setup, conversion optimization" },
-    { id: "ads", name: "Ads", icon: "📢", description: "Meta, Google, TikTok campaigns" },
-    { id: "seo", name: "SEO", icon: "🔍", description: "Keyword strategy, technical SEO" },
-    { id: "content", name: "Content", icon: "✍️", description: "Blog, email, long-form content" },
-    { id: "social", name: "Social Media", icon: "📱", description: "Content creation, community management" },
-  ]
+  // Categories
+const categories = [
+  { id: "shopify", name: "Shopify", icon: "🛍️", description: "Store setup, conversion optimization" },
+  { id: "ads", name: "Ads", icon: "📢", description: "Meta, Google, TikTok campaigns" },
+  { id: "seo", name: "SEO", icon: "🔍", description: "Keyword strategy, technical SEO" },
+  { id: "content", name: "Content", icon: "✍️", description: "Blog, email, long-form content" },
+  { id: "social", name: "Social Media", icon: "📱", description: "Content creation, community management" },
 
-  // Subcategories
-  const subcategoriesMap: Record<string, { id: string; name: string; description: string }[]> = {
-    shopify: [
-      { id: "store_setup", name: "Store Setup & Migration", description: "Shopify store setup, product migration" },
-      { id: "theme_dev", name: "Theme Development", description: "Custom theme, Liquid coding" },
-      { id: "cro", name: "CRO", description: "A/B testing, checkout optimization" },
-      { id: "app_integration", name: "App Integration", description: "Shopify apps, automation" },
-    ],
-    ads: [
-      { id: "meta_ads", name: "Meta Ads", description: "Facebook & Instagram advertising" },
-      { id: "google_ads", name: "Google Ads", description: "Search, Display, Shopping" },
-      { id: "tiktok_ads", name: "TikTok Ads", description: "TikTok advertising" },
-      { id: "linkedin_ads", name: "LinkedIn Ads", description: "B2B lead generation" },
-    ],
-    seo: [
-      { id: "technical_seo", name: "Technical SEO", description: "Site speed, crawlability" },
-      { id: "onpage_seo", name: "On-Page SEO", description: "Meta tags, content optimization" },
-      { id: "offpage_seo", name: "Off-Page SEO", description: "Link building, outreach" },
-      { id: "keyword_research", name: "Keyword Research", description: "Keyword strategy" },
-    ],
-    content: [
-      { id: "blog_writing", name: "Blog Writing", description: "SEO blog posts, articles" },
-      { id: "email_newsletters", name: "Email Newsletters", description: "Newsletter content" },
-      { id: "longform_articles", name: "Long-form Articles", description: "In-depth guides" },
-      { id: "case_studies", name: "Case Studies", description: "Success stories" },
-    ],
-    social: [
-      { id: "instagram", name: "Instagram", description: "Feed, stories, reels" },
-      { id: "linkedin_strategy", name: "LinkedIn", description: "B2B engagement" },
-      { id: "twitter", name: "Twitter/X", description: "Tweet scheduling" },
-      { id: "community_mgmt", name: "Community", description: "Engagement, responses" },
-    ],
-  }
+  // ✅ NEW CATEGORY
+  { id: "design", name: "Design", icon: "🎨", description: "UI/UX, graphics, ad creatives" },
+]
+
+// Subcategories
+const subcategoriesMap: Record<string, { id: string; name: string; description: string }[]> = {
+  shopify: [
+    { id: "store_setup", name: "Store Setup & Migration", description: "Shopify store setup, product migration" },
+    { id: "theme_dev", name: "Theme Development", description: "Custom theme, Liquid coding" },
+    { id: "cro", name: "CRO", description: "A/B testing, checkout optimization" },
+    { id: "app_integration", name: "App Integration", description: "Shopify apps, automation" },
+  ],
+  ads: [
+    { id: "meta_ads", name: "Meta Ads", description: "Facebook & Instagram advertising" },
+    { id: "google_ads", name: "Google Ads", description: "Search, Display, Shopping" },
+    { id: "tiktok_ads", name: "TikTok Ads", description: "TikTok advertising" },
+    { id: "linkedin_ads", name: "LinkedIn Ads", description: "B2B lead generation" },
+  ],
+  seo: [
+    { id: "technical_seo", name: "Technical SEO", description: "Site speed, crawlability" },
+    { id: "onpage_seo", name: "On-Page SEO", description: "Meta tags, content optimization" },
+    { id: "offpage_seo", name: "Off-Page SEO", description: "Link building, outreach" },
+    { id: "keyword_research", name: "Keyword Research", description: "Keyword strategy" },
+  ],
+  content: [
+    { id: "blog_writing", name: "Blog Writing", description: "SEO blog posts, articles" },
+    { id: "email_newsletters", name: "Email Newsletters", description: "Newsletter content" },
+    { id: "longform_articles", name: "Long-form Articles", description: "In-depth guides" },
+    { id: "case_studies", name: "Case Studies", description: "Success stories" },
+  ],
+  social: [
+    { id: "instagram", name: "Instagram", description: "Feed, stories, reels" },
+    { id: "linkedin_strategy", name: "LinkedIn", description: "B2B engagement" },
+    { id: "twitter", name: "Twitter/X", description: "Tweet scheduling" },
+    { id: "community_mgmt", name: "Community", description: "Engagement, responses" },
+  ],
+
+  // ✅ NEW SUBCATEGORIES
+  design: [
+    { id: "ui_ux", name: "UI/UX Design", description: "User interface & user experience design" },
+    { id: "graphic_design", name: "Graphic Design", description: "Branding, posters, social creatives" },
+    { id: "ad_creatives", name: "Ad Creative Design", description: "High-converting ad visuals for campaigns" },
+  ],
+}
 
   const experienceLevels = [
     { id: "less_than_1", name: "< 1 year" },
