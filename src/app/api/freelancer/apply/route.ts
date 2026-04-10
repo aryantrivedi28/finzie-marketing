@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     // Calculate vetting score
     const vettingScore = calculateVettingScore(body)
 
-    // Prepare insert data
+    // Prepare insert data - using existing column names
     const insertData = {
       full_name,
       email,
@@ -116,11 +116,11 @@ export async function POST(request: Request) {
       pricing_max,
       pricing_type,
       freelancer_description: freelancer_description || null,
-      availability_text: availability || null,  // Changed from availability_to/from
+      availability_text: availability || null,
       best_project_url: best_project_url || null,
       terms_accepted,
       status: 'pending_review',
-      vetting_score: vettingScore,
+      ai_score: vettingScore,  // Using existing ai_score column
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
   }
 }
 
-// Vetting Score Calculator (renamed from AI Score)
+// Vetting Score Calculator
 function calculateVettingScore(data: any): number {
   let score = 0
 
@@ -216,12 +216,12 @@ function calculateVettingScore(data: any): number {
     }
   }
 
-  // Availability (5 points - optional, bonus)
+  // Availability (5 points - optional)
   if (data.availability && data.availability.length > 5) {
     score += 5
   }
 
-  // Best project URL (10 points - bonus for faster matching)
+  // Best project URL (10 points - bonus)
   if (data.best_project_url) {
     score += 10
   }
