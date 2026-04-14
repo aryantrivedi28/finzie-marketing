@@ -1,53 +1,48 @@
-// components/sections/CtaBand.tsx
-import Link from 'next/link';
+// components/sections/CTABand.tsx
+'use client'
+
+import React from 'react'
+import Link from 'next/link'
 
 interface CtaBandProps {
-  title: string;
-  description: string;
-  primaryText: string;
-  primaryHref: string;
-  secondaryText?: string;
-  secondaryHref?: string;
+  title?: string;
+  description?: string;
+  primaryText?: string;
+  primaryHref?: string;
 }
 
-const CtaBand = ({ 
-  title, 
-  description, 
-  primaryText, 
-  primaryHref, 
-  secondaryText, 
-  secondaryHref 
+const CTABand = ({ 
+  title = "Ready to fix the gaps<br>and <em class='italic'>start executing?</em>", 
+  description = "Tell us what you need. One call. Your team activated within 48 hours.",
+  primaryText = "Book a Discovery Call",
+  primaryHref = "/contact"
 }: CtaBandProps) => {
   return (
-    <div className="bg-[#1C2321] py-16 text-center text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_50%_50%,rgba(68,161,148,0.08),transparent)] pointer-events-none"></div>
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8 relative z-10">
-        <h2 
-          className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.15] mb-3.5"
-          dangerouslySetInnerHTML={{ __html: title }}
-        />
-        <p className="text-[0.9rem] font-light text-white/50 max-w-[520px] mx-auto mb-7 leading-relaxed">
-          {description}
-        </p>
-        <div className="flex gap-3.5 justify-center flex-wrap">
+    <section className="py-[100px] px-5 sm:px-6 md:px-8 lg:px-12 bg-[#44A194] border-b border-[rgba(28,35,33,0.09)]">
+      <div className="max-w-[1240px] mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
+        <div>
+          <h2 
+            className="font-['Cormorant_Garamond',serif] text-[clamp(30px,3.8vw,52px)] font-light text-white leading-[1.15] max-w-[560px]"
+            dangerouslySetInnerHTML={{ __html: title }}
+          />
+          <p className="text-sm text-white/65 mt-3 max-w-[500px]">
+            {description}
+          </p>
+        </div>
+        <div className="flex-shrink-0">
           <Link 
             href={primaryHref} 
-            className="bg-[#EC8F8D] text-white px-8 md:px-10 py-3 md:py-4 rounded-[10px] text-[0.88rem] md:text-[0.92rem] font-bold hover:bg-[#e07a78] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(236,143,141,0.2)] transition-all"
+            className="inline-flex items-center gap-2.5 bg-white text-[#44A194] font-['Jost',sans-serif] text-xs font-semibold tracking-[0.18em] uppercase py-[18px] px-[38px] no-underline transition-all duration-300 hover:bg-[#1C2321] hover:text-white"
           >
-            {primaryText}
+            <span>{primaryText}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
           </Link>
-          {secondaryText && secondaryHref && (
-            <Link 
-              href={secondaryHref} 
-              className="bg-transparent text-white px-8 md:px-10 py-3 md:py-4 rounded-[10px] text-[0.88rem] md:text-[0.92rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all"
-            >
-              {secondaryText}
-            </Link>
-          )}
         </div>
       </div>
-    </div>
-  );
-};
+    </section>
+  )
+}
 
-export default CtaBand;
+export default CTABand

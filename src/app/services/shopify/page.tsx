@@ -3,6 +3,7 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Store, Palette, TrendingUp, Plug, Diamond, Code, ShoppingCart, Wallet, ArrowRight } from 'lucide-react'
 
 export default function ShopifyCategoryPage() {
   const router = useRouter()
@@ -14,7 +15,7 @@ export default function ShopifyCategoryPage() {
       description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
       timeline: '3-5 days',
       price: 'From $997',
-      icon: '🏪',
+      icon: Store,
       accentColor: '#44A194'
     },
     {
@@ -23,7 +24,7 @@ export default function ShopifyCategoryPage() {
       description: 'Custom theme development, Liquid coding, template customization that matches your brand.',
       timeline: '5-10 days',
       price: 'From $1,997',
-      icon: '🎨',
+      icon: Palette,
       accentColor: '#44A194'
     },
     {
@@ -32,7 +33,7 @@ export default function ShopifyCategoryPage() {
       description: 'A/B testing, checkout optimization, and conversion funnel improvement to boost sales.',
       timeline: 'Ongoing',
       price: 'From $1,497/mo',
-      icon: '📈',
+      icon: TrendingUp,
       accentColor: '#44A194'
     },
     {
@@ -41,7 +42,7 @@ export default function ShopifyCategoryPage() {
       description: 'Shopify apps, automation, workflows, and API connections to streamline operations.',
       timeline: '2-4 days',
       price: 'From $497',
-      icon: '🔌',
+      icon: Plug,
       accentColor: '#44A194'
     },
     {
@@ -50,7 +51,7 @@ export default function ShopifyCategoryPage() {
       description: 'Enterprise Shopify, multi-store management, and advanced features for scaling brands.',
       timeline: 'Custom',
       price: 'Custom pricing',
-      icon: '💎',
+      icon: Diamond,
       accentColor: '#44A194'
     },
     {
@@ -59,7 +60,7 @@ export default function ShopifyCategoryPage() {
       description: 'Liquid templating, custom sections, dynamic content for advanced functionality.',
       timeline: '3-7 days',
       price: 'From $797',
-      icon: '💻',
+      icon: Code,
       accentColor: '#44A194'
     },
     {
@@ -68,7 +69,7 @@ export default function ShopifyCategoryPage() {
       description: 'Custom checkout, post-purchase upsells, and cart abandonment recovery.',
       timeline: '3-5 days',
       price: 'From $1,297',
-      icon: '🛒',
+      icon: ShoppingCart,
       accentColor: '#44A194'
     },
     {
@@ -77,7 +78,7 @@ export default function ShopifyCategoryPage() {
       description: 'Bundle offers, cross-sells, volume discounts to increase average order value.',
       timeline: '2-3 days',
       price: 'From $597',
-      icon: '💰',
+      icon: Wallet,
       accentColor: '#44A194'
     }
   ]
@@ -87,15 +88,13 @@ export default function ShopifyCategoryPage() {
       client: 'Modern Living Co.',
       result: 'Increased conversion rate by 42%',
       quote: 'They transformed our Shopify store. Sales up 156% in 3 months.',
-      industry: 'Home Decor',
-      image: '/case-studies/modern-living.jpg' // Placeholder
+      industry: 'Home Decor'
     },
     {
       client: 'FitGear Apparel',
       result: 'Reduced cart abandonment by 28%',
       quote: 'The checkout optimization alone paid for itself in 2 weeks.',
-      industry: 'Fitness Apparel',
-      image: '/case-studies/fitgear.jpg' // Placeholder
+      industry: 'Fitness Apparel'
     }
   ]
 
@@ -112,6 +111,13 @@ export default function ShopifyCategoryPage() {
       title: 'CRO-Focused Approach',
       description: 'Every decision is measured against conversion impact, not just aesthetics.'
     }
+  ]
+
+  const otherEngines = [
+    { name: 'Paid Ads Engine', path: '/services/ads' },
+    { name: 'SEO Engine', path: '/services/seo' },
+    { name: 'Content Engine', path: '/services/content' },
+    { name: 'Social Media Engine', path: '/services/social' }
   ]
 
   return (
@@ -184,30 +190,35 @@ export default function ShopifyCategoryPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {subcategories.map((service) => (
-              <div
-                key={service.id}
-                className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer border border-[rgba(28,35,33,0.06)]"
-                onClick={() => router.push(`/services/shopify/${service.id}`)}
-              >
-                <div className="p-6">
-                  <div className="text-3xl mb-3">{service.icon}</div>
-                  <h3 className="font-['Cormorant_Garamond',serif] text-xl font-light text-[#1C2321] mb-2">
-                    {service.name}
-                  </h3>
-                  <p className="text-xs text-[#8a8a82] font-['Jost',sans-serif] leading-[1.65] mb-3">
-                    {service.description}
-                  </p>
-                  <div className="flex items-center justify-between text-xs mb-4">
-                    <span className="text-[#44A194] font-medium">⏱ {service.timeline}</span>
-                    <span className="text-[#1C2321] font-['Jost',sans-serif]">{service.price}</span>
+            {subcategories.map((service) => {
+              const Icon = service.icon
+              return (
+                <div
+                  key={service.id}
+                  className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer border border-[rgba(28,35,33,0.06)]"
+                  onClick={() => router.push(`/services/shopify/${service.id}`)}
+                >
+                  <div className="p-6">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3.5 bg-[rgba(68,161,148,0.1)]">
+                      <Icon className="text-[#44A194] w-5 h-5" />
+                    </div>
+                    <h3 className="font-['Cormorant_Garamond',serif] text-xl font-light text-[#1C2321] mb-2">
+                      {service.name}
+                    </h3>
+                    <p className="text-xs text-[#8a8a82] font-['Jost',sans-serif] leading-[1.65] mb-3">
+                      {service.description}
+                    </p>
+                    <div className="flex items-center justify-between text-xs mb-4">
+                      <span className="text-[#44A194] font-medium">⏱ {service.timeline}</span>
+                      <span className="text-[#1C2321] font-['Jost',sans-serif]">{service.price}</span>
+                    </div>
+                    <button className="text-[10px] tracking-[0.14em] uppercase font-['Jost',sans-serif] text-[#44A194] group-hover:gap-2 transition-all duration-300 flex items-center gap-1">
+                      View Service → <ArrowRight className="w-3 h-3" />
+                    </button>
                   </div>
-                  <button className="text-[10px] tracking-[0.14em] uppercase font-['Jost',sans-serif] text-[#44A194] group-hover:gap-2 transition-all duration-300 flex items-center gap-1">
-                    View Service →
-                  </button>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
@@ -288,13 +299,13 @@ export default function ShopifyCategoryPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {['Paid Ads Engine', 'SEO Engine', 'Content Engine', 'Social Media Engine'].map((engine, idx) => (
+            {otherEngines.map((engine, idx) => (
               <button
                 key={idx}
-                onClick={() => router.push(`/services/${engine.toLowerCase().replace(' engine', '').replace(' ', '-')}`)}
+                onClick={() => router.push(engine.path)}
                 className="px-4 py-2 bg-white border border-[rgba(28,35,33,0.08)] rounded-lg text-sm text-[#1C2321] hover:border-[#44A194] hover:text-[#44A194] transition-all duration-300 font-['Jost',sans-serif]"
               >
-                {engine}
+                {engine.name}
               </button>
             ))}
           </div>
@@ -317,7 +328,7 @@ export default function ShopifyCategoryPage() {
                 formElement.scrollIntoView({ behavior: 'smooth' })
               }
             }}
-            className="bg-[#EC8F8D] text-white border-none px-8 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#e07a78] hover:scale-105 active:scale-95 inline-block"
+            className="bg-[#EC8F8D] text-white border-none px-8 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#e07a78] hover:scale-105 active:scale-95 inline-block rounded-lg"
           >
             Request a Shopify Audit →
           </button>

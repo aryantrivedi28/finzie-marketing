@@ -3,6 +3,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { ShoppingBag, Megaphone, Search, FileText, Share2, ArrowRight, Minus, Plus } from 'lucide-react'
 
 export default function ServicesPage() {
   const router = useRouter()
@@ -12,7 +13,7 @@ export default function ServicesPage() {
     {
       id: 'shopify',
       name: 'Shopify Engine',
-      icon: '🛍️',
+      icon: ShoppingBag,
       description: 'E-commerce operations that actually convert',
       accentColor: '#44A194',
       keyServices: ['Store Setup', 'Theme Dev', 'CRO', 'App Integration'],
@@ -21,7 +22,7 @@ export default function ServicesPage() {
     {
       id: 'ads',
       name: 'Paid Ads Engine',
-      icon: '📢',
+      icon: Megaphone,
       description: 'Scale traffic into predictable revenue',
       accentColor: '#EC8F8D',
       keyServices: ['Meta Ads', 'Google Ads', 'TikTok Ads', 'Retargeting'],
@@ -30,7 +31,7 @@ export default function ServicesPage() {
     {
       id: 'seo',
       name: 'SEO Engine',
-      icon: '🔍',
+      icon: Search,
       description: 'Compounding organic growth',
       accentColor: '#537D96',
       keyServices: ['Technical SEO', 'Keyword Research', 'Content Briefs', 'Local SEO'],
@@ -39,7 +40,7 @@ export default function ServicesPage() {
     {
       id: 'content',
       name: 'Content Engine',
-      icon: '✍️',
+      icon: FileText,
       description: 'Storytelling that sells',
       accentColor: '#44A194',
       keyServices: ['Blog Writing', 'Email Newsletters', 'Case Studies', 'Ghostwriting'],
@@ -48,7 +49,7 @@ export default function ServicesPage() {
     {
       id: 'social',
       name: 'Social Media Engine',
-      icon: '📱',
+      icon: Share2,
       description: 'Community-led brand growth',
       accentColor: '#EC8F8D',
       keyServices: ['Instagram Mgmt', 'LinkedIn Strategy', 'Content Calendar', 'Community Mgmt'],
@@ -101,48 +102,53 @@ export default function ServicesPage() {
       <div className="px-5 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
-                onClick={() => router.push(category.path)}
-              >
-                <div className="relative overflow-hidden">
-                  <div 
-                    className="absolute top-0 left-0 right-0 h-1" 
-                    style={{ backgroundColor: category.accentColor }}
-                  ></div>
-                  <div className="p-6 md:p-7">
-                    <div className="text-4xl mb-3">{category.icon}</div>
-                    <h3 className="font-['Cormorant_Garamond',serif] text-2xl font-light text-[#1C2321] mb-2">
-                      {category.name}
-                    </h3>
-                    <p className="text-sm text-[#8a8a82] font-['Jost',sans-serif] leading-[1.65] mb-4">
-                      {category.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-5">
-                      {category.keyServices.map((service, idx) => (
-                        <span 
-                          key={idx}
-                          className="text-[10px] px-2.5 py-1 bg-[rgba(68,161,148,0.08)] text-[#44A194] rounded-full font-['Jost',sans-serif] tracking-wide"
-                        >
-                          {service}
-                        </span>
-                      ))}
+            {categories.map((category) => {
+              const Icon = category.icon
+              return (
+                <div
+                  key={category.id}
+                  className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+                  onClick={() => router.push(category.path)}
+                >
+                  <div className="relative overflow-hidden">
+                    <div 
+                      className="absolute top-0 left-0 right-0 h-1" 
+                      style={{ backgroundColor: category.accentColor }}
+                    ></div>
+                    <div className="p-6 md:p-7">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3.5 bg-[rgba(68,161,148,0.1)]">
+                        <Icon className="text-[#44A194] w-5 h-5" />
+                      </div>
+                      <h3 className="font-['Cormorant_Garamond',serif] text-2xl font-light text-[#1C2321] mb-2">
+                        {category.name}
+                      </h3>
+                      <p className="text-sm text-[#8a8a82] font-['Jost',sans-serif] leading-[1.65] mb-4">
+                        {category.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mb-5">
+                        {category.keyServices.map((service, idx) => (
+                          <span 
+                            key={idx}
+                            className="text-[10px] px-2.5 py-1 bg-[rgba(68,161,148,0.08)] text-[#44A194] rounded-full font-['Jost',sans-serif] tracking-wide"
+                          >
+                            {service}
+                          </span>
+                        ))}
+                      </div>
+                      <button 
+                        className="text-[11px] tracking-[0.18em] uppercase font-['Jost',sans-serif] text-[#44A194] group-hover:gap-2 transition-all duration-300 flex items-center gap-1"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(category.path)
+                        }}
+                      >
+                        Explore → <ArrowRight className="w-3 h-3" />
+                      </button>
                     </div>
-                    <button 
-                      className="text-[11px] tracking-[0.18em] uppercase font-['Jost',sans-serif] text-[#44A194] group-hover:gap-2 transition-all duration-300 flex items-center gap-1"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        router.push(category.path)
-                      }}
-                    >
-                      Explore →
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
@@ -254,7 +260,7 @@ export default function ServicesPage() {
                     {faq.q}
                   </span>
                   <span className="text-[#44A194] text-xl">
-                    {openFaq === idx ? '−' : '+'}
+                    {openFaq === idx ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                   </span>
                 </button>
                 {openFaq === idx && (
@@ -288,7 +294,7 @@ export default function ServicesPage() {
                 formElement.scrollIntoView({ behavior: 'smooth' })
               }
             }}
-            className="bg-[#EC8F8D] text-white border-none px-8 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#e07a78] hover:scale-105 active:scale-95 whitespace-nowrap"
+            className="bg-[#EC8F8D] text-white border-none px-8 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#e07a78] hover:scale-105 active:scale-95 whitespace-nowrap rounded-lg"
           >
             Talk to a Strategist →
           </button>
