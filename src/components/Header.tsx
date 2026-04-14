@@ -13,6 +13,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isServicesOpen, setIsServicesOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
   // Determine active page from URL path
@@ -39,17 +40,21 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close menu when clicking outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
       if (isMenuOpen && !target.closest('.mobile-menu') && !target.closest('.menu-button')) {
         setIsMenuOpen(false)
       }
+      if (isServicesOpen && !target.closest('.services-dropdown')) {
+        setIsServicesOpen(false)
+        setActiveCategory(null)
+      }
     }
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
-  }, [isMenuOpen])
+  }, [isMenuOpen, isServicesOpen])
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -65,9 +70,9 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
 
   const handleNavClick = (page: string) => {
     setIsMenuOpen(false)
+    setIsServicesOpen(false)
     setActiveCategory(null)
 
-    // Use Next.js router for navigation
     if (page === 'home') {
       router.push('/')
     } else if (page === 'systems') {
@@ -84,12 +89,10 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
       router.push('/services')
     }
 
-    // Call the optional callback if provided
     if (onNavClick) {
       onNavClick(page)
     }
 
-    // Focus on chat input after navigation to home
     if (page === 'home') {
       setTimeout(() => {
         const ci = document.getElementById('ci')
@@ -100,11 +103,12 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
 
   const handleServiceClick = (path: string) => {
     setIsMenuOpen(false)
+    setIsServicesOpen(false)
     setActiveCategory(null)
     router.push(path)
   }
 
-  // Service categories data
+  // Service categories data with subcategories
   const serviceCategories = [
     {
       id: 'shopify',
@@ -184,11 +188,10 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 border-b ${
-        isScrolled
+      className={`sticky top-0 z-50 transition-all duration-300 border-b ${isScrolled
           ? 'shadow-md bg-[#F4F0E4]/95 backdrop-blur-sm border-[rgba(28,35,33,0.08)]'
           : 'bg-[#F4F0E4] border-[rgba(28,35,33,0.08)]'
-      }`}
+        }`}
     >
       <div className="px-5 sm:px-6 md:px-8 lg:px-12 py-4 md:py-5">
         <div className="flex justify-between items-center">
@@ -216,39 +219,46 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
               isActive={activePage === 'home'}
               onClick={() => handleNavClick('home')}
             />
-            
+
             {/* Services Dropdown - Nested on Hover */}
-            <div className="relative services-dropdown group">
+            <div
+              className="relative services-dropdown"
+              onMouseEnter={() => setIsServicesOpen(true)}
+              onMouseLeave={() => {
+                setIsServicesOpen(false)
+                setActiveCategory(null)
+              }}
+            >
               <button
                 onClick={() => handleNavClick('services')}
-                className={`bg-none border-none font-['Jost',sans-serif] text-[11px] font-normal tracking-[0.18em] uppercase pb-0.5 relative transition-colors duration-300 flex items-center gap-1 ${
-                  activePage === 'services' ? 'text-[#1C2321]' : 'text-[#8a8a82] group-hover:text-[#1C2321]'
-                }`}
+                className={`bg-none border-none font-['Jost',sans-serif] text-[11px] font-normal tracking-[0.18em] uppercase pb-0.5 relative transition-colors duration-300 flex items-center gap-1 ${activePage === 'services' ? 'text-[#1C2321]' : 'text-[#8a8a82] hover:text-[#1C2321]'
+                  }`}
               >
                 Services
-                <svg 
-                  className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180"
-                  fill="none" 
-                  stroke="currentColor" 
+                <svg
+                  className={`w-3 h-3 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
                 <span
-                  className={`absolute bottom-[-2px] left-0 right-0 h-[1px] bg-[#44A194] transition-transform duration-300 origin-left ${
-                    activePage === 'services' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                  }`}
+                  className={`absolute bottom-[-2px] left-0 right-0 h-[1px] bg-[#44A194] transition-transform duration-300 origin-left ${activePage === 'services' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                    }`}
                 />
               </button>
 
               {/* First Level Dropdown - Categories */}
-              <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-[rgba(28,35,33,0.08)] overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div
+                className={`absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-[rgba(28,35,33,0.08)] overflow-hidden transition-all duration-200 z-50 ${isServicesOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
+                  }`}
+              >
                 {serviceCategories.map((category) => (
                   <div
                     key={category.id}
-                    className="relative group/category"
+                    className="relative"
                     onMouseEnter={() => setActiveCategory(category.id)}
-                    onMouseLeave={() => setActiveCategory(null)}
                   >
                     {/* Category Item */}
                     <div className="flex items-center justify-between px-4 py-3 hover:bg-[rgba(68,161,148,0.05)] cursor-pointer">
@@ -256,23 +266,27 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                         onClick={() => handleServiceClick(category.path)}
                         className="flex-1 text-left"
                       >
-                        <span className="text-[0.85rem] font-semibold text-[#1C2321] group-hover/category:text-[#44A194] transition-colors">
+                        <span className="text-[0.85rem] font-semibold text-[#1C2321] hover:text-[#44A194] transition-colors">
                           {category.name}
                         </span>
                       </button>
-                      <svg 
+                      <svg
                         className="w-3 h-3 text-[#8a8a82]"
-                        fill="none" 
-                        stroke="currentColor" 
+                        fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
 
-                    {/* Second Level Dropdown - Subcategories */}
+                    {/* Second Level Dropdown - Subcategories (appears to the RIGHT) */}
                     {activeCategory === category.id && (
-                      <div className="absolute left-full top-0 ml-1 w-64 bg-white rounded-lg shadow-xl border border-[rgba(28,35,33,0.08)] overflow-hidden z-50">
+                      <div
+                        className="absolute left-full top-0 ml-1 w-64 bg-white rounded-lg shadow-xl border border-[rgba(28,35,33,0.08)] overflow-hidden z-50"
+                        onMouseEnter={() => setActiveCategory(category.id)}   // ✅ KEEP ACTIVE
+                        onMouseLeave={() => setActiveCategory(null)}         // ✅ CLOSE ONLY HERE
+                      >
                         <div className="py-2">
                           <div className="px-4 py-2 border-b border-[rgba(28,35,33,0.05)]">
                             <button
@@ -296,7 +310,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                     )}
                   </div>
                 ))}
-                
+
                 <div className="border-t border-[rgba(28,35,33,0.08)] p-3 bg-[rgba(68,161,148,0.03)]">
                   <button
                     onClick={() => handleServiceClick('/services')}
@@ -348,19 +362,16 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
             aria-expanded={isMenuOpen}
           >
             <span
-              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${
-                isMenuOpen ? 'rotate-45 translate-y-2' : ''
-              }`}
+              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''
+                }`}
             />
             <span
-              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${
-                isMenuOpen ? 'opacity-0' : ''
-              }`}
+              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''
+                }`}
             />
             <span
-              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${
-                isMenuOpen ? '-rotate-45 -translate-y-2' : ''
-              }`}
+              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''
+                }`}
             />
           </button>
         </div>
@@ -380,16 +391,16 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                   isActive={activePage === 'home'}
                   onClick={() => handleNavClick('home')}
                 />
-                
-                {/* Mobile Services Accordion */}
+
+                {/* Mobile Services Accordion with Subcategories */}
                 <div className="border-b border-[rgba(28,35,33,0.08)] pb-2">
-                  <MobileServicesAccordion 
+                  <MobileServicesAccordion
                     serviceCategories={serviceCategories}
                     onServiceClick={handleServiceClick}
                     setIsMenuOpen={setIsMenuOpen}
                   />
                 </div>
-                
+
                 <MobileNavButton
                   label="For Business"
                   pageId="business"
@@ -416,7 +427,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                 />
                 <button
                   onClick={() => handleNavClick('home')}
-                  className="bg-[#44A194] text-white border-none px-6 py-3 font-['Jost',sans-serif] text-sm tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#38857a] hover:scale-105 active:scale-95 mt-4 w-full"
+                  className="bg-[#44A194] text-white border-none px-6 py-3 font-['Jost',sans-serif] text-sm tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#38857a] hover:scale-105 active:scale-95 mt-4 w-full rounded-lg"
                 >
                   Get Started
                 </button>
@@ -440,15 +451,13 @@ const NavButton = ({ label, pageId, isActive, onClick }: NavButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`bg-none border-none font-['Jost',sans-serif] text-[11px] font-normal tracking-[0.18em] uppercase pb-0.5 relative transition-colors duration-300 group ${
-        isActive ? 'text-[#1C2321]' : 'text-[#8a8a82] hover:text-[#1C2321]'
-      }`}
+      className={`bg-none border-none font-['Jost',sans-serif] text-[11px] font-normal tracking-[0.18em] uppercase pb-0.5 relative transition-colors duration-300 group ${isActive ? 'text-[#1C2321]' : 'text-[#8a8a82] hover:text-[#1C2321]'
+        }`}
     >
       {label}
       <span
-        className={`absolute bottom-[-2px] left-0 right-0 h-[1px] bg-[#44A194] transition-transform duration-300 origin-left ${
-          isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-        }`}
+        className={`absolute bottom-[-2px] left-0 right-0 h-[1px] bg-[#44A194] transition-transform duration-300 origin-left ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+          }`}
       />
     </button>
   )
@@ -458,11 +467,10 @@ const MobileNavButton = ({ label, pageId, isActive, onClick }: NavButtonProps) =
   return (
     <button
       onClick={onClick}
-      className={`bg-none border-none font-['Jost',sans-serif] text-base font-normal tracking-[0.18em] uppercase py-3 px-4 text-left transition-all duration-300 rounded-lg ${
-        isActive
+      className={`bg-none border-none font-['Jost',sans-serif] text-base font-normal tracking-[0.18em] uppercase py-3 px-4 text-left transition-all duration-300 rounded-lg ${isActive
           ? 'text-[#44A194] bg-[#44A194]/10'
           : 'text-[#1C2321] hover:bg-[#44A194]/5'
-      }`}
+        }`}
     >
       {label}
     </button>
@@ -481,76 +489,86 @@ interface MobileServicesAccordionProps {
 }
 
 const MobileServicesAccordion = ({ serviceCategories, onServiceClick, setIsMenuOpen }: MobileServicesAccordionProps) => {
-  const [openCategory, setOpenCategory] = useState<string | null>(null)
-
-  const toggleCategory = (categoryId: string) => {
-    setOpenCategory(openCategory === categoryId ? null : categoryId)
-  }
+  const [isServicesOpen, setIsServicesOpen] = useState(false)
+  const [activeMobileCategory, setActiveMobileCategory] = useState<string | null>(null)
 
   return (
     <div className="w-full">
       <button
-        onClick={() => {
-          onServiceClick('/services')
-          setIsMenuOpen(false)
-        }}
+        onClick={() => setIsServicesOpen(!isServicesOpen)}
         className="w-full flex items-center justify-between font-['Jost',sans-serif] text-base font-normal tracking-[0.18em] uppercase py-3 px-4 text-left transition-all duration-300 rounded-lg hover:bg-[#44A194]/5"
       >
         <span>Services</span>
-        <svg 
-          className="w-4 h-4"
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          className={`w-4 h-4 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      
-      {serviceCategories.map((category) => (
-        <div key={category.id} className="mt-1">
+
+      {isServicesOpen && (
+        <div className="ml-4 mt-2 space-y-2">
           <button
-            onClick={() => toggleCategory(category.id)}
-            className="w-full flex items-center justify-between py-2 px-4 text-[0.85rem] font-semibold text-[#1C2321] hover:bg-[#44A194]/5 rounded-lg transition-colors"
+            onClick={() => {
+              onServiceClick('/services')
+              setIsMenuOpen(false)
+            }}
+            className="w-full text-left py-2 px-3 text-[0.85rem] font-semibold text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
           >
-            <span>{category.name}</span>
-            <svg 
-              className={`w-3 h-3 transition-transform duration-200 ${openCategory === category.id ? 'rotate-90' : ''}`}
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            All Services →
           </button>
-          
-          {openCategory === category.id && (
-            <div className="ml-4 mt-1 space-y-1">
+
+          {serviceCategories.map((category) => (
+            <div key={category.id} className="space-y-1">
+              {/* Category button - click to show/hide subcategories on mobile */}
               <button
-                onClick={() => {
-                  onServiceClick(category.path)
-                  setIsMenuOpen(false)
-                }}
-                className="w-full text-left py-1.5 px-4 text-[0.8rem] text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
+                onClick={() => setActiveMobileCategory(activeMobileCategory === category.id ? null : category.id)}
+                className="w-full flex items-center justify-between py-2 px-3 text-[0.85rem] font-semibold text-[#1C2321] hover:text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
               >
-                View All {category.name} →
-              </button>
-              {category.subcategories.map((sub, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    onServiceClick(sub.path)
-                    setIsMenuOpen(false)
-                  }}
-                  className="w-full text-left py-1.5 px-4 text-[0.75rem] text-[#8a8a82] hover:text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
+                <span>{category.name}</span>
+                <svg
+                  className={`w-3 h-3 transition-transform duration-200 ${activeMobileCategory === category.id ? 'rotate-90' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {sub.name}
-                </button>
-              ))}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              {/* Subcategories - visible when category is active */}
+              {activeMobileCategory === category.id && (
+                <div className="ml-4 space-y-1">
+                  <button
+                    onClick={() => {
+                      onServiceClick(category.path)
+                      setIsMenuOpen(false)
+                    }}
+                    className="w-full text-left py-1.5 px-3 text-[0.75rem] font-medium text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
+                  >
+                    View All {category.name} →
+                  </button>
+                  {category.subcategories.map((sub, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        onServiceClick(sub.path)
+                        setIsMenuOpen(false)
+                      }}
+                      className="w-full text-left py-1.5 px-3 text-[0.75rem] text-[#8a8a82] hover:text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
+                    >
+                      {sub.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+          ))}
         </div>
-      ))}
+      )}
     </div>
   )
 }
@@ -574,6 +592,17 @@ const styles = `
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes slideRight {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
     }
   }
 
