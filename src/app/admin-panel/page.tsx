@@ -2878,8 +2878,7 @@
 
 
 
-
-// app/admin-panel/page.tsx
+// app/admin-panel/page.tsx (Updated)
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -2892,6 +2891,7 @@ import {
   Filter,
   Plus,
   Download,
+  CreditCard, // Add this for payments tab
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -2901,6 +2901,7 @@ import { useResponsive } from "./hooks/useResponsive";
 import { useFreelancers } from "./hooks/useFreelancers";
 import { useClientRequests } from "./hooks/useClientRequests";
 import { useForms } from "./hooks/useForms";
+import { usePayments } from "./hooks/usePayments"; // New hook
 
 // Components
 import { LoadingSpinner } from "./components/common/LoadingSpinner";
@@ -2924,12 +2925,18 @@ import { GigList } from "./components/forms/GigList";
 import { CreateGigModal } from "./components/forms/CreateGigModal";
 import { SubmissionsModal } from "./components/forms/SubmissionsModal";
 
+// Payment Components (New)
+import { PaymentsTable } from "./components/payments/PaymentsTable";
+import { DealModal } from "./components/payments/DealModal";
+import { PaymentFilters } from "./components/payments/PaymentFilters";
+import { CreateDealModal } from "./components/payments/CreateDealModal";
+
 export default function AdminPanel() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isMobile, mounted } = useResponsive();
-  const [activeTab, setActiveTab] = useState<"freelancers" | "forms" | "requests">(
-    (searchParams.get("tab") as "freelancers" | "forms" | "requests") || "freelancers"
+  const [activeTab, setActiveTab] = useState<"freelancers" | "forms" | "requests" | "payments">(
+    (searchParams.get("tab") as "freelancers" | "forms" | "requests" | "payments") || "freelancers"
   );
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
@@ -2973,6 +2980,26 @@ export default function AdminPanel() {
     downloadCSVForForm
   } = useForms();
 
+  // Payment hooks (New)
+  const {
+    deals,
+    loading: paymentsLoading,
+    error: paymentsError,
+    filters: paymentFilters,
+    setFilters: setPaymentFilters,
+    loadDeals,
+    createDeal,
+    createPaymentLink,
+    releasePayment,
+    downloadCSV: downloadPaymentsCSV,
+    resetFilters: resetPaymentFilters,
+    addAdminMargin,           // New
+    sendClientAgreement,      // New
+    sendFreelancerAgreement,  // New
+    generateClientInvoice,    // New
+    getDealStats
+  } = usePayments();
+
   // Local state for modals
   const [requestSearch, setRequestSearch] = useState("");
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
@@ -2981,6 +3008,12 @@ export default function AdminPanel() {
   const [showJDModal, setShowJDModal] = useState(false);
   const [showCreateGigModal, setShowCreateGigModal] = useState(false);
   const [jdReqId, setJdReqId] = useState<string | null>(null);
+
+  // Payment modals (New)
+  const [selectedDeal, setSelectedDeal] = useState<any>(null);
+  const [showDealModal, setShowDealModal] = useState(false);
+  const [showCreateDealModal, setShowCreateDealModal] = useState(false);
+
   const [newRequest, setNewRequest] = useState({
     company: '',
     contact_name: '',
@@ -3004,12 +3037,19 @@ export default function AdminPanel() {
   });
 
   // Stats
-  const stats = useMemo(() => ({
-    totalFreelancers: freelancers.length,
-    totalForms: forms.length,
-    totalSubmissions: forms.reduce((sum, f) => sum + (f.submission_count || 0), 0),
-    totalRequests: filteredRequests.length,
-  }), [freelancers.length, forms.length, filteredRequests.length, forms]);
+  const stats = useMemo(() => {
+    const paymentStats = getDealStats();
+    return {
+      totalFreelancers: freelancers.length,
+      totalForms: forms.length,
+      totalSubmissions: forms.reduce((sum, f) => sum + (f.submission_count || 0), 0),
+      totalRequests: filteredRequests.length,
+      // Payment stats
+      totalRevenue: paymentStats.totalRevenue,
+      pendingPayments: paymentStats.pendingPayments,
+      activeDeals: paymentStats.activeDeals
+    };
+  }, [freelancers.length, forms.length, filteredRequests.length, forms, getDealStats]);
 
   // Load data on mount and tab change
   useEffect(() => {
@@ -3020,9 +3060,11 @@ export default function AdminPanel() {
         loadForms();
       } else if (activeTab === "requests") {
         fetchRequests();
+      } else if (activeTab === "payments") {
+        loadDeals();
       }
     }
-  }, [mounted, activeTab, loadFreelancers, loadForms, fetchRequests]);
+  }, [mounted, activeTab, loadFreelancers, loadForms, fetchRequests, loadDeals]);
 
   // Filter requests on search
   useEffect(() => {
@@ -3100,6 +3142,24 @@ export default function AdminPanel() {
       downloadFreelancersCSV();
     } else if (activeTab === "requests") {
       downloadRequestsCSV();
+    } else if (activeTab === "payments") {
+      downloadPaymentsCSV();
+    }
+  };
+
+  const handleViewDeal = (deal: any) => {
+    setSelectedDeal(deal);
+    setShowDealModal(true);
+  };
+
+  const handleCreateDeal = async (dealData: any) => {
+    const result = await createDeal(dealData);
+    if (result) {
+      toast.success('Deal created successfully');
+      setShowCreateDealModal(false);
+      loadDeals();
+    } else {
+      toast.error('Failed to create deal');
     }
   };
 
@@ -3111,17 +3171,19 @@ export default function AdminPanel() {
     );
   }
 
-  const currentError = activeTab === "freelancers" ? freelancersError : 
-                       activeTab === "requests" ? requestsError : 
-                       formsError;
-  const currentLoading = activeTab === "freelancers" ? freelancersLoading : 
-                         activeTab === "requests" ? requestsLoading : 
-                         formsLoading;
+  const currentError = activeTab === "freelancers" ? freelancersError :
+    activeTab === "requests" ? requestsError :
+      activeTab === "forms" ? formsError :
+        paymentsError;
+  const currentLoading = activeTab === "freelancers" ? freelancersLoading :
+    activeTab === "requests" ? requestsLoading :
+      activeTab === "forms" ? formsLoading :
+        paymentsLoading;
 
   return (
     <div className="min-h-screen bg-[#F4F0E4]">
       {/* Mobile Filter Button */}
-      {isMobile && activeTab === "freelancers" && (
+      {isMobile && (activeTab === "freelancers" || activeTab === "payments") && (
         <button
           onClick={() => setShowMobileFilters(!showMobileFilters)}
           className="fixed bottom-4 right-4 z-50 p-3 bg-[#44A194] text-white rounded-full shadow-lg"
@@ -3134,31 +3196,38 @@ export default function AdminPanel() {
       <div className="sticky top-0 z-40 bg-white border-b border-[#1C2321]/10 px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <h1 className="font-display text-lg sm:text-xl md:text-2xl font-light text-[#1C2321] truncate">
-            {activeTab === "freelancers" ? "Freelancer Database" : 
-             activeTab === "forms" ? "Gig Forms" : 
-             "Client Requests"}
+            {activeTab === "freelancers" ? "Freelancer Database" :
+              activeTab === "forms" ? "Gig Forms" :
+                activeTab === "requests" ? "Client Requests" :
+                  "Payment Management"}
           </h1>
           <p className="text-xs sm:text-sm text-[#8a8a82] mt-0.5 sm:mt-1 tracking-[0.04em] truncate">
             {activeTab === "freelancers"
               ? "Manage and search through your freelancer pool"
               : activeTab === "forms"
-              ? "Create and manage gig forms"
-              : "All incoming hiring briefs"}
+                ? "Create and manage gig forms"
+                : activeTab === "requests"
+                  ? "All incoming hiring briefs"
+                  : "Manage deals, agreements, invoices, and payments"}
           </p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 ml-2 sm:ml-4">
           {/* Export Button */}
-          {(activeTab === "freelancers" || activeTab === "requests") && (
+          {(activeTab === "freelancers" || activeTab === "requests" || activeTab === "payments") && (
             <button
               onClick={handleDownloadCSV}
-              disabled={activeTab === "freelancers" ? freelancers.length === 0 : filteredRequests.length === 0}
+              disabled={
+                (activeTab === "freelancers" && freelancers.length === 0) ||
+                (activeTab === "requests" && filteredRequests.length === 0) ||
+                (activeTab === "payments" && deals.length === 0)
+              }
               className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#44A194] text-white text-[10px] sm:text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors disabled:opacity-50 flex items-center gap-1 sm:gap-2"
             >
               <Download className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">Export CSV</span>
             </button>
           )}
-          
+
           {/* New Button */}
           {activeTab === "forms" ? (
             <button
@@ -3176,19 +3245,49 @@ export default function AdminPanel() {
               <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">New Request</span>
             </button>
+          ) : activeTab === "payments" ? (
+            <button
+              onClick={() => setShowCreateDealModal(true)}
+              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#44A194] text-white text-[10px] sm:text-xs tracking-[0.16em] uppercase hover:bg-[#38857a] transition-colors flex items-center gap-1 sm:gap-2"
+            >
+              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">New Deal</span>
+            </button>
           ) : null}
         </div>
       </div>
 
       {/* Content */}
       <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
-        {/* Stats Cards */}
+        {/* Stats Cards - Updated for payments */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-[1px] sm:gap-[2px] bg-[#1C2321]/10 mb-6 sm:mb-8">
           <StatCard value={stats.totalFreelancers} label="Total Freelancers" icon={Users} />
           <StatCard value={stats.totalRequests} label="Client Requests" icon={FileText} />
           <StatCard value={stats.totalForms} label="Active Gigs" icon={Briefcase} />
-          <StatCard value={stats.totalSubmissions} label="Total Submissions" icon={FileCheck} />
+          <StatCard
+            value={activeTab === "payments" ? `₹${stats.totalRevenue?.toLocaleString() || 0}` : stats.totalSubmissions}
+            label={activeTab === "payments" ? "Total Revenue" : "Total Submissions"}
+            icon={activeTab === "payments" ? CreditCard : FileCheck}
+          />
         </div>
+
+        {/* Additional Payment Stats when on payments tab */}
+        {activeTab === "payments" && (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-white border border-[#1C2321]/10 p-4">
+              <p className="text-xs text-[#8a8a82] uppercase tracking-wider mb-1">Active Deals</p>
+              <p className="text-2xl font-semibold text-[#1C2321]">{stats.activeDeals || 0}</p>
+            </div>
+            <div className="bg-white border border-[#1C2321]/10 p-4">
+              <p className="text-xs text-[#8a8a82] uppercase tracking-wider mb-1">Pending Payments</p>
+              <p className="text-2xl font-semibold text-[#EC8F8D]">{stats.pendingPayments || 0}</p>
+            </div>
+            <div className="bg-white border border-[#1C2321]/10 p-4">
+              <p className="text-xs text-[#8a8a82] uppercase tracking-wider mb-1">Awaiting Payout</p>
+              <p className="text-2xl font-semibold text-[#44A194]">{deals.filter(d => d.payment_status === 'paid' && d.payout_status === 'pending').length}</p>
+            </div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-4 sm:gap-8 border-b border-[#1C2321]/10 mb-6 sm:mb-8 overflow-x-auto scrollbar-hide">
@@ -3218,6 +3317,15 @@ export default function AdminPanel() {
             }}
           >
             Gig Forms
+          </TabButton>
+          <TabButton
+            active={activeTab === "payments"}
+            onClick={() => {
+              setActiveTab("payments");
+              router.push("/admin-panel?tab=payments");
+            }}
+          >
+            Payments <span className="ml-1 px-1.5 py-0.5 bg-[#44A194] text-white text-[8px] rounded-full">{deals.filter(d => d.payment_status === 'pending').length}</span>
           </TabButton>
         </div>
 
@@ -3280,15 +3388,37 @@ export default function AdminPanel() {
           <GigList
             forms={forms}
             loading={formsLoading}
-            onCopyLink={() => {}}
+            onCopyLink={() => { }}
             onViewSubmissions={(formId) => {
               setSelectedForm(formId);
               loadFormSubmissions(formId);
             }}
             onToggleStatus={toggleFormStatus}
-            onEdit={() => {}}
+            onEdit={() => { }}
             onDelete={deleteForm}
           />
+        )}
+
+        {/* Payments Tab Content */}
+        {activeTab === "payments" && (
+          <>
+            <PaymentFilters
+              isMobile={isMobile}
+              showMobileFilters={showMobileFilters}
+              setShowMobileFilters={setShowMobileFilters}
+              filters={paymentFilters}
+              setFilters={setPaymentFilters}
+              onSearch={loadDeals}
+              onReset={resetPaymentFilters}
+              loading={paymentsLoading}
+            />
+
+            <PaymentsTable
+              deals={deals}
+              loading={paymentsLoading}
+              onView={handleViewDeal}
+            />
+          </>
         )}
       </div>
 
@@ -3330,6 +3460,30 @@ export default function AdminPanel() {
         submissions={formSubmissions}
         formId={selectedForm || ''}
         onDownloadCSV={downloadCSVForForm}
+      />
+
+      {/* Payment Modals */}
+      <CreateDealModal
+        isOpen={showCreateDealModal}
+        onClose={() => setShowCreateDealModal(false)}
+        onSubmit={handleCreateDeal}
+        // freelancers={freelancers}
+        clientRequests={filteredRequests.filter(r => r.status === 'active')}
+      />
+
+      <DealModal
+        isOpen={showDealModal}
+        onClose={() => {
+          setShowDealModal(false);
+          setSelectedDeal(null);
+        }}
+        deal={selectedDeal}
+        onSendClientAgreement={sendClientAgreement}
+        onSendFreelancerAgreement={sendFreelancerAgreement}
+        onAddAdminMargin={addAdminMargin}
+        onGenerateInvoice={generateClientInvoice}
+        onCreatePaymentLink={createPaymentLink}
+        onRefresh={loadDeals}
       />
 
       <Toaster />
