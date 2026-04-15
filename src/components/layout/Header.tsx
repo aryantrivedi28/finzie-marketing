@@ -183,14 +183,24 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
         { name: 'Influencer Outreach', path: '/services/social/influencer-outreach' },
         { name: 'Social Analytics', path: '/services/social/analytics' },
       ]
+    },
+    {
+      id: 'design',
+      name: 'Design Engine',
+      path: '/services/design',
+      subcategories: [
+        { name: 'UI/UX Design', path: '/services/design/ui-ux-design' },
+        { name: 'Graphic Design', path: '/services/design/graphic-design' },
+        { name: 'Ad Creative Design', path: '/services/design/ad-creatives' },
+      ]
     }
   ]
 
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 border-b ${isScrolled
-          ? 'shadow-md bg-[#F4F0E4]/95 backdrop-blur-sm border-[rgba(28,35,33,0.08)]'
-          : 'bg-[#F4F0E4] border-[rgba(28,35,33,0.08)]'
+        ? 'shadow-md bg-[#F4F0E4]/95 backdrop-blur-sm border-[rgba(28,35,33,0.08)]'
+        : 'bg-[#F4F0E4] border-[rgba(28,35,33,0.08)]'
         }`}
     >
       <div className="px-5 sm:px-6 md:px-8 lg:px-12 py-4 md:py-5">
@@ -468,8 +478,8 @@ const MobileNavButton = ({ label, pageId, isActive, onClick }: NavButtonProps) =
     <button
       onClick={onClick}
       className={`bg-none border-none font-['Jost',sans-serif] text-base font-normal tracking-[0.18em] uppercase py-3 px-4 text-left transition-all duration-300 rounded-lg ${isActive
-          ? 'text-[#44A194] bg-[#44A194]/10'
-          : 'text-[#1C2321] hover:bg-[#44A194]/5'
+        ? 'text-[#44A194] bg-[#44A194]/10'
+        : 'text-[#1C2321] hover:bg-[#44A194]/5'
         }`}
     >
       {label}

@@ -3,9 +3,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  User, Mail, Phone, ChevronDown, AlertCircle, CheckCircle2, 
-  ArrowRight, Clock, Award, Shield, Users, Sparkles, ShoppingBag, Megaphone, Search, FileText, Share2 
+import {
+  User, Mail, Phone, ChevronDown, AlertCircle, CheckCircle2,
+  ArrowRight, Clock, Award, Shield, Users, Sparkles, ShoppingBag, Megaphone, Search, FileText, Share2,
+  Palette
 } from 'lucide-react';
 import type { Variants } from 'framer-motion';
 
@@ -58,6 +59,11 @@ const SERVICE_CATEGORIES = {
     'Social Media Strategy',
     'Influencer Outreach',
     'Social Analytics'
+  ],
+  'Design Engine': [
+    'UI/UX Design',
+    'Graphic Design',
+    'Ad Creative Design'
   ]
 } as const;
 
@@ -141,33 +147,33 @@ export default function ClientRequestForm() {
         if (value.trim().length < 2) return 'Name must be at least 2 characters';
         if (value.trim().length > 100) return 'Name is too long';
         return '';
-      
+
       case 'email':
         if (!value.trim()) return 'Email is required';
         const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
         if (!emailRegex.test(value)) return 'Please enter a valid email address';
         return '';
-      
+
       case 'whatsappNumber':
         if (!value.trim()) return 'WhatsApp number is required';
         const phoneRegex = /^[\+]?[(]?[0-9]{1,3}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/;
         if (!phoneRegex.test(value.replace(/\s/g, ''))) return 'Please enter a valid phone number';
         return '';
-      
+
       case 'serviceCategory':
         if (!value) return 'Please select a service category';
         return '';
-      
+
       case 'subCategory':
         if (!value) return 'Please select a specialization';
         return '';
-      
+
       case 'requirement':
         if (!value.trim()) return 'Please describe your requirement';
         if (value.trim().length < 20) return 'Please provide more details (at least 20 characters)';
         if (value.trim().length > 2000) return 'Description is too long (max 2000 characters)';
         return '';
-      
+
       default:
         return '';
     }
@@ -192,7 +198,7 @@ export default function ClientRequestForm() {
   ) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-    
+
     if (touched.has(name)) {
       const error = validateField(name as keyof FormData, value);
       setErrors(prev => ({ ...prev, [name]: error }));
@@ -214,7 +220,7 @@ export default function ClientRequestForm() {
     // Validate all fields
     const newErrors: FormErrors = {};
     let hasErrors = false;
-    
+
     (Object.keys(form) as Array<keyof FormData>).forEach(key => {
       const error = validateField(key, form[key]);
       if (error) {
@@ -265,7 +271,7 @@ export default function ClientRequestForm() {
       setTimeout(() => {
         router.push('/thank-you-client');
       }, 2000);
-      
+
     } catch (error) {
       setSubmitStatus({
         type: 'error',
@@ -280,7 +286,7 @@ export default function ClientRequestForm() {
     const isTouched = touched.has(fieldName);
     const error = errors[fieldName];
     const value = form[fieldName];
-    
+
     return {
       hasError: isTouched && !!error,
       isValid: isTouched && !error && !!value,
@@ -293,13 +299,13 @@ export default function ClientRequestForm() {
   const inputClass = useCallback((fieldName: keyof FormData) => {
     const { hasError, isValid } = getFieldStatus(fieldName);
     let borderClass = 'border-[rgba(28,35,33,0.08)] focus:border-[#44A194]';
-    
+
     if (hasError) {
       borderClass = 'border-[#EC8F8D] focus:border-[#EC8F8D]';
     } else if (isValid) {
       borderClass = 'border-[#44A194] focus:border-[#44A194]';
     }
-    
+
     return `${inputBase} ${borderClass}`;
   }, [getFieldStatus]);
 
@@ -324,9 +330,9 @@ export default function ClientRequestForm() {
     'Paid Ads Engine': <Megaphone className="w-4 h-4" />,
     'SEO Engine': <Search className="w-4 h-4" />,
     'Content Engine': <FileText className="w-4 h-4" />,
-    'Social Media Engine': <Share2 className="w-4 h-4" />
+    'Social Media Engine': <Share2 className="w-4 h-4" />,
+    'Design Engine': <Palette className="w-4 h-4" />
   };
-
   if (!isMounted) {
     return (
       <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center">
@@ -365,11 +371,10 @@ export default function ClientRequestForm() {
               initial={{ opacity: 0, y: -20, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: -20, height: 0 }}
-              className={`mb-6 md:mb-8 flex items-start gap-3 px-4 sm:px-5 py-4 border ${
-                submitStatus.type === 'success'
-                  ? 'bg-white border-[#44A194]/20'
-                  : 'bg-white border-[#EC8F8D]/20'
-              } rounded-none`}
+              className={`mb-6 md:mb-8 flex items-start gap-3 px-4 sm:px-5 py-4 border ${submitStatus.type === 'success'
+                ? 'bg-white border-[#44A194]/20'
+                : 'bg-white border-[#EC8F8D]/20'
+                } rounded-none`}
               style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
               role="alert"
             >
@@ -394,7 +399,7 @@ export default function ClientRequestForm() {
             className="flex-1 w-full bg-white border border-[rgba(28,35,33,0.08)] relative overflow-hidden rounded-none"
           >
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] via-[#537D96] to-[#EC8F8D]" />
-            
+
             <form onSubmit={handleSubmit} className="p-5 sm:p-6 md:p-8 lg:p-10 space-y-6 md:space-y-8" noValidate>
               {/* Section 1 - Personal Info */}
               <motion.fieldset variants={fadeInUp} className="space-y-5 md:space-y-6">
@@ -659,7 +664,7 @@ export default function ClientRequestForm() {
             {/* Process Card */}
             <div className="bg-white border border-[rgba(28,35,33,0.08)] p-6 sm:p-8 relative overflow-hidden rounded-none">
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] to-[#537D96]" />
-              
+
               <h3 className="text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-[#44A194] mb-6 font-['Jost',sans-serif] font-normal">
                 What happens next
               </h3>
@@ -688,7 +693,7 @@ export default function ClientRequestForm() {
             {/* Trust Indicators */}
             <div className="bg-white border border-[rgba(28,35,33,0.08)] p-6 sm:p-8 relative overflow-hidden rounded-none">
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#EC8F8D] to-[#44A194]" />
-              
+
               <div className="space-y-4">
                 {trustIndicators.map(({ text, color, icon: Icon }) => (
                   <div key={text} className="flex items-center gap-3">
@@ -718,7 +723,7 @@ export default function ClientRequestForm() {
             {/* Available Services Summary */}
             <div className="bg-white border border-[rgba(28,35,33,0.08)] p-6 sm:p-8 relative overflow-hidden rounded-none">
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#44A194] to-[#EC8F8D]" />
-              
+
               <h3 className="text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-[#44A194] mb-4 font-['Jost',sans-serif] font-normal">
                 Our Engines
               </h3>

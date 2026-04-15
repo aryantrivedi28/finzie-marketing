@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import ClientRequestForm from '../../app/client-request/page'
+import ClientRequestForm from '../../app/contact/page'
 
 // Dynamic import for ChatInterface if needed later
 const ChatInterface = dynamic(
@@ -143,7 +143,7 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
   // Make functions available globally
   if (typeof window !== 'undefined') {
     (window as any).confirmEngine = confirmEngine
-    ;(window as any).seeAllSystems = seeAllSystems
+      ; (window as any).seeAllSystems = seeAllSystems
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -175,7 +175,7 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
   return (
     <main className="flex-1 min-h-screen bg-[#F4F0E4]">
       {/* Grain Overlay */}
-      <div 
+      <div
         className="fixed inset-0 z-[9999] pointer-events-none opacity-[0.028]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`
@@ -183,10 +183,9 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
       />
 
       {/* Header */}
-      <header 
-        className={`sticky top-0 z-[300] bg-[#F4F0E4] border-b border-[rgba(28,35,33,0.09)] px-5 sm:px-6 md:px-8 lg:px-12 flex items-center justify-between h-[72px] transition-shadow duration-300 ${
-          scrolled ? 'shadow-[0_2px_24px_rgba(28,35,33,0.07)]' : ''
-        }`}
+      <header
+        className={`sticky top-0 z-[300] bg-[#F4F0E4] border-b border-[rgba(28,35,33,0.09)] px-5 sm:px-6 md:px-8 lg:px-12 flex items-center justify-between h-[72px] transition-shadow duration-300 ${scrolled ? 'shadow-[0_2px_24px_rgba(28,35,33,0.07)]' : ''
+          }`}
       >
         <a href="/" className="flex flex-col gap-[3px] cursor-pointer no-underline">
           <span className="font-['Cormorant_Garamond',serif] text-[22px] font-medium tracking-[0.14em] uppercase text-[#1C2321] leading-none">
@@ -206,13 +205,13 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
           <a href="/contact" className="bg-[#1C2321] text-white font-['Jost',sans-serif] text-[11px] font-medium tracking-[0.18em] uppercase py-3 px-[26px] ml-4 transition-colors duration-300 hover:bg-[#44A194] no-underline inline-flex items-center gap-2">
             <span>Work With Us</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
+              <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </a>
         </nav>
 
         {/* Mobile Menu Button */}
-        <button 
+        <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="md:hidden flex flex-col gap-[5px] p-2 bg-transparent border-none cursor-pointer"
           aria-label="Toggle menu"
@@ -224,9 +223,8 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
         </button>
 
         {/* Mobile Navigation */}
-        <div className={`fixed top-[72px] left-0 right-0 bg-[#F4F0E4] border-b border-[rgba(28,35,33,0.09)] z-[299] transition-all duration-300 ${
-          isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}>
+        <div className={`fixed top-[72px] left-0 right-0 bg-[#F4F0E4] border-b border-[rgba(28,35,33,0.09)] z-[299] transition-all duration-300 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+          }`}>
           <nav className="flex flex-col">
             <a href="/services" className="nav-link-mobile">Services</a>
             <a href="/how-it-works" className="nav-link-mobile">How It Works</a>
@@ -268,7 +266,7 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
               <span className="absolute inset-0 bg-[#44A194] -translate-x-full group-hover:translate-x-0 transition-transform duration-[0.35s] ease-[cubic-bezier(0.4,0,0.2,1)]" />
               <span className="relative z-[1]">Start a Project</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="relative z-[1] transition-transform duration-300 group-hover:translate-x-1">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
+                <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>
             <a href="/how-it-works" className="inline-flex items-center gap-2.5 bg-transparent text-[#1C2321] font-['Jost',sans-serif] text-xs font-medium tracking-[0.18em] uppercase py-[15px] px-8 border border-[rgba(28,35,33,0.25)] no-underline transition-all duration-300 hover:border-[#44A194] hover:text-[#44A194]">
@@ -586,7 +584,7 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
                 <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.16em] uppercase text-[#7a7a72] font-medium transition-colors duration-300 group-hover:text-[#44A194]">
                   Learn more
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform duration-300 group-hover:translate-x-1">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                    <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </div>
               </a>
@@ -615,7 +613,7 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
               <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.16em] uppercase text-[#7a7a72] font-medium transition-colors duration-300 group-hover:text-[#44A194] flex-shrink-0">
                 Learn more
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform duration-300 group-hover:translate-x-1">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                  <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </div>
             </a>
@@ -683,7 +681,7 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
               <span className="absolute inset-0 bg-[#44A194] -translate-x-full group-hover:translate-x-0 transition-transform duration-[0.35s] ease-[cubic-bezier(0.4,0,0.2,1)]" />
               <span className="relative z-[1]">Work With Us</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="relative z-[1] transition-transform duration-300 group-hover:translate-x-1">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
+                <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>
           </div>
@@ -735,7 +733,7 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
             <a href="/contact" className="inline-flex items-center gap-2.5 bg-white text-[#44A194] font-['Jost',sans-serif] text-xs font-semibold tracking-[0.18em] uppercase py-[18px] px-[38px] no-underline transition-all duration-300 hover:bg-[#1C2321] hover:text-white">
               <span>Book a Discovery Call</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
+                <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>
           </div>

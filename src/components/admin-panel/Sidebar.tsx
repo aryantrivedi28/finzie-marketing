@@ -36,6 +36,7 @@ const navigation: NavigationItem[] = [
   { name: "Dashboard", href: "/admin-panel", icon: LayoutDashboard },
   { name: "Freelancers", href: "/admin-panel?tab=freelancers", icon: Users },
   { name: "Forms", href: "/admin-panel?tab=forms", icon: FileText },
+  { name: "Payments", href: "/admin-panel?tab=payments", icon: CreditCard }, // Added Payments tab
   // { name: "Agreements", href: "/admin-panel/agreements", icon: FileCheck },
   // { name: "Generate Form", href: "/admin-panel/generate-form", icon: Sparkles },
   // { name: "Bulk Mail", href: "/admin-panel/bulk-mail-send", icon: Send, badge: 3 },
@@ -95,10 +96,23 @@ export function Sidebar() {
   const isActiveItem = (item: NavigationItem): boolean => {
     if (item.disabled) return false;
     
-    return pathname === item.href ||
-      (item.href.includes('?') &&
-        pathname === '/admin-panel' &&
-        searchParams.toString().includes(item.href.split('?')[1]));
+    // Handle dashboard route (no tab parameter)
+    if (item.href === "/admin-panel" && pathname === "/admin-panel") {
+      // Check if there's no tab parameter or if it's the dashboard
+      const hasNoTab = !searchParams.toString() || searchParams.toString() === "";
+      const isDashboardTab = searchParams.get("tab") === "dashboard";
+      return hasNoTab || isDashboardTab;
+    }
+    
+    // Handle routes with tab parameters
+    if (item.href.includes('?')) {
+      const tabParam = item.href.split('?')[1];
+      const isActive = pathname === '/admin-panel' && 
+        searchParams.toString().includes(tabParam);
+      return isActive;
+    }
+    
+    return pathname === item.href;
   };
 
   // Handle navigation click
@@ -340,4 +354,3 @@ export function Sidebar() {
     </>
   );
 }
-

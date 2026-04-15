@@ -3,7 +3,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { ShoppingBag, Megaphone, Search, FileText, Share2, ArrowRight, Minus, Plus } from 'lucide-react'
+import { ShoppingBag, Megaphone, Search, FileText, Share2, ArrowRight, Minus, Plus, Palette } from 'lucide-react'
 
 export default function ServicesPage() {
   const router = useRouter()
@@ -54,6 +54,15 @@ export default function ServicesPage() {
       accentColor: '#EC8F8D',
       keyServices: ['Instagram Mgmt', 'LinkedIn Strategy', 'Content Calendar', 'Community Mgmt'],
       path: '/services/social'
+    },
+    {
+      id: 'design',
+      name: 'Design Engine',
+      icon: Palette,
+      description: 'Visual design that converts',
+      accentColor: '#44A194',
+      keyServices: ['UI/UX Design', 'Graphic Design', 'Ad Creatives'],
+      path: '/services/design'
     }
   ]
 
@@ -111,8 +120,8 @@ export default function ServicesPage() {
                   onClick={() => router.push(category.path)}
                 >
                   <div className="relative overflow-hidden">
-                    <div 
-                      className="absolute top-0 left-0 right-0 h-1" 
+                    <div
+                      className="absolute top-0 left-0 right-0 h-1"
                       style={{ backgroundColor: category.accentColor }}
                     ></div>
                     <div className="p-6 md:p-7">
@@ -127,7 +136,7 @@ export default function ServicesPage() {
                       </p>
                       <div className="flex flex-wrap gap-2 mb-5">
                         {category.keyServices.map((service, idx) => (
-                          <span 
+                          <span
                             key={idx}
                             className="text-[10px] px-2.5 py-1 bg-[rgba(68,161,148,0.08)] text-[#44A194] rounded-full font-['Jost',sans-serif] tracking-wide"
                           >
@@ -135,7 +144,7 @@ export default function ServicesPage() {
                           </span>
                         ))}
                       </div>
-                      <button 
+                      <button
                         className="text-[11px] tracking-[0.18em] uppercase font-['Jost',sans-serif] text-[#44A194] group-hover:gap-2 transition-all duration-300 flex items-center gap-1"
                         onClick={(e) => {
                           e.stopPropagation()
