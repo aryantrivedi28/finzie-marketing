@@ -1,6 +1,21 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { 
+  ArrowRight, 
+  CheckCircle2, 
+  X, 
+  TrendingUp, 
+  RefreshCw, 
+  Layout, 
+  BarChart3, 
+  Calendar,
+  Target,
+  Settings,
+  Eye,
+  FileText,
+  Clock
+} from 'lucide-react'
 
 const HowItWorksPage = () => {
   const router = useRouter()
@@ -13,8 +28,101 @@ const HowItWorksPage = () => {
     }, 400)
   }
 
+  const steps = [
+    {
+      number: '01',
+      title: 'Intake',
+      description: 'You tell us what\'s not working or what you want to grow. One structured call — we take it from there.',
+      icon: FileText
+    },
+    {
+      number: '02',
+      title: 'System Setup',
+      description: 'Right engine configured. Inputs defined. Outputs agreed. Shared tracking sheet created before execution starts.',
+      icon: Settings
+    },
+    {
+      number: '03',
+      title: 'Execution',
+      description: 'The engine runs — on schedule, on brief. No chasing, no managing. Just results.',
+      icon: TrendingUp
+    },
+    {
+      number: '04',
+      title: 'Tracking',
+      description: 'Shared sheet updated every 48 hours. Key metrics, commentary, what\'s being adjusted. No login needed.',
+      icon: BarChart3
+    },
+    {
+      number: '05',
+      title: 'Review',
+      description: 'Monthly review — results vs targets. Adjust the system or activate the next engine.',
+      icon: Calendar
+    }
+  ]
+
+  const trackingBlocks = [
+    {
+      icon: BarChart3,
+      title: 'Live Metrics',
+      description: 'Whatever metrics matter for your engine — spend, conversions, rankings — updated continuously.',
+      color: '#44A194'
+    },
+    {
+      icon: RefreshCw,
+      title: '48-Hour Update Cycle',
+      description: 'Data refreshed every 48 hours with commentary on what\'s working and what\'s changing.',
+      color: '#44A194'
+    },
+    {
+      icon: Eye,
+      title: 'No New Tools',
+      description: 'A Google Sheet link. You already know how to open it.',
+      color: '#44A194'
+    },
+    {
+      icon: Clock,
+      title: 'Monthly Delivery Review',
+      description: 'Results vs targets. What we\'re adjusting. What to activate next.',
+      color: '#44A194'
+    }
+  ]
+
+  const comparisonData = [
+    {
+      title: 'Typical Agency',
+      items: [
+        'Runs ads on a store that leaks',
+        'No tracking — no idea what\'s working',
+        'Hourly billing, zero accountability',
+        'You manage the process'
+      ],
+      isHighlight: false
+    },
+    {
+      title: 'DIY Route',
+      items: [
+        'Months to build internal capability',
+        'High overhead, unpredictable output',
+        'Context lost when people leave',
+        'You own all the risk'
+      ],
+      isHighlight: false
+    },
+    {
+      title: 'ExecuMarketing',
+      items: [
+        'Fix the store first, then scale',
+        'Clean tracking before spending',
+        'Fixed scope, full visibility',
+        'One system. One team. Results.'
+      ],
+      isHighlight: true
+    }
+  ]
+
   return (
-    <div className="w-full">
+    <div className="w-full min-h-screen bg-[#F4F0E4]">
       {/* Hero Section */}
       <div className="px-5 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto">
@@ -39,72 +147,28 @@ const HowItWorksPage = () => {
       <div className="border-t border-[rgba(28,35,33,0.08)] px-5 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-px bg-[rgba(28,35,33,0.08)]">
-            
-            {/* Step 1 */}
-            <div className="bg-[#F4F0E4] p-6 sm:p-8 relative transition-all duration-300 hover:bg-white group">
-              <div className="font-['Cormorant_Garamond',serif] text-4xl sm:text-5xl font-light text-[#44A194] opacity-25 leading-[1] mb-3">
-                01
-              </div>
-              <div className="text-xs sm:text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em] font-['Jost',sans-serif]">
-                Intake
-              </div>
-              <div className="text-[11.5px] text-[#8a8a82] leading-[1.75] font-['Jost',sans-serif]">
-                You tell us what's not working or what you want to grow. One structured call — we take it from there.
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="bg-[#F4F0E4] p-6 sm:p-8 relative transition-all duration-300 hover:bg-white group">
-              <div className="font-['Cormorant_Garamond',serif] text-4xl sm:text-5xl font-light text-[#44A194] opacity-25 leading-[1] mb-3">
-                02
-              </div>
-              <div className="text-xs sm:text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em] font-['Jost',sans-serif]">
-                System Setup
-              </div>
-              <div className="text-[11.5px] text-[#8a8a82] leading-[1.75] font-['Jost',sans-serif]">
-                Right engine configured. Inputs defined. Outputs agreed. Shared tracking sheet created before execution starts.
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="bg-[#F4F0E4] p-6 sm:p-8 relative transition-all duration-300 hover:bg-white group">
-              <div className="font-['Cormorant_Garamond',serif] text-4xl sm:text-5xl font-light text-[#44A194] opacity-25 leading-[1] mb-3">
-                03
-              </div>
-              <div className="text-xs sm:text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em] font-['Jost',sans-serif]">
-                Execution
-              </div>
-              <div className="text-[11.5px] text-[#8a8a82] leading-[1.75] font-['Jost',sans-serif]">
-                The engine runs — on schedule, on brief. No chasing, no managing. Just results.
-              </div>
-            </div>
-
-            {/* Step 4 */}
-            <div className="bg-[#F4F0E4] p-6 sm:p-8 relative transition-all duration-300 hover:bg-white group">
-              <div className="font-['Cormorant_Garamond',serif] text-4xl sm:text-5xl font-light text-[#44A194] opacity-25 leading-[1] mb-3">
-                04
-              </div>
-              <div className="text-xs sm:text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em] font-['Jost',sans-serif]">
-                Tracking
-              </div>
-              <div className="text-[11.5px] text-[#8a8a82] leading-[1.75] font-['Jost',sans-serif]">
-                Shared sheet updated every 48 hours. Key metrics, commentary, what's being adjusted. No login needed.
-              </div>
-            </div>
-
-            {/* Step 5 */}
-            <div className="bg-[#F4F0E4] p-6 sm:p-8 relative transition-all duration-300 hover:bg-white group">
-              <div className="font-['Cormorant_Garamond',serif] text-4xl sm:text-5xl font-light text-[#44A194] opacity-25 leading-[1] mb-3">
-                05
-              </div>
-              <div className="text-xs sm:text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em] font-['Jost',sans-serif]">
-                Review
-              </div>
-              <div className="text-[11.5px] text-[#8a8a82] leading-[1.75] font-['Jost',sans-serif]">
-                Monthly review — results vs targets. Adjust the system or activate the next engine.
-              </div>
-            </div>
-
+            {steps.map((step, index) => {
+              const Icon = step.icon
+              return (
+                <div
+                  key={index}
+                  className="bg-[#F4F0E4] p-6 sm:p-8 relative transition-all duration-300 hover:bg-white group"
+                >
+                  <div className="font-['Cormorant_Garamond',serif] text-4xl sm:text-5xl font-light text-[#44A194] opacity-25 leading-[1] mb-3">
+                    {step.number}
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-[rgba(68,161,148,0.08)] flex items-center justify-center mb-3 group-hover:bg-[rgba(68,161,148,0.15)] transition-colors">
+                    <Icon className="w-5 h-5 text-[#44A194]" />
+                  </div>
+                  <div className="text-xs sm:text-sm font-medium text-[#1C2321] mb-2 tracking-[0.04em] font-['Jost',sans-serif]">
+                    {step.title}
+                  </div>
+                  <div className="text-[11.5px] text-[#8a8a82] leading-[1.75] font-['Jost',sans-serif]">
+                    {step.description}
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -132,67 +196,27 @@ const HowItWorksPage = () => {
 
           {/* Right Column - Tracking Blocks */}
           <div className="flex flex-col gap-px bg-[rgba(28,35,33,0.08)]">
-            
-            {/* Block 1 */}
-            <div className="bg-white p-6 sm:p-7 flex gap-5 items-start transition-all duration-300 hover:translate-x-1 hover:shadow-[-3px_0_0_#44A194]">
-              <div className="w-10 h-10 flex-shrink-0 bg-[rgba(68,161,148,0.08)] flex items-center justify-center text-lg">
-                📊
-              </div>
-              <div>
-                <div className="text-sm font-medium text-[#1C2321] mb-1.5 font-['Jost',sans-serif]">
-                  Live Metrics
+            {trackingBlocks.map((block, index) => {
+              const Icon = block.icon
+              return (
+                <div
+                  key={index}
+                  className="bg-white p-6 sm:p-7 flex gap-5 items-start transition-all duration-300 hover:translate-x-1 hover:shadow-[-3px_0_0_#44A194] group"
+                >
+                  <div className="w-10 h-10 flex-shrink-0 bg-[rgba(68,161,148,0.08)] rounded-lg flex items-center justify-center group-hover:bg-[rgba(68,161,148,0.15)] transition-colors">
+                    <Icon className="w-5 h-5 text-[#44A194]" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-[#1C2321] mb-1.5 font-['Jost',sans-serif]">
+                      {block.title}
+                    </div>
+                    <div className="text-xs text-[#8a8a82] leading-[1.7] font-['Jost',sans-serif]">
+                      {block.description}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-xs text-[#8a8a82] leading-[1.7] font-['Jost',sans-serif]">
-                  Whatever metrics matter for your engine — spend, conversions, rankings — updated continuously.
-                </div>
-              </div>
-            </div>
-
-            {/* Block 2 */}
-            <div className="bg-white p-6 sm:p-7 flex gap-5 items-start transition-all duration-300 hover:translate-x-1 hover:shadow-[-3px_0_0_#44A194]">
-              <div className="w-10 h-10 flex-shrink-0 bg-[rgba(68,161,148,0.08)] flex items-center justify-center text-lg">
-                🔄
-              </div>
-              <div>
-                <div className="text-sm font-medium text-[#1C2321] mb-1.5 font-['Jost',sans-serif]">
-                  48-Hour Update Cycle
-                </div>
-                <div className="text-xs text-[#8a8a82] leading-[1.7] font-['Jost',sans-serif]">
-                  Data refreshed every 48 hours with commentary on what's working and what's changing.
-                </div>
-              </div>
-            </div>
-
-            {/* Block 3 */}
-            <div className="bg-white p-6 sm:p-7 flex gap-5 items-start transition-all duration-300 hover:translate-x-1 hover:shadow-[-3px_0_0_#44A194]">
-              <div className="w-10 h-10 flex-shrink-0 bg-[rgba(68,161,148,0.08)] flex items-center justify-center text-lg">
-                📋
-              </div>
-              <div>
-                <div className="text-sm font-medium text-[#1C2321] mb-1.5 font-['Jost',sans-serif]">
-                  No New Tools
-                </div>
-                <div className="text-xs text-[#8a8a82] leading-[1.7] font-['Jost',sans-serif]">
-                  A Google Sheet link. You already know how to open it.
-                </div>
-              </div>
-            </div>
-
-            {/* Block 4 */}
-            <div className="bg-white p-6 sm:p-7 flex gap-5 items-start transition-all duration-300 hover:translate-x-1 hover:shadow-[-3px_0_0_#44A194]">
-              <div className="w-10 h-10 flex-shrink-0 bg-[rgba(68,161,148,0.08)] flex items-center justify-center text-lg">
-                📅
-              </div>
-              <div>
-                <div className="text-sm font-medium text-[#1C2321] mb-1.5 font-['Jost',sans-serif]">
-                  Monthly Delivery Review
-                </div>
-                <div className="text-xs text-[#8a8a82] leading-[1.7] font-['Jost',sans-serif]">
-                  Results vs targets. What we're adjusting. What to activate next.
-                </div>
-              </div>
-            </div>
-
+              )
+            })}
           </div>
         </div>
       </div>
@@ -214,82 +238,36 @@ const HowItWorksPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[rgba(28,35,33,0.08)]">
-            
-            {/* Typical Agency */}
-            <div className="bg-[#F4F0E4] p-6 sm:p-8 transition-all duration-300 hover:bg-white border-l-3 border-l-[rgba(28,35,33,0.08)]">
-              <div className="text-[10px] tracking-[0.2em] uppercase text-[#8a8a82] mb-4 font-['Jost',sans-serif]">
-                Typical Agency
+            {comparisonData.map((item, index) => (
+              <div
+                key={index}
+                className={`p-6 sm:p-8 transition-all duration-300 hover:shadow-lg ${
+                  item.isHighlight 
+                    ? 'bg-white border-l-2 border-l-[#44A194] shadow-sm' 
+                    : 'bg-[#F4F0E4] hover:bg-white border-l-2 border-l-[rgba(28,35,33,0.08)]'
+                }`}
+              >
+                <div className={`text-[10px] tracking-[0.2em] uppercase mb-4 font-['Jost',sans-serif] ${
+                  item.isHighlight ? 'text-[#44A194]' : 'text-[#8a8a82]'
+                }`}>
+                  {item.title}
+                </div>
+                <ul className="list-none flex flex-col gap-2.5">
+                  {item.items.map((listItem, idx) => (
+                    <li key={idx} className="flex gap-2.5 text-sm">
+                      {item.isHighlight ? (
+                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                      ) : (
+                        <X className="w-4 h-4 text-[#EC8F8D] flex-shrink-0 mt-0.5" />
+                      )}
+                      <span className={item.isHighlight ? 'text-[#3a3a36]' : 'text-[#8a8a82]'}>
+                        {listItem}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="list-none flex flex-col gap-2.5">
-                <li className="flex gap-2.5 text-sm text-[#8a8a82]">
-                  <span className="text-[#EC8F8D]">×</span>
-                  Runs ads on a store that leaks
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#8a8a82]">
-                  <span className="text-[#EC8F8D]">×</span>
-                  No tracking — no idea what's working
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#8a8a82]">
-                  <span className="text-[#EC8F8D]">×</span>
-                  Hourly billing, zero accountability
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#8a8a82]">
-                  <span className="text-[#EC8F8D]">×</span>
-                  You manage the process
-                </li>
-              </ul>
-            </div>
-
-            {/* DIY Route */}
-            <div className="bg-[#F4F0E4] p-6 sm:p-8 transition-all duration-300 hover:bg-white border-l-3 border-l-[rgba(28,35,33,0.08)]">
-              <div className="text-[10px] tracking-[0.2em] uppercase text-[#8a8a82] mb-4 font-['Jost',sans-serif]">
-                DIY Route
-              </div>
-              <ul className="list-none flex flex-col gap-2.5">
-                <li className="flex gap-2.5 text-sm text-[#8a8a82]">
-                  <span className="text-[#EC8F8D]">×</span>
-                  Months to build internal capability
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#8a8a82]">
-                  <span className="text-[#EC8F8D]">×</span>
-                  High overhead, unpredictable output
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#8a8a82]">
-                  <span className="text-[#EC8F8D]">×</span>
-                  Context lost when people leave
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#8a8a82]">
-                  <span className="text-[#EC8F8D]">×</span>
-                  You own all the risk
-                </li>
-              </ul>
-            </div>
-
-            {/* ExecuMarketing */}
-            <div className="bg-white p-6 sm:p-8 border-l-3 border-l-[#44A194] shadow-sm">
-              <div className="text-[10px] tracking-[0.2em] uppercase text-[#44A194] mb-4 font-['Jost',sans-serif]">
-                ExecuMarketing
-              </div>
-              <ul className="list-none flex flex-col gap-2.5">
-                <li className="flex gap-2.5 text-sm text-[#3a3a36]">
-                  <span className="text-[#44A194]">✓</span>
-                  Fix the store first, then scale
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#3a3a36]">
-                  <span className="text-[#44A194]">✓</span>
-                  Clean tracking before spending
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#3a3a36]">
-                  <span className="text-[#44A194]">✓</span>
-                  Fixed scope, full visibility
-                </li>
-                <li className="flex gap-2.5 text-sm text-[#3a3a36]">
-                  <span className="text-[#44A194]">✓</span>
-                  One system. One team. Results.
-                </li>
-              </ul>
-            </div>
-
+            ))}
           </div>
         </div>
       </div>
@@ -308,9 +286,9 @@ const HowItWorksPage = () => {
           </div>
           <button
             onClick={handleGetStarted}
-            className="bg-[#EC8F8D] text-white border-none px-8 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#e07a78] hover:scale-105 active:scale-95 whitespace-nowrap"
+            className="bg-[#EC8F8D] text-white border-none px-8 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#e07a78] hover:scale-105 active:scale-95 whitespace-nowrap rounded-none"
           >
-            Start the Intake →
+            Start the Intake → <ArrowRight className="w-3 h-3 inline-block ml-1" />
           </button>
         </div>
       </div>

@@ -371,7 +371,7 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-9">
-                <Link href="/client-request">
+                <Link href="/contact">
                   <button className="w-full sm:w-auto bg-[#44A194] text-white border-none px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#38857a] active:scale-95">
                     Work With Us
                   </button>

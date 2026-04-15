@@ -26,6 +26,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     if (path === '/pricing') return 'pricing'
     if (path === '/about') return 'about'
     if (path.startsWith('/services')) return 'services'
+    if (path === '/contact') return 'contact'
     return 'home'
   }
 
@@ -87,6 +88,8 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
       router.push('/business')
     } else if (page === 'services') {
       router.push('/services')
+    } else if (page === 'contact'){
+      router.push('/contact')
     }
 
     if (onNavClick) {
@@ -357,7 +360,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
               onClick={() => handleNavClick('about')}
             />
             <button
-              onClick={() => handleNavClick('home')}
+              onClick={() => handleNavClick('contact')}
               className="bg-[#44A194] text-white border-none px-5 lg:px-[22px] py-2.5 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#38857a] hover:scale-105 active:scale-95 whitespace-nowrap"
             >
               Get Started
@@ -436,7 +439,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                   onClick={() => handleNavClick('about')}
                 />
                 <button
-                  onClick={() => handleNavClick('home')}
+                  onClick={() => handleNavClick('contact')}
                   className="bg-[#44A194] text-white border-none px-6 py-3 font-['Jost',sans-serif] text-sm tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#38857a] hover:scale-105 active:scale-95 mt-4 w-full rounded-lg"
                 >
                   Get Started

@@ -3,7 +3,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, useScroll, useTransform, AnimatePresence, Variants } from 'framer-motion'
-import { ArrowRight, CheckCircle2, X, Sparkles } from 'lucide-react'
+import { 
+  ArrowRight, CheckCircle2, X, Sparkles, 
+  Target, Megaphone, Search, Settings, Layout, 
+  BarChart3, Users, Clock, Award, Shield, Check 
+} from 'lucide-react'
 
 // Animation variants
 const fadeInUp: Variants = {
@@ -36,7 +40,7 @@ interface ProcessStepProps {
 }
 
 interface ServiceCardProps {
-  icon: string
+  icon: React.ReactNode
   title: string
   description: string
 }
@@ -118,10 +122,11 @@ const ForBusinessPage = () => {
   ], [])
 
   const services: ServiceCardProps[] = useMemo(() => [
-    { icon: "🎯", title: "Paid Ads", description: "Meta, Google, TikTok — specialists who've managed real budgets and know how to make them perform." },
-    { icon: "📣", title: "Social Media", description: "Content, community, strategy — freelancers who build presence, not just post counts." },
-    { icon: "🔍", title: "SEO & Content", description: "Writers and strategists who understand search, not just sentences." },
-    { icon: "⚙️", title: "CRM & Automation", description: "Setup, migration, workflows — experts who've done it before and don't need hand-holding." }
+    { icon: <Target className="w-5 h-5 text-[#44A194]" />, title: "Paid Ads", description: "Meta, Google, TikTok — specialists who've managed real budgets and know how to make them perform." },
+    { icon: <Megaphone className="w-5 h-5 text-[#44A194]" />, title: "Social Media", description: "Content, community, strategy — freelancers who build presence, not just post counts." },
+    { icon: <Search className="w-5 h-5 text-[#44A194]" />, title: "SEO & Content", description: "Writers and strategists who understand search, not just sentences." },
+    { icon: <Settings className="w-5 h-5 text-[#44A194]" />, title: "CRM & Automation", description: "Setup, migration, workflows — experts who've done it before and don't need hand-holding." },
+    { icon: <Layout className="w-5 h-5 text-[#44A194]" />, title: "Design", description: "UI/UX, graphic design, ad creatives — visuals that convert and brands that stand out." }
   ], [])
 
   const testimonials: TestimonialProps[] = useMemo(() => [
@@ -148,17 +153,25 @@ const ForBusinessPage = () => {
     { value: "24", label: "From Brief to First Match", suffix: "hr" }
   ], [])
 
+  // Fixed navigation function
   const handleNavigation = (page: string) => {
-    router.push(`/${page === 'home' ? '' : page}`)
+    // Map page names to routes
+    const routes: Record<string, string> = {
+      home: '/',
+      contact: '/contact',
+      services: '/services',
+      business: '/business',
+      pricing: '/pricing',
+      about: '/about',
+      systems: '/systems',
+      how: '/how'
+    }
+    
+    const route = routes[page] || `/${page}`
+    router.push(route)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
 
   const ProcessStep = ({ number, title, description }: ProcessStepProps) => (
     <motion.div
@@ -181,9 +194,9 @@ const ForBusinessPage = () => {
       whileHover="hover"
       className="bg-[#F4F0E4] p-6 sm:p-8 md:p-9 flex flex-col sm:flex-row gap-3.5 items-start transition-all duration-200 hover:bg-white group"
     >
-      <span className="text-2xl sm:text-lg flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
+      <div className="flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
         {icon}
-      </span>
+      </div>
       <div>
         <div className="text-sm font-medium text-[#1C2321] mb-1.5 group-hover:text-[#44A194] transition-colors duration-200">
           {title}
@@ -246,18 +259,18 @@ const ForBusinessPage = () => {
                 </p>
                 <p className="text-sm text-[#8a8a82] leading-relaxed md:leading-[1.9]">
                   ExecuMarketing cuts through it. AI-vetted specialists in paid ads, social, SEO,
-                  content, and CRM — matched to your brief, ready to execute.
+                  content, CRM, and design — matched to your brief, ready to execute.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-9">
                 <button
-                  onClick={() => handleNavigation('home')}
+                  onClick={() => handleNavigation('contact')}
                   className="w-full sm:w-auto bg-[#44A194] text-white border-none px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#38857a] active:scale-95"
                 >
                   Post a Project
                 </button>
                 <button
-                  onClick={() => scrollToSection('how-it-works')}
+                  onClick={() => handleNavigation('how')}
                   className="w-full sm:w-auto bg-transparent text-[#1C2321] border border-[rgba(28,35,33,0.22)] px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:border-[#44A194] hover:text-[#44A194]"
                 >
                   See How It Works
@@ -489,7 +502,7 @@ const ForBusinessPage = () => {
                 ].map((item, index) => (
                   <li key={index} className="flex items-start gap-3 text-sm text-[#3a3a36] leading-relaxed">
                     <div className="w-4 h-4 rounded-full bg-[#EC8F8D] flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                      <Check className="w-2.5 h-2.5 text-white" />
                     </div>
                     <span>{item}</span>
                   </li>
@@ -597,8 +610,8 @@ const ForBusinessPage = () => {
               </p>
             </div>
             <button
-              onClick={() => handleNavigation('home')}
-              className="w-full sm:w-auto bg-[#EC8F8D] text-white border-none px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#e07a78] active:scale-95 flex items-center justify-center gap-2 group"
+              onClick={() => handleNavigation('contact')}
+              className="w-full sm:w-auto bg-[#EC8F8D] text-white border-none px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#e07a78] active:scale-95 flex items-center justify-center gap-2 group rounded-none"
             >
               <span>Post a Project</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
