@@ -1,40 +1,40 @@
-// app/api/admin/deals/[id]/route.ts
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { supabase } from '@/src/lib/SupabaseAuthClient';
+// // app/api/admin/deals/[id]/route.ts
+// import { NextResponse } from 'next/server';
+// import { cookies } from 'next/headers';
+// import { supabase } from '@/src/lib/SupabaseAuthClient';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+// export async function GET(request: Request, { params }: { params: { id: string } }) {
     
-    const { data: deal, error } = await supabase
-        .from('deals')
-        .select(`
-            *,
-            invoices (*),
-            payment_logs (*)
-        `)
-        .eq('id', params.id)
-        .single();
+//     const { data: deal, error } = await supabase
+//         .from('deals')
+//         .select(`
+//             *,
+//             invoices (*),
+//             payment_logs (*)
+//         `)
+//         .eq('id', params.id)
+//         .single();
     
-    if (error) {
-        return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
-    }
+//     if (error) {
+//         return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
+//     }
     
-    return NextResponse.json({ deal });
-}
+//     return NextResponse.json({ deal });
+// }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-    const body = await request.json();
+// export async function PUT(request: Request, { params }: { params: { id: string } }) {
+//     const body = await request.json();
     
-    const { data: deal, error } = await supabase
-        .from('deals')
-        .update(body)
-        .eq('id', params.id)
-        .select()
-        .single();
+//     const { data: deal, error } = await supabase
+//         .from('deals')
+//         .update(body)
+//         .eq('id', params.id)
+//         .select()
+//         .single();
     
-    if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+//     if (error) {
+//         return NextResponse.json({ error: error.message }, { status: 500 });
+//     }
     
-    return NextResponse.json({ deal });
-}
+//     return NextResponse.json({ deal });
+// }
