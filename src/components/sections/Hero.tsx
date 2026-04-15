@@ -43,7 +43,7 @@ const Hero = () => {
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </Link>
-          <Link href="/how-it-works" className="inline-flex items-center gap-2.5 bg-transparent text-[#1C2321] font-['Jost',sans-serif] text-xs font-medium tracking-[0.18em] uppercase py-[15px] px-8 border border-[rgba(28,35,33,0.25)] no-underline transition-all duration-300 hover:border-[#44A194] hover:text-[#44A194]">
+          <Link href="/how" className="inline-flex items-center gap-2.5 bg-transparent text-[#1C2321] font-['Jost',sans-serif] text-xs font-medium tracking-[0.18em] uppercase py-[15px] px-8 border border-[rgba(28,35,33,0.25)] no-underline transition-all duration-300 hover:border-[#44A194] hover:text-[#44A194]">
             See How It Works
           </Link>
         </div>
