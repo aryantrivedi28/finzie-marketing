@@ -1,10 +1,9 @@
 // app/api/admin/deals/[id]/route.ts
 import { NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { supabase } from '@/src/lib/SupabaseAuthClient';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const supabase = createRouteHandlerClient({ cookies });
     
     const { data: deal, error } = await supabase
         .from('deals')
@@ -24,7 +23,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
-    const supabase = createRouteHandlerClient({ cookies });
     const body = await request.json();
     
     const { data: deal, error } = await supabase

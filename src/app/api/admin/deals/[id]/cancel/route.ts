@@ -11,18 +11,18 @@ const razorpay = new Razorpay({
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
     const { reason, refund_amount } = await request.json();
-    
+
     // Get deal details
     const { data: deal } = await supabase
         .from('deals')
         .select('*')
         .eq('id', params.id)
         .single();
-    
+
     if (!deal) {
         return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
     }
-    
+
     // If payment was made, process refund
     if (deal.payment_status === 'paid' && deal.razorpay_payment_id) {
         try {
@@ -33,20 +33,25 @@ export async function POST(request: Request, { params }: { params: { id: string 
                     reason: reason || 'Cancelled by admin'
                 }
             });
-            
+
             await supabase
                 .from('payment_logs')
                 .insert({
                     deal_id: deal.id,
                     action: 'refund_processed',
-                    details: { refund_id: refund.id, amount: refund.amount / 100 }
+                    details: {
+                        refund_id: refund.id, details: {
+                            refund_id: refund.id,
+                            amount: (refund.amount ?? 0) / 100
+                        }
+                    }
                 });
         } catch (error) {
             console.error('Refund failed:', error);
             return NextResponse.json({ error: 'Refund failed' }, { status: 500 });
         }
     }
-    
+
     // Update deal status
     await supabase
         .from('deals')
@@ -56,11 +61,11 @@ export async function POST(request: Request, { params }: { params: { id: string 
             notes: `Cancelled: ${reason || 'No reason provided'}`
         })
         .eq('id', deal.id);
-    
+
     // Notify client and freelancer
     // await sendCancellationNotification(deal, reason);
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
         success: true,
         message: 'Deal cancelled successfully'
     });
