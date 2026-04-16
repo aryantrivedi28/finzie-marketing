@@ -20,7 +20,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     const path = pathname || '/'
     if (path === '/') return 'home'
     if (path === '/systems') return 'systems'
-    if (path === '/business') return 'business'
+    // if (path === '/business') return 'business'
     if (path === '/how') return 'how'
     if (path === '/pricing') return 'pricing'
     if (path === '/about') return 'about'
@@ -75,7 +75,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     else if (page === 'how') router.push('/how')
     else if (page === 'pricing') router.push('/pricing')
     else if (page === 'about') router.push('/about')
-    else if (page === 'business') router.push('/business')
+    // else if (page === 'business') router.push('/business')
     else if (page === 'services') router.push('/services')
     else if (page === 'contact') router.push('/contact')
 
@@ -328,12 +328,12 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
               )}
             </div>
 
-            <NavButton
+            {/* <NavButton
               label="For Business"
               pageId="business"
               isActive={activePage === 'business'}
               onClick={() => handleNavClick('business')}
-            />
+            /> */}
             <NavButton
               label="How It Works"
               pageId="how"
@@ -397,12 +397,12 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                   />
                 </div>
 
-                <MobileNavButton
+                {/* <MobileNavButton
                   label="For Business"
                   pageId="business"
                   isActive={activePage === 'business'}
                   onClick={() => handleNavClick('business')}
-                />
+                /> */}
                 <MobileNavButton
                   label="How It Works"
                   pageId="how"
