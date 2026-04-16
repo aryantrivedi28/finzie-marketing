@@ -1,10 +1,5 @@
-// app/services/ads/google-ads/client.tsx (Client Component)
-'use client';
-
+// app/services/ads/google-ads/client.tsx
 import Link from 'next/link';
-import { useState } from 'react';
-import Breadcrumb from '../../../../components/layout/Breadcrumb';
-import CtaBand from '../../../../components/sections/CtaBand';
 import { 
   Search,
   ShoppingBag,
@@ -17,16 +12,10 @@ import {
   FileText,
   ArrowRight,
   CheckCircle2,
-  ChevronDown,
-  DollarSign,
-  Target,
-  Zap,
-  Users
+  ChevronDown
 } from 'lucide-react';
 
 export default function GoogleAdsClient() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-
   const includedItems = [
     { icon: Search, title: 'Search Campaigns', description: 'Target high-intent keywords when customers search for your products or services. Capture demand at the moment of intent.' },
     { icon: ShoppingBag, title: 'Shopping Campaigns', description: 'Product listing ads that show images, prices, and reviews directly in search results for e-commerce stores.' },
@@ -64,7 +53,18 @@ export default function GoogleAdsClient() {
 
   return (
     <>
-      <Breadcrumb items={[{ label: 'Services', href: '/services' }, { label: 'Paid Ads Engine', href: '/services/ads' }, { label: 'Google Ads' }]} />
+      {/* Breadcrumb */}
+      <nav className="bg-[#F8F9FB] border-b border-[#DDE1E9] py-3 px-4 md:px-6">
+        <div className="max-w-[1080px] mx-auto flex items-center gap-2 text-xs md:text-sm text-[#5C6880] overflow-x-auto whitespace-nowrap">
+          <Link href="/" className="hover:text-[#0E9BF0] transition-colors">Home</Link>
+          <span className="text-[#96A0B5]">›</span>
+          <Link href="/services" className="hover:text-[#0E9BF0] transition-colors">Services</Link>
+          <span className="text-[#96A0B5]">›</span>
+          <Link href="/services/ads" className="hover:text-[#0E9BF0] transition-colors">Paid Ads Engine</Link>
+          <span className="text-[#96A0B5]">›</span>
+          <span className="text-[#1A2236] font-medium">Google Ads</span>
+        </div>
+      </nav>
 
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-[#1C2321] to-[#0F1513] text-white py-12 sm:py-16 md:py-20 relative overflow-hidden">
@@ -244,12 +244,21 @@ export default function GoogleAdsClient() {
       </section>
 
       {/* CTA Band */}
-      <CtaBand 
-        title='Capture Customers When They are Ready to Buy.<br /><span class="hl-green">Get Your Free Google Ads Audit.</span>'
-        description="We'll analyze your account and show you how to improve quality score, lower CPC, and increase ROAS."
-        primaryText="Get Free Audit →"
-        primaryHref="/contact"
-      />
+      <section className="py-16 md:py-20 bg-gradient-to-br from-[#1C2321] to-[#0F1513] text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_60%_30%,rgba(68,161,148,0.12),transparent)] pointer-events-none"></div>
+        <div className="max-w-[1200px] mx-auto px-4 md:px-8 relative z-10">
+          <div className="max-w-[700px] mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              Capture Customers When They are Ready to Buy.<br />
+              <span className="text-[#44A194]">Get Your Free Google Ads Audit.</span>
+            </h2>
+            <p className="text-white/60 mb-8">We'll analyze your account and show you how to improve quality score, lower CPC, and increase ROAS.</p>
+            <Link href="/contact" className="inline-block bg-[#44A194] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#38857a] transition-all">
+              Get Free Audit →
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* FAQ */}
       <section className="py-12 sm:py-16 md:py-20 bg-white">
@@ -267,22 +276,13 @@ export default function GoogleAdsClient() {
 
           <div className="max-w-[800px] mx-auto">
             {faqs.map((faq, index) => (
-              <div key={index} className="border-b border-[rgba(28,35,33,0.08)]">
-                <button
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="flex justify-between items-center w-full py-4 sm:py-5 text-left"
-                >
-                  <span className="text-sm sm:text-[0.92rem] font-semibold text-[#1C2321] hover:text-[#44A194] transition-colors pr-4">
-                    {faq.q}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-[#8a8a82] transition-transform flex-shrink-0 ${openFaq === index ? 'rotate-180' : ''}`} />
-                </button>
-                {openFaq === index && (
-                  <div className="pb-4 sm:pb-5">
-                    <p className="text-sm sm:text-[0.85rem] font-light text-[#8a8a82] leading-relaxed">{faq.a}</p>
-                  </div>
-                )}
-              </div>
+              <details key={index} className="group border-b border-[rgba(28,35,33,0.08)]">
+                <summary className="flex justify-between items-center cursor-pointer list-none py-4 sm:py-5 text-[0.92rem] font-semibold text-[#1C2321] hover:text-[#44A194] transition-colors">
+                  {faq.q}
+                  <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-[#8a8a82] transition-transform group-open:rotate-180" />
+                </summary>
+                <p className="text-sm sm:text-[0.85rem] font-light text-[#8a8a82] leading-relaxed pb-4 sm:pb-5">{faq.a}</p>
+              </details>
             ))}
           </div>
         </div>

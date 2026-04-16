@@ -1,6 +1,5 @@
 // app/services/shopify/checkout-optimization/page.tsx
 import Link from 'next/link';
-import { useState } from 'react';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
 import { 
@@ -23,7 +22,6 @@ import {
 
 
 export default function CheckoutOptimizationClient() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const includedItems = [
     { icon: ShoppingCart, title: 'Checkout Abandonment Audit', description: 'Analyze where customers drop off. Identify friction points, form fields, and payment issues causing abandonment.' },
@@ -263,24 +261,15 @@ export default function CheckoutOptimizationClient() {
             </h2>
           </div>
 
-          <div className="max-w-[800px] mx-auto">
+<div className="max-w-[800px] mx-auto">
             {faqs.map((faq, index) => (
-              <div key={index} className="border-b border-[rgba(28,35,33,0.08)]">
-                <button
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="flex justify-between items-center w-full py-4 sm:py-5 text-left"
-                >
-                  <span className="text-sm sm:text-[0.92rem] font-semibold text-[#1C2321] hover:text-[#44A194] transition-colors pr-4">
-                    {faq.q}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-[#8a8a82] transition-transform flex-shrink-0 ${openFaq === index ? 'rotate-180' : ''}`} />
-                </button>
-                {openFaq === index && (
-                  <div className="pb-4 sm:pb-5">
-                    <p className="text-sm sm:text-[0.85rem] font-light text-[#8a8a82] leading-relaxed">{faq.a}</p>
-                  </div>
-                )}
-              </div>
+              <details key={index} className="group border-b border-[rgba(28,35,33,0.08)]">
+                <summary className="flex justify-between items-center cursor-pointer list-none py-4 sm:py-5 text-[0.92rem] font-semibold text-[#1C2321] hover:text-[#44A194] transition-colors">
+                  {faq.q}
+                  <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-[#8a8a82] transition-transform group-open:rotate-180" />
+                </summary>
+                <p className="text-sm sm:text-[0.85rem] font-light text-[#8a8a82] leading-relaxed pb-4 sm:pb-5">{faq.a}</p>
+              </details>
             ))}
           </div>
         </div>
