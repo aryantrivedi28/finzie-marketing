@@ -16,7 +16,6 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
   const [isServicesOpen, setIsServicesOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
-  // Determine active page from URL path
   const getActivePageFromPath = () => {
     const path = pathname || '/'
     if (path === '/') return 'home'
@@ -32,7 +31,6 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
 
   const activePage = propActivePage || getActivePageFromPath()
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
@@ -41,7 +39,6 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -57,7 +54,6 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [isMenuOpen, isServicesOpen])
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden'
@@ -74,27 +70,16 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     setIsServicesOpen(false)
     setActiveCategory(null)
 
-    if (page === 'home') {
-      router.push('/')
-    } else if (page === 'systems') {
-      router.push('/systems')
-    } else if (page === 'how') {
-      router.push('/how')
-    } else if (page === 'pricing') {
-      router.push('/pricing')
-    } else if (page === 'about') {
-      router.push('/about')
-    } else if (page === 'business') {
-      router.push('/business')
-    } else if (page === 'services') {
-      router.push('/services')
-    } else if (page === 'contact'){
-      router.push('/contact')
-    }
+    if (page === 'home') router.push('/')
+    else if (page === 'systems') router.push('/systems')
+    else if (page === 'how') router.push('/how')
+    else if (page === 'pricing') router.push('/pricing')
+    else if (page === 'about') router.push('/about')
+    else if (page === 'business') router.push('/business')
+    else if (page === 'services') router.push('/services')
+    else if (page === 'contact') router.push('/contact')
 
-    if (onNavClick) {
-      onNavClick(page)
-    }
+    if (onNavClick) onNavClick(page)
 
     if (page === 'home') {
       setTimeout(() => {
@@ -111,7 +96,6 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     router.push(path)
   }
 
-  // Service categories data with subcategories
   const serviceCategories = [
     {
       id: 'shopify',
@@ -233,13 +217,15 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
               onClick={() => handleNavClick('home')}
             />
 
-            {/* Services Dropdown - Nested on Hover */}
+            {/* Services Dropdown */}
             <div
               className="relative services-dropdown"
               onMouseEnter={() => setIsServicesOpen(true)}
               onMouseLeave={() => {
-                setIsServicesOpen(false)
-                setActiveCategory(null)
+                setTimeout(() => {
+                  setIsServicesOpen(false)
+                  setActiveCategory(null)
+                }) // 👈 delay fix
               }}
             >
               <button
@@ -249,7 +235,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
               >
                 Services
                 <svg
-                  className={`w-3 h-3 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`}
+                  className={`w-3 h-3 transition-transform duration-500 ${isServicesOpen ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -262,77 +248,84 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                 />
               </button>
 
-              {/* First Level Dropdown - Categories */}
-              <div
-                className={`absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-[rgba(28,35,33,0.08)] overflow-hidden transition-all duration-200 z-50 ${isServicesOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
-                  }`}
-              >
-                {serviceCategories.map((category) => (
-                  <div
-                    key={category.id}
-                    className="relative"
-                    onMouseEnter={() => setActiveCategory(category.id)}
-                  >
-                    {/* Category Item */}
-                    <div className="flex items-center justify-between px-4 py-3 hover:bg-[rgba(68,161,148,0.05)] cursor-pointer">
-                      <button
-                        onClick={() => handleServiceClick(category.path)}
-                        className="flex-1 text-left"
-                      >
-                        <span className="text-[0.85rem] font-semibold text-[#1C2321] hover:text-[#44A194] transition-colors">
-                          {category.name}
-                        </span>
-                      </button>
-                      <svg
-                        className="w-3 h-3 text-[#8a8a82]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
+              {/* ── KEY FIX: wrapper has no overflow-hidden so L2 panel can escape ── */}
+              {isServicesOpen && (
+                <div className="absolute top-full left-0 mt-0 z-50 flex">
 
-                    {/* Second Level Dropdown - Subcategories (appears to the RIGHT) */}
-                    {activeCategory === category.id && (
+                  {/* L1 — Categories list */}
+                  <div className="w-64 bg-white rounded-lg shadow-xl border border-[rgba(28,35,33,0.08)]">
+                    {serviceCategories.map((category) => (
                       <div
-                        className="absolute left-full top-0 ml-1 w-64 bg-white rounded-lg shadow-xl border border-[rgba(28,35,33,0.08)] overflow-hidden z-50"
-                        onMouseEnter={() => setActiveCategory(category.id)}   // ✅ KEEP ACTIVE
-                        onMouseLeave={() => setActiveCategory(null)}         // ✅ CLOSE ONLY HERE
+                        key={category.id}
+                        className="relative"
+                        onMouseEnter={() => setActiveCategory(category.id)}
                       >
-                        <div className="py-2">
-                          <div className="px-4 py-2 border-b border-[rgba(28,35,33,0.05)]">
-                            <button
-                              onClick={() => handleServiceClick(category.path)}
-                              className="w-full text-left text-[0.75rem] font-semibold text-[#44A194] hover:text-[#38857a] transition-colors"
-                            >
-                              View All {category.name} →
-                            </button>
-                          </div>
-                          {category.subcategories.map((sub, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => handleServiceClick(sub.path)}
-                              className="w-full text-left px-4 py-2 text-[0.75rem] text-[#8a8a82] hover:text-[#44A194] hover:bg-[rgba(68,161,148,0.05)] transition-colors"
-                            >
-                              {sub.name}
-                            </button>
-                          ))}
+                        <div
+                          className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors ${activeCategory === category.id
+                            ? 'bg-[rgba(68,161,148,0.08)]'
+                            : 'hover:bg-[rgba(68,161,148,0.05)]'
+                            }`}
+                        >
+                          <button
+                            onClick={() => handleServiceClick(category.path)}
+                            className="flex-1 text-left"
+                          >
+                            <span className={`text-[0.85rem] font-semibold transition-colors ${activeCategory === category.id ? 'text-[#44A194]' : 'text-[#1C2321]'}`}>
+                              {category.name}
+                            </span>
+                          </button>
+                          <svg
+                            className={`w-3 h-3 transition-colors ${activeCategory === category.id ? 'text-[#44A194]' : 'text-[#8a8a82]'}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
                         </div>
                       </div>
-                    )}
-                  </div>
-                ))}
+                    ))}
 
-                <div className="border-t border-[rgba(28,35,33,0.08)] p-3 bg-[rgba(68,161,148,0.03)]">
-                  <button
-                    onClick={() => handleServiceClick('/services')}
-                    className="w-full text-center text-[0.75rem] font-semibold text-[#44A194] hover:text-[#38857a] transition-colors"
-                  >
-                    View All Services →
-                  </button>
+                    <div className="border-t border-[rgba(28,35,33,0.08)] p-3 bg-[rgba(68,161,148,0.03)] rounded-b-lg">
+                      <button
+                        onClick={() => handleServiceClick('/services')}
+                        className="w-full text-center text-[0.75rem] font-semibold text-[#44A194] hover:text-[#38857a] transition-colors"
+                      >
+                        View All Services →
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* L2 — Subcategories panel (sits flush to the right of L1) */}
+                  {activeCategory && (
+                    <div className="w-64 bg-white rounded-lg shadow-xl border border-[rgba(28,35,33,0.08)] ml-1">
+                      {serviceCategories
+                        .filter((c) => c.id === activeCategory)
+                        .map((category) => (
+                          <div key={category.id} className="py-2">
+                            <div className="px-4 py-2 border-b border-[rgba(28,35,33,0.05)]">
+                              <button
+                                onClick={() => handleServiceClick(category.path)}
+                                className="w-full text-left text-[0.75rem] font-semibold text-[#44A194] hover:text-[#38857a] transition-colors"
+                              >
+                                View All {category.name} →
+                              </button>
+                            </div>
+                            {category.subcategories.map((sub, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleServiceClick(sub.path)}
+                                className="w-full text-left px-4 py-2 text-[0.75rem] text-[#8a8a82] hover:text-[#44A194] hover:bg-[rgba(68,161,148,0.05)] transition-colors"
+                              >
+                                {sub.name}
+                              </button>
+                            ))}
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
 
             <NavButton
@@ -374,18 +367,9 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
           >
-            <span
-              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''
-                }`}
-            />
-            <span
-              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''
-                }`}
-            />
-            <span
-              className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''
-                }`}
-            />
+            <span className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`} />
+            <span className={`w-6 h-0.5 bg-[#1C2321] transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
           </button>
         </div>
 
@@ -405,7 +389,6 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                   onClick={() => handleNavClick('home')}
                 />
 
-                {/* Mobile Services Accordion with Subcategories */}
                 <div className="border-b border-[rgba(28,35,33,0.08)] pb-2">
                   <MobileServicesAccordion
                     serviceCategories={serviceCategories}
@@ -525,10 +508,7 @@ const MobileServicesAccordion = ({ serviceCategories, onServiceClick, setIsMenuO
       {isServicesOpen && (
         <div className="ml-4 mt-2 space-y-2">
           <button
-            onClick={() => {
-              onServiceClick('/services')
-              setIsMenuOpen(false)
-            }}
+            onClick={() => { onServiceClick('/services'); setIsMenuOpen(false) }}
             className="w-full text-left py-2 px-3 text-[0.85rem] font-semibold text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
           >
             All Services →
@@ -536,7 +516,6 @@ const MobileServicesAccordion = ({ serviceCategories, onServiceClick, setIsMenuO
 
           {serviceCategories.map((category) => (
             <div key={category.id} className="space-y-1">
-              {/* Category button - click to show/hide subcategories on mobile */}
               <button
                 onClick={() => setActiveMobileCategory(activeMobileCategory === category.id ? null : category.id)}
                 className="w-full flex items-center justify-between py-2 px-3 text-[0.85rem] font-semibold text-[#1C2321] hover:text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
@@ -552,14 +531,10 @@ const MobileServicesAccordion = ({ serviceCategories, onServiceClick, setIsMenuO
                 </svg>
               </button>
 
-              {/* Subcategories - visible when category is active */}
               {activeMobileCategory === category.id && (
                 <div className="ml-4 space-y-1">
                   <button
-                    onClick={() => {
-                      onServiceClick(category.path)
-                      setIsMenuOpen(false)
-                    }}
+                    onClick={() => { onServiceClick(category.path); setIsMenuOpen(false) }}
                     className="w-full text-left py-1.5 px-3 text-[0.75rem] font-medium text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
                   >
                     View All {category.name} →
@@ -567,10 +542,7 @@ const MobileServicesAccordion = ({ serviceCategories, onServiceClick, setIsMenuO
                   {category.subcategories.map((sub, idx) => (
                     <button
                       key={idx}
-                      onClick={() => {
-                        onServiceClick(sub.path)
-                        setIsMenuOpen(false)
-                      }}
+                      onClick={() => { onServiceClick(sub.path); setIsMenuOpen(false) }}
                       className="w-full text-left py-1.5 px-3 text-[0.75rem] text-[#8a8a82] hover:text-[#44A194] hover:bg-[#44A194]/5 rounded-lg transition-colors"
                     >
                       {sub.name}
@@ -586,49 +558,19 @@ const MobileServicesAccordion = ({ serviceCategories, onServiceClick, setIsMenuO
   )
 }
 
-// Add these animations to your global CSS file or use a CSS-in-JS solution
 const styles = `
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-
   @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-
-  @keyframes slideRight {
-    from {
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  .animate-fadeIn {
-    animation: fadeIn 0.3s ease-out;
-  }
-
-  .animate-slideDown {
-    animation: slideDown 0.3s ease-out;
-  }
+  .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+  .animate-slideDown { animation: slideDown 0.3s ease-out; }
 `
 
-// Optional: Add styles to document head
 if (typeof document !== 'undefined') {
   const styleSheet = document.createElement('style')
   styleSheet.textContent = styles
