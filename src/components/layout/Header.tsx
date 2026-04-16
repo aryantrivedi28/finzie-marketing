@@ -204,7 +204,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
               ExecuMarketing
             </span>
             <span className="text-[9px] tracking-[0.24em] uppercase text-[#44A194]">
-              A Finzie Company
+              Priviously known as finzie
             </span>
           </div>
 

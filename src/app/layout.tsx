@@ -62,7 +62,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  manifest: '/site.webmanifest',
   verification: {
     google: 'your-google-verification-code', // Add your Google Search Console verification code
   },

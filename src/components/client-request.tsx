@@ -312,16 +312,16 @@ export default function ClientRequestForm() {
   // Process steps
   const steps = [
     { icon: Clock, title: 'Request Review', desc: 'Our team reviews your submission within 2 hours.' },
-    { icon: Sparkles, title: 'AI Matching', desc: 'We match you with the best-fit specialist from our pool.' },
+    { icon: Sparkles, title: 'AI-driven execution', desc: 'We match you with the best-fit specialist from our pool.' },
     { icon: Users, title: 'Kickoff', desc: 'Align on scope, deliverables, and timeline within 24 hours.' }
   ];
 
   // Trust indicators
   const trustIndicators = [
     { text: 'Free consultation', color: '#44A194', icon: Award },
-    { text: 'AI-vetted specialists only', color: '#537D96', icon: Shield },
+    { text: 'AI-driven specialists only', color: '#537D96', icon: Shield },
     { text: 'Response within 2 hours', color: '#EC8F8D', icon: Clock },
-    { text: 'Matches in < 24 hours', color: '#1C2321', icon: Sparkles }
+    { text: 'Execution start in < 24 hours', color: '#1C2321', icon: Sparkles }
   ];
 
   // Category icons mapping
@@ -357,9 +357,9 @@ export default function ClientRequestForm() {
           </div>
           <h1 className="font-['Cormorant_Garamond',serif] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-[1.2] md:leading-[1.15] tracking-[-0.01em] text-[#1C2321] max-w-4xl mx-auto md:mx-0">
             Tell us what you need.<br />
-            We'll find the{' '}
+            We'll execute{' '}
             <em className="text-[#44A194] not-italic font-medium">
-              right talent.
+              it for you.
             </em>
           </h1>
         </motion.div>
@@ -705,18 +705,6 @@ export default function ClientRequestForm() {
                     </span>
                   </div>
                 ))}
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-[rgba(28,35,33,0.08)]">
-                <p className="text-[9px] sm:text-[10px] text-[#8a8a82] tracking-[0.1em] uppercase mb-2">
-                  Trusted by
-                </p>
-                <p className="text-base sm:text-lg font-['Cormorant_Garamond',serif] text-[#1C2321]">
-                  10,000+ specialists
-                </p>
-                <p className="text-xs text-[#8a8a82] mt-1">
-                  Across 5 marketing disciplines
-                </p>
               </div>
             </div>
 
