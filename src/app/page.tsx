@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation'
 import ClientRequestForm from '../components/client-request'
 
 // Import all sections
-import { Header } from '../components/layout/Header'
-import Footer from '../components/layout/Footer'
 import Hero from '../components/sections/Hero'
 import LogoStrip from '../components/sections/LogoStrip'
 import ProblemSection from '../components/sections/ProblemSection'
