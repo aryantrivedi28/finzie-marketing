@@ -1,6 +1,4 @@
 // app/services/shopify/liquid-development/page.tsx
-'use client';
-
 import Link from 'next/link';
 import { useState } from 'react';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';

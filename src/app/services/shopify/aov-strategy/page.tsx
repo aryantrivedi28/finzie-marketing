@@ -1,6 +1,4 @@
 // app/services/shopify/aov-strategy/page.tsx
-'use client';
-
 import Link from 'next/link';
 import { useState } from 'react';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';

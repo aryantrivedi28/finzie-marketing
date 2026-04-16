@@ -1,6 +1,4 @@
 // app/services/shopify/app-integration/page.tsx
-'use client';
-
 import Link from 'next/link';
 import { useState } from 'react';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
