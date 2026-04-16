@@ -3,8 +3,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import Breadcrumb from '@/components/layout/Breadcrumb';
-import CtaBand from '@/components/sections/CtaBand';
+import Breadcrumb from '../../../../components/layout/Breadcrumb';
+import CtaBand from '../../../../components/sections/CtaBand';
 import { 
   Search,
   ShoppingBag,
