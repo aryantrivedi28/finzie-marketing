@@ -41,6 +41,10 @@
   --input: var(--white);
   --ring: var(--teal);
   --radius: 0.625rem;
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Jost', sans-serif;
 }
 
 @layer base {
@@ -56,63 +60,124 @@
 
   html {
     scroll-behavior: smooth;
+    font-size: 16px;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: 'Jost', sans-serif;
+    font-family: var(--font-body);
     font-weight: 300;
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Font families */
+  /* Headings - Cormorant Garamond, weight 300-400 */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 300;
+  }
+
+  h1, .h1 {
+    font-weight: 300;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+  }
+
+  h2, .h2 {
+    font-weight: 300;
+    line-height: 1.15;
+  }
+
+  h3, .h3 {
+    font-weight: 400;
+  }
+
+  h4, .h4 {
+    font-weight: 500;
+  }
+
+  /* Body text - Jost, weight 300 */
+  p, .body-text {
+    font-family: var(--font-body);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* Links */
+  a {
+    font-family: var(--font-body);
+    font-weight: 400;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  /* Buttons */
+  button, .btn {
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  /* Labels & Navigation */
+  label, .label, .nav-link {
+    font-family: var(--font-body);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* Captions & Tags */
+  .caption, .tag {
+    font-family: var(--font-body);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Statistics / Display Numbers */
+  .stat, .display-number {
+    font-family: var(--font-display);
+    font-weight: 300;
+  }
+
+  /* Italic accent for headlines */
+  .accent-italic {
+    font-style: italic;
+    font-family: var(--font-display);
+    font-weight: 300;
+  }
+
+  /* Font families utility classes */
   .font-display {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: var(--font-display);
   }
 
   .font-body {
-    font-family: 'Jost', sans-serif;
+    font-family: var(--font-body);
   }
 
-  /* Noise overlay */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    opacity: 0.022;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-  }
-}
-
-@layer utilities {
-  .calendar-cell-size {
-    --cell-size: 2rem;
+  /* Font weights */
+  .font-300 {
+    font-weight: 300;
   }
 
-  /* Custom scrollbar */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-light) transparent;
+  .font-400 {
+    font-weight: 400;
   }
 
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 3px;
+  .font-500 {
+    font-weight: 500;
   }
 
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: var(--border-light);
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  /* Text utilities */
+  /* Letter spacing utilities */
   .letter-spacing-12 {
     letter-spacing: 0.12em;
   }
@@ -140,19 +205,41 @@
   .text-uppercase {
     text-transform: uppercase;
   }
+}
 
-  /* Font weights */
-  .font-300 {
-    font-weight: 300;
+@layer utilities {
+  .calendar-cell-size {
+    --cell-size: 2rem;
   }
 
-  .font-400 {
-    font-weight: 400;
+  /* Custom scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
   }
 
-  .font-500 {
-    font-weight: 500;
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 3px;
   }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* Noise overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
 }
 
 /* Page Transitions */
@@ -430,5 +517,3 @@
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
-
-

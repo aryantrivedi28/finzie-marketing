@@ -3,7 +3,7 @@ import type { Config } from 'tailwindcss'
 const config: Config = {
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-		"./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     './app/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
     './lib/**/*.{js,ts,jsx,tsx}',
@@ -11,8 +11,24 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        display: ['var(--font-display)', 'serif'],
-        body: ['var(--font-body)', 'sans-serif'],
+        // Display typeface - Cormorant Garamond for headlines
+        display: ['Cormorant Garamond', 'serif'],
+        // UI typeface - Jost for body text, navigation, buttons
+        body: ['Jost', 'sans-serif'],
+      },
+      fontWeight: {
+        light: '300',
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+      },
+      letterSpacing: {
+        '12': '0.12em',
+        '16': '0.16em',
+        '18': '0.18em',
+        '20': '0.2em',
+        '24': '0.24em',
+        '28': '0.28em',
       },
       colors: {
         cream: {
@@ -60,6 +76,8 @@ const config: Config = {
         'fade-down-delay': 'fadeDown 0.6s 0.1s ease both',
         'dot-glow': 'dotGlow 2.4s infinite',
         'pulse-ring': 'pulseRing 2s infinite',
+        'typing-dot': 'typingDot 1.4s infinite ease-in-out',
+        'ring-pulse': 'ringPulse 4s ease-in-out infinite',
       },
       keyframes: {
         fadeDown: {
@@ -89,6 +107,26 @@ const config: Config = {
           },
           '100%': {
             boxShadow: '0 0 0 0 rgba(68, 161, 148, 0)',
+          },
+        },
+        typingDot: {
+          '0%, 60%, 100%': {
+            transform: 'scale(1)',
+            opacity: '0.4',
+          },
+          '30%': {
+            transform: 'scale(1.4)',
+            opacity: '1',
+          },
+        },
+        ringPulse: {
+          '0%, 100%': {
+            transform: 'scale(1)',
+            opacity: '0.7',
+          },
+          '50%': {
+            transform: 'scale(1.04)',
+            opacity: '1',
           },
         },
       },
