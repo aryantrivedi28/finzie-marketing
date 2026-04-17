@@ -3,6 +3,11 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { motion, Variants } from 'framer-motion'
 import Link from 'next/link'
+import { 
+  Zap, Target, RefreshCw, BarChart3, TrendingUp, Users, 
+  Award, Sparkles, Briefcase, PenTool, Search, Settings, 
+  Layout, ArrowRight, CheckCircle2
+} from 'lucide-react'
 
 // Animation variants
 const fadeInUp: Variants = {
@@ -30,7 +35,7 @@ const cardHover: Variants = {
 }
 
 interface BenefitCardProps {
-  icon: string
+  icon: React.ReactNode
   title: string
   description: string
   delay?: number
@@ -68,22 +73,22 @@ const ForFreelancersPage = () => {
   // Benefits data
   const benefits: BenefitCardProps[] = useMemo(() => [
     {
-      icon: "⚡",
+      icon: <Zap className="w-5 h-5" />,
       title: "Onboard in Minutes",
       description: "Tell us what you do and show us your work. Our AI handles the rest — no lengthy applications or waiting weeks for approval."
     },
     {
-      icon: "🎯",
+      icon: <Target className="w-5 h-5" />,
       title: "Work Finds You",
       description: "Clients post briefs, our AI matches. You get introduced to opportunities that fit — not a feed of everything."
     },
     {
-      icon: "🔁",
+      icon: <RefreshCw className="w-5 h-5" />,
       title: "Per Gig, Retainer, or Hourly",
       description: "Work the way that suits the project. Some clients want a one-off, others want you on retainer. You choose what works."
     },
     {
-      icon: "📊",
+      icon: <BarChart3 className="w-5 h-5" />,
       title: "AI Insights to Grow",
       description: "We track what top performers in your category are doing — and share those signals with you, so you can keep getting better."
     }
@@ -135,14 +140,14 @@ const ForFreelancersPage = () => {
     "Designers and creatives — brand, performance, and everything in between"
   ], [])
 
-  const BenefitCard = ({ icon, title, description, delay = 0 }: BenefitCardProps) => (
+  const BenefitCard = ({ icon, title, description }: BenefitCardProps) => (
     <motion.div
       variants={cardHover}
       whileHover="hover"
       className="bg-[#F4F0E4] p-6 sm:p-8 md:p-9 transition-all duration-200 hover:bg-white group cursor-pointer"
     >
-      <div className="text-2xl sm:text-xl mb-3 sm:mb-3.5 group-hover:scale-110 transition-transform duration-200">
-        {icon}
+      <div className="w-10 h-10 rounded-lg bg-[rgba(68,161,148,0.1)] flex items-center justify-center mb-3 sm:mb-3.5 group-hover:scale-110 transition-transform duration-200">
+        <div className="text-[#44A194]">{icon}</div>
       </div>
       <div className="text-sm font-medium text-[#1C2321] mb-2 group-hover:text-[#44A194] transition-colors duration-200">
         {title}
@@ -153,14 +158,14 @@ const ForFreelancersPage = () => {
     </motion.div>
   )
 
-  const StatCard = ({ value, title, description, delay = 0 }: StatCardProps) => (
+  const StatCard = ({ value, title, description }: StatCardProps) => (
     <motion.div
       variants={cardHover}
       whileHover="hover"
       className="bg-[#F4F0E4] p-6 sm:p-8 md:p-9 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 relative overflow-hidden group cursor-pointer transition-all duration-200 hover:shadow-lg"
     >
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#44A194] scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
-      <div className="font-['Cormorant_Garamond',serif] text-3xl sm:text-4xl md:text-[44px] font-light text-[#44A194] leading-[1] flex-shrink-0">
+      <div className="font-display text-3xl sm:text-4xl md:text-[44px] font-light text-[#44A194] leading-[1] flex-shrink-0">
         {value}
       </div>
       <div>
@@ -174,7 +179,7 @@ const ForFreelancersPage = () => {
     </motion.div>
   )
 
-  const InsightCard = ({ title, subtitle, description, delay = 0 }: InsightCardProps) => (
+  const InsightCard = ({ title, subtitle, description }: InsightCardProps) => (
     <motion.div
       variants={cardHover}
       whileHover="hover"
@@ -194,7 +199,6 @@ const ForFreelancersPage = () => {
   )
 
   const handleJoinClick = () => {
-    // Track click event
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'click_join_freelancer', {
         event_category: 'engagement',
@@ -219,7 +223,7 @@ const ForFreelancersPage = () => {
                 <span className="w-6 h-[1px] bg-[#44A194]"></span>
                 <span>For Freelancers</span>
               </div>
-              <h1 className="font-['Cormorant_Garamond',serif] text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light leading-[1.2] md:leading-[1.12] tracking-[-0.01em] mb-4 md:mb-5">
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light leading-[1.2] md:leading-[1.12] tracking-[-0.01em] mb-4 md:mb-5">
                 Work comes to you.<br />
                 You don't{' '}
                 <em className="italic text-[#44A194] not-italic">chase it.</em>
@@ -235,10 +239,10 @@ const ForFreelancersPage = () => {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-9">
-                <Link href="/join-freelancer">
+                <Link href="/all-freelancer">
                   <button
                     onClick={handleJoinClick}
-                    className="w-full sm:w-auto bg-[#44A194] text-white border-none px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#38857a] active:scale-95"
+                    className="w-full sm:w-auto bg-[#44A194] text-white border-none px-6 sm:px-7 py-3 font-body text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#38857a] active:scale-95"
                   >
                     Join as a Freelancer
                   </button>
@@ -260,7 +264,7 @@ const ForFreelancersPage = () => {
             {/* Benefits Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-8 lg:mt-0">
               {benefits.map((benefit, index) => (
-                <BenefitCard key={benefit.title} {...benefit} delay={index * 0.1} />
+                <BenefitCard key={benefit.title} {...benefit} />
               ))}
             </div>
           </div>
@@ -280,7 +284,7 @@ const ForFreelancersPage = () => {
               <span className="inline-block bg-[rgba(68,161,148,0.1)] text-[#44A194] text-[9px] sm:text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 mb-4 sm:mb-5">
                 Who We Work With
               </span>
-              <h2 className="font-['Cormorant_Garamond',serif] text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light leading-[1.2] md:leading-[1.12] tracking-[-0.01em] mt-4">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light leading-[1.2] md:leading-[1.12] tracking-[-0.01em] mt-4">
                 Five disciplines.<br />
                 One{' '}
                 <em className="italic text-[#44A194] not-italic">community.</em>
@@ -301,7 +305,7 @@ const ForFreelancersPage = () => {
                     className="flex items-start gap-3 text-sm text-[#3a3a36] leading-relaxed"
                   >
                     <div className="w-4 h-4 rounded-full bg-[#EC8F8D] flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                      <CheckCircle2 className="w-2.5 h-2.5 text-white" />
                     </div>
                     <span>{item}</span>
                   </motion.li>
@@ -312,7 +316,7 @@ const ForFreelancersPage = () => {
             {/* Stats Cards */}
             <div className="space-y-4 sm:space-y-5 mt-8 lg:mt-0">
               {stats.map((stat, index) => (
-                <StatCard key={stat.title} {...stat} delay={index * 0.1} />
+                <StatCard key={stat.title} {...stat} />
               ))}
             </div>
           </div>
@@ -332,7 +336,7 @@ const ForFreelancersPage = () => {
             <span className="inline-block bg-[rgba(68,161,148,0.1)] text-[#44A194] text-[9px] sm:text-[10px] tracking-[0.22em] uppercase px-3 py-1.5 mb-4 sm:mb-5">
               AI Intelligence
             </span>
-            <h2 className="font-['Cormorant_Garamond',serif] text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light leading-[1.2] md:leading-[1.12] tracking-[-0.01em] mb-4">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light leading-[1.2] md:leading-[1.12] tracking-[-0.01em] mb-4">
               What top performers<br />
               do{' '}
               <em className="italic text-[#44A194] not-italic">differently.</em>
@@ -345,7 +349,7 @@ const ForFreelancersPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-8">
             {insights.map((insight, index) => (
-              <InsightCard key={insight.title} {...insight} delay={index * 0.1} />
+              <InsightCard key={insight.title} {...insight} />
             ))}
           </div>
         </div>
@@ -362,7 +366,7 @@ const ForFreelancersPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-6 lg:gap-10 text-center lg:text-left">
             <div>
-              <h2 className="font-['Cormorant_Garamond',serif] text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-light text-white leading-[1.2]">
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-light text-white leading-[1.2]">
                 Stop chasing work.<br />
                 Let it come to you.
               </h2>
@@ -370,20 +374,19 @@ const ForFreelancersPage = () => {
                 Join 10,000+ specialists who get matched — not lost in the noise.
               </p>
             </div>
-            <Link href="/join-freelancer">
+            <Link href="/all-freelancer">
               <button
                 onClick={handleJoinClick}
-                className="w-full sm:w-auto bg-white text-[#44A194] border-none px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 hover:shadow-lg flex items-center justify-center gap-2 group"
+                className="w-full sm:w-auto bg-white text-[#44A194] border-none px-6 sm:px-7 py-3 font-body text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 hover:shadow-lg flex items-center justify-center gap-2 group"
               >
                 <span>Join as a Freelancer</span>
-                <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
               </button>
             </Link>
           </div>
         </div>
       </motion.div>
 
-      {/* Add smooth scroll styles */}
       <style jsx>{`
         html {
           scroll-behavior: smooth;
