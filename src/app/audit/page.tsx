@@ -2,14 +2,35 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { 
+  BarChart3, 
+  Target, 
+  Wrench, 
+  Mail, 
+  Shield, 
+  Zap, 
+  CreditCard,
+  Clock,
+  CheckCircle2,
+  Sparkles,
+  TrendingUp,
+  Users,
+  Rocket
+} from 'lucide-react'
 
-// Color Palette
+// ExecuMarketing Brand Color Palette
 const colors = {
-  primary: '#f7af00',      // Gold
-  light: '#faf4e5',        // Light cream
-  lighter: '#f0eadd',      // Lighter cream
-  dark: '#050504',         // Near black
-  gray: '#31302f',         // Dark gray
+  // Primary Palette
+  cream: '#F4F0E4',      // Dominant background
+  teal: '#44A194',        // Primary action/CTA
+  steelBlue: '#537D96',   // AI/tech elements
+  softCoral: '#EC8F8D',   // Emotional accent (sparingly)
+  
+  // Neutral Palette
+  night: '#1C2321',       // Headings, primary text
+  carbon: '#3a3a36',      // Body text
+  stone: '#8a8a82',       // Labels, meta text
+  white: '#FFFFFF',       // Cards, clean surfaces
 }
 
 export default function Home() {
@@ -43,7 +64,6 @@ export default function Home() {
     }
   }
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -64,7 +84,6 @@ export default function Home() {
         setLoading(false)
         return
       }
-
 
       const auditId = data.auditId
       pollAuditStatus(auditId)
@@ -111,73 +130,122 @@ export default function Home() {
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: colors.light }}
-    >
+    <div className="min-h-screen" style={{ backgroundColor: colors.cream }}>
       {/* Hero Section */}
-      <div className="container mx-auto px-3 sm:px-4 py-8 sm:py-12 md:py-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto text-center mb-8 sm:mb-10 md:mb-12"
+          className="max-w-5xl mx-auto text-center mb-12 sm:mb-16 md:mb-20"
         >
-          <h1
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mb-4 sm:mb-6 leading-tight"
-            style={{ color: colors.dark }}
+          {/* Tagline */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="inline-block mb-4 sm:mb-6"
           >
-            Advanced Shopify Store Audit
-          </h1>
-          <p
-            className="text-base sm:text-lg md:text-xl leading-relaxed"
-            style={{ color: colors.gray }}
-          >
-            Get a comprehensive, AI-powered analysis of your Shopify store's performance,
-            UX, SEO, and conversion opportunities.
-          </p>
-        </motion.div>
+            <span 
+              className="text-xs sm:text-sm font-medium tracking-wider uppercase px-3 py-1 rounded-full inline-flex items-center gap-2"
+              style={{ 
+                backgroundColor: colors.teal + '15',
+                color: colors.teal
+              }}
+            >
+              <Sparkles size={14} />
+              AI-Powered Talent Delivery
+            </span>
+          </motion.div>
 
+          {/* Main Headline */}
+          <h1 
+            className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light mb-4 sm:mb-6 leading-tight"
+            style={{ color: colors.night }}
+          >
+            Stop searching.{' '}
+            <span className="italic" style={{ color: colors.teal }}>
+              Start executing.
+            </span>
+          </h1>
+          
+          {/* Subheadline */}
+          <p 
+            className="font-['Jost'] text-base sm:text-lg md:text-xl leading-relaxed max-w-3xl mx-auto"
+            style={{ color: colors.carbon }}
+          >
+            Get a comprehensive, AI-powered analysis of your Shopify store's 
+            performance, UX, SEO, and conversion opportunities — delivered by 
+            the platform that vets quality, not noise.
+          </p>
+
+          {/* Trust Badge */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm"
+          >
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={16} style={{ color: colors.teal }} />
+              <span style={{ color: colors.stone }}>AI-vetted quality</span>
+            </div>
+            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.stone }} />
+            <div className="flex items-center gap-2">
+              <Clock size={16} style={{ color: colors.teal }} />
+              <span style={{ color: colors.stone }}>24-hour matching</span>
+            </div>
+            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.stone }} />
+            <div className="flex items-center gap-2">
+              <TrendingUp size={16} style={{ color: colors.teal }} />
+              <span style={{ color: colors.stone }}>No bidding required</span>
+            </div>
+          </motion.div>
+        </motion.div>
 
         {/* Audit Form */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="max-w-2xl mx-auto px-0"
+          className="max-w-2xl mx-auto"
         >
-          <div
-            className="rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border"
-            style={{
-              backgroundColor: colors.lighter,
-              borderColor: colors.lighter,
-            }}
+          <div 
+            className="rounded-2xl shadow-xl p-6 sm:p-8 md:p-10"
+            style={{ backgroundColor: colors.white }}
           >
+            {/* Form Header */}
+            <div className="text-center mb-6 sm:mb-8">
+              <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-light mb-2" style={{ color: colors.night }}>
+                Audit your store
+              </h2>
+              <p className="font-['Jost'] text-sm" style={{ color: colors.stone }}>
+                Get actionable insights in minutes
+              </p>
+            </div>
+
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg border"
-                style={{
-                  backgroundColor: '#fee2e2',
-                  borderColor: '#fecaca',
+                className="mb-6 p-4 rounded-lg flex items-start gap-3"
+                style={{ 
+                  backgroundColor: colors.softCoral + '15',
+                  borderLeft: `3px solid ${colors.softCoral}`
                 }}
               >
-                <p
-                  className="text-sm sm:text-base font-medium"
-                  style={{ color: '#991b1b' }}
-                >
+                <div className="flex-shrink-0 mt-0.5">
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: colors.softCoral }} />
+                </div>
+                <p className="font-['Jost'] text-sm font-medium flex-1" style={{ color: '#8B3A3A' }}>
                   {error}
                 </p>
               </motion.div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
               <div>
-                <label
-                  className="block text-sm font-semibold mb-2"
-                  style={{ color: colors.dark }}
-                >
+                <label className="font-['Jost'] block text-sm font-medium mb-2" style={{ color: colors.night }}>
                   Your Name
                 </label>
                 <input
@@ -185,31 +253,28 @@ export default function Home() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg focus:outline-none focus:ring-2 transition-all border"
+                  className="font-['Jost'] w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all border"
                   placeholder="John Doe"
                   style={{
-                    backgroundColor: colors.light,
-                    color: colors.dark,
-                    borderColor: colors.gray,
+                    backgroundColor: colors.white,
+                    color: colors.carbon,
+                    borderColor: colors.stone,
                     borderWidth: '1px',
                   }}
                   onFocus={(e) => {
-                    e.target.style.boxShadow = `0 0 0 3px rgba(247, 175, 0, 0.1)`
-                    e.target.style.borderColor = colors.primary
+                    e.target.style.borderColor = colors.teal
+                    e.target.style.boxShadow = `0 0 0 3px ${colors.teal}20`
                   }}
                   onBlur={(e) => {
+                    e.target.style.borderColor = colors.stone
                     e.target.style.boxShadow = 'none'
-                    e.target.style.borderColor = colors.gray
                   }}
                 />
               </div>
 
               <div>
-                <label
-                  className="block text-sm font-semibold mb-2"
-                  style={{ color: colors.dark }}
-                >
-                  Email Address <span style={{ color: colors.primary }}>*</span>
+                <label className="font-['Jost'] block text-sm font-medium mb-2" style={{ color: colors.night }}>
+                  Email Address <span style={{ color: colors.teal }}>*</span>
                 </label>
                 <input
                   type="email"
@@ -217,37 +282,31 @@ export default function Home() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg focus:outline-none focus:ring-2 transition-all border"
+                  className="font-['Jost'] w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all border"
                   placeholder="you@business.com"
                   style={{
-                    backgroundColor: colors.light,
-                    color: colors.dark,
-                    borderColor: colors.gray,
+                    backgroundColor: colors.white,
+                    color: colors.carbon,
+                    borderColor: colors.stone,
                     borderWidth: '1px',
                   }}
                   onFocus={(e) => {
-                    e.target.style.boxShadow = `0 0 0 3px rgba(247, 175, 0, 0.1)`
-                    e.target.style.borderColor = colors.primary
+                    e.target.style.borderColor = colors.teal
+                    e.target.style.boxShadow = `0 0 0 3px ${colors.teal}20`
                   }}
                   onBlur={(e) => {
+                    e.target.style.borderColor = colors.stone
                     e.target.style.boxShadow = 'none'
-                    e.target.style.borderColor = colors.gray
                   }}
                 />
-                <p
-                  className="mt-1 text-xs sm:text-sm"
-                  style={{ color: colors.gray }}
-                >
+                <p className="font-['Jost'] mt-1 text-xs" style={{ color: colors.stone }}>
                   We'll send the detailed audit report to this email
                 </p>
               </div>
 
               <div>
-                <label
-                  className="block text-sm font-semibold mb-2"
-                  style={{ color: colors.dark }}
-                >
-                  Shopify Store URL <span style={{ color: colors.primary }}>*</span>
+                <label className="font-['Jost'] block text-sm font-medium mb-2" style={{ color: colors.night }}>
+                  Shopify Store URL <span style={{ color: colors.teal }}>*</span>
                 </label>
                 <input
                   type="url"
@@ -255,27 +314,24 @@ export default function Home() {
                   required
                   value={formData.storeUrl}
                   onChange={handleChange}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg focus:outline-none focus:ring-2 transition-all border"
+                  className="font-['Jost'] w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all border"
                   placeholder="https://your-store.myshopify.com"
                   style={{
-                    backgroundColor: colors.light,
-                    color: colors.dark,
-                    borderColor: colors.gray,
+                    backgroundColor: colors.white,
+                    color: colors.carbon,
+                    borderColor: colors.stone,
                     borderWidth: '1px',
                   }}
                   onFocus={(e) => {
-                    e.target.style.boxShadow = `0 0 0 3px rgba(247, 175, 0, 0.1)`
-                    e.target.style.borderColor = colors.primary
+                    e.target.style.borderColor = colors.teal
+                    e.target.style.boxShadow = `0 0 0 3px ${colors.teal}20`
                   }}
                   onBlur={(e) => {
+                    e.target.style.borderColor = colors.stone
                     e.target.style.boxShadow = 'none'
-                    e.target.style.borderColor = colors.gray
                   }}
                 />
-                <p
-                  className="mt-1 text-xs sm:text-sm"
-                  style={{ color: colors.gray }}
-                >
+                <p className="font-['Jost'] mt-1 text-xs" style={{ color: colors.stone }}>
                   Must be a public Shopify store
                 </p>
               </div>
@@ -283,73 +339,170 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
+                className="font-['Jost'] w-full font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg flex items-center justify-center gap-2"
                 style={{
-                  backgroundColor: colors.primary,
-                  color: colors.dark,
+                  backgroundColor: colors.teal,
+                  color: colors.white,
                 }}
               >
                 {loading ? 'Analyzing...' : 'Start Free Audit'}
+                {!loading && <Rocket size={18} />}
               </button>
             </form>
 
-            {/* What You'll Get Section */}
-            <div
-              className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t"
-              style={{ borderColor: colors.light }}
-            >
-              <h3
-                className="text-base sm:text-lg font-bold mb-3 sm:mb-4"
-                style={{ color: colors.dark }}
+            {/* Trust Indicators */}
+            <div className="mt-8 pt-6 border-t" style={{ borderColor: colors.cream }}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs">
+                <div className="flex items-center gap-2">
+                  <Shield size={14} style={{ color: colors.teal }} />
+                  <span className="font-['Jost']" style={{ color: colors.stone }}>Your data is secure</span>
+                </div>
+                <div className="hidden sm:block w-px h-4" style={{ backgroundColor: colors.stone }} />
+                <div className="flex items-center gap-2">
+                  <Zap size={14} style={{ color: colors.teal }} />
+                  <span className="font-['Jost']" style={{ color: colors.stone }}>Results in ~1 minute</span>
+                </div>
+                <div className="hidden sm:block w-px h-4" style={{ backgroundColor: colors.stone }} />
+                <div className="flex items-center gap-2">
+                  <CreditCard size={14} style={{ color: colors.teal }} />
+                  <span className="font-['Jost']" style={{ color: colors.stone }}>No credit card required</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* What You'll Get Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="mt-16 sm:mt-20"
+        >
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl md:text-4xl font-light mb-3" style={{ color: colors.night }}>
+              What you'll get
+            </h2>
+            <p className="font-['Jost'] text-sm sm:text-base" style={{ color: colors.stone }}>
+              Everything you need to optimize your Shopify store
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[
+              {
+                icon: BarChart3,
+                title: 'Performance Score',
+                description: 'Complete Lighthouse metrics & Core Web Vitals analysis'
+              },
+              {
+                icon: Target,
+                title: 'AI Recommendations',
+                description: 'Expert insights powered by advanced AI technology'
+              },
+              {
+                icon: Wrench,
+                title: 'Actionable Fixes',
+                description: 'Step-by-step solutions with code examples'
+              },
+              {
+                icon: Mail,
+                title: 'Email Report',
+                description: 'Detailed findings delivered to your inbox'
+              }
+            ].map((item, idx) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 + idx * 0.1 }}
+                className="text-center p-6 rounded-xl transition-all hover:shadow-lg"
+                style={{ backgroundColor: colors.white }}
+                whileHover={{ y: -4 }}
               >
-                ✨ What You'll Get:
-              </h3>
-              <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base">
-                <li className="flex items-start gap-3">
-                  <span
-                    className="flex-shrink-0 text-lg sm:text-xl font-bold mt-0.5"
-                    style={{ color: colors.primary }}
-                  >
-                    ✓
-                  </span>
-                  <span style={{ color: colors.gray }}>
-                    Complete performance analysis with Lighthouse metrics
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span
-                    className="flex-shrink-0 text-lg sm:text-xl font-bold mt-0.5"
-                    style={{ color: colors.primary }}
-                  >
-                    ✓
-                  </span>
-                  <span style={{ color: colors.gray }}>
-                    AI-powered recommendations and priority actions
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span
-                    className="flex-shrink-0 text-lg sm:text-xl font-bold mt-0.5"
-                    style={{ color: colors.primary }}
-                  >
-                    ✓
-                  </span>
-                  <span style={{ color: colors.gray }}>
-                    Detailed technical issues with step-by-step fixes
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span
-                    className="flex-shrink-0 text-lg sm:text-xl font-bold mt-0.5"
-                    style={{ color: colors.primary }}
-                  >
-                    ✓
-                  </span>
-                  <span style={{ color: colors.gray }}>
-                    Email report with all findings and estimated business impact
-                  </span>
-                </li>
-              </ul>
+                <div className="flex justify-center mb-3">
+                  <item.icon size={40} style={{ color: colors.teal, strokeWidth: 1.5 }} />
+                </div>
+                <h3 className="font-['Jost'] font-semibold text-sm sm:text-base mb-2" style={{ color: colors.night }}>
+                  {item.title}
+                </h3>
+                <p className="font-['Jost'] text-xs sm:text-sm" style={{ color: colors.stone }}>
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Why Choose ExecuMarketing Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+          className="mt-16 sm:mt-20 py-12 sm:py-16 px-6 sm:px-8 rounded-2xl relative overflow-hidden"
+          style={{ backgroundColor: colors.steelBlue + '10' }}
+        >
+          {/* Decorative element */}
+          <div 
+            className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10"
+            style={{ backgroundColor: colors.steelBlue, transform: 'translate(30%, -30%)' }}
+          />
+          
+          <div className="relative z-10">
+            <div className="text-center mb-8 sm:mb-10">
+              <div className="inline-block mb-3">
+                <span className="font-['Jost'] text-xs font-medium tracking-wider uppercase px-3 py-1 rounded-full inline-flex items-center gap-2" style={{ backgroundColor: colors.steelBlue + '20', color: colors.steelBlue }}>
+                  <Sparkles size={12} />
+                  Powered by Finzie
+                </span>
+              </div>
+              <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl md:text-4xl font-light mb-3" style={{ color: colors.night }}>
+                Built on human trust,<br />
+                <span className="italic" style={{ color: colors.teal }}>powered by AI</span>
+              </h2>
+              <p className="font-['Jost'] text-sm sm:text-base max-w-2xl mx-auto" style={{ color: colors.carbon }}>
+                Unlike noisy marketplaces and rigid agencies, we deliver quality-matched talent 
+                that actually executes. The same infrastructure Finzie clients trust.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto">
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <Clock size={28} style={{ color: colors.teal }} />
+                </div>
+                <div className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-light mb-1" style={{ color: colors.teal }}>
+                  24h
+                </div>
+                <div className="font-['Jost'] text-xs" style={{ color: colors.stone }}>Matching</div>
+              </div>
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <Sparkles size={28} style={{ color: colors.teal }} />
+                </div>
+                <div className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-light mb-1" style={{ color: colors.teal }}>
+                  AI
+                </div>
+                <div className="font-['Jost'] text-xs" style={{ color: colors.stone }}>Vetted Quality</div>
+              </div>
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <TrendingUp size={28} style={{ color: colors.teal }} />
+                </div>
+                <div className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-light mb-1" style={{ color: colors.teal }}>
+                  0
+                </div>
+                <div className="font-['Jost'] text-xs" style={{ color: colors.stone }}>Bidding Required</div>
+              </div>
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <Users size={28} style={{ color: colors.teal }} />
+                </div>
+                <div className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-light mb-1" style={{ color: colors.teal }}>
+                  10K+
+                </div>
+                <div className="font-['Jost'] text-xs" style={{ color: colors.stone }}>Specialists</div>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -359,126 +512,30 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center shadow-2xl border"
-              style={{
-                backgroundColor: colors.light,
-                borderColor: colors.lighter,
-              }}
+              className="rounded-2xl p-8 text-center shadow-2xl max-w-sm w-full"
+              style={{ backgroundColor: colors.white }}
             >
-              <div
-                className="animate-spin h-10 sm:h-12 w-10 sm:w-12 rounded-full border-4 border-gray-300 mx-auto mb-4"
-                style={{ borderTopColor: colors.primary }}
+              <div 
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full mx-auto mb-4 animate-spin border-4"
+                style={{ 
+                  borderColor: colors.stone + '30',
+                  borderTopColor: colors.teal
+                }}
               />
-              <p
-                className="font-bold text-base sm:text-lg mb-2"
-                style={{ color: colors.dark }}
-              >
+              <p className="font-['Jost'] font-semibold text-base sm:text-lg mb-2" style={{ color: colors.night }}>
                 Analyzing your store...
               </p>
-              <p
-                className="text-xs sm:text-sm"
-                style={{ color: colors.gray }}
-              >
-                This may take 1 minutes
+              <p className="font-['Jost'] text-xs sm:text-sm" style={{ color: colors.stone }}>
+                Our AI is scanning your store<br />This may take up to a minute
               </p>
             </motion.div>
           </motion.div>
         )}
-
-        {/* Features Section */}
-        <div
-          className="mt-12 sm:mt-14 md:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
-        >
-          {[
-            {
-              icon: '⚡',
-              title: 'Deep Performance Analysis',
-              description: 'Lighthouse metrics, Core Web Vitals, image optimization, script analysis'
-            },
-            {
-              icon: '🎯',
-              title: 'AI-Powered Insights',
-              description: 'OpenAI analyzes your store and provides expert recommendations'
-            },
-            {
-              icon: '🛠️',
-              title: 'Actionable Solutions',
-              description: 'Step-by-step fixes with code examples and implementation guides'
-            }
-          ].map((feature, idx) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + idx * 0.1, duration: 0.5 }}
-              className="rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8 border hover:shadow-md transition-all"
-              style={{
-                backgroundColor: colors.lighter,
-                borderColor: colors.lighter,
-              }}
-              whileHover={{ y: -5 }}
-            >
-              <div className="text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 h-10 sm:h-12">
-                {feature.icon}
-              </div>
-              <h3
-                className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3"
-                style={{ color: colors.dark }}
-              >
-                {feature.title}
-              </h3>
-              <p
-                className="text-sm sm:text-base leading-relaxed"
-                style={{ color: colors.gray }}
-              >
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* CTA Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.6 }}
-          className="mt-12 sm:mt-14 md:mt-16 text-center py-8 sm:py-10 md:py-12 px-4 rounded-xl sm:rounded-2xl border"
-          style={{
-            backgroundColor: colors.lighter,
-            borderColor: colors.lighter,
-          }}
-        >
-          <h2
-            className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4"
-            style={{ color: colors.dark }}
-          >
-            Ready to optimize your store?
-          </h2>
-          <p
-            className="text-sm sm:text-base md:text-lg mb-6 sm:mb-8"
-            style={{ color: colors.gray }}
-          >
-            Get actionable insights in minutes, not hours
-          </p>
-          <button
-            onClick={() => {
-              const formSection = document.querySelector('form')
-              formSection?.scrollIntoView({ behavior: 'smooth' })
-            }}
-            className="inline-block font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg transition-all duration-200 transform hover:scale-[1.05] active:scale-[0.95] text-base sm:text-lg"
-            style={{
-              backgroundColor: colors.primary,
-              color: colors.dark,
-            }}
-          >
-            Start Your Free Audit Now
-          </button>
-        </motion.div>
       </div>
     </div>
   )

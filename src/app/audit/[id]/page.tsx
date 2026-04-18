@@ -4,23 +4,66 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import ScoreCard from '../../../components/audit/ScoreCard'
 import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Shield,
+  Zap,
+  CreditCard,
+  TrendingUp,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  AlertTriangle,
+  Info,
+  ChevronDown,
+  ChevronUp,
+  Share2,
+  Copy,
+  Mail,
+  FileText,
+  RefreshCw,
+  Sparkles,
+  Gauge,
+  Search,
+  Users,
+  Target,
+  Wrench,
+  BarChart3,
+  Flame,
+  Award,
+  Eye,
+  Link as LinkIcon,
+  Calendar,
+  Home,
+  ThumbsUp,
+  ArrowRight,
+  ExternalLink
+} from 'lucide-react'
 
-type Issue = {
-  title: string
-  solutionSteps?: string[]
-  description?: string
-  impact?: string
-  element?: string
-  recommendation?: string
+// ExecuMarketing Brand Color Palette
+const colors = {
+  // Primary Palette
+  cream: '#F4F0E4',      // Dominant background
+  teal: '#44A194',        // Primary action/CTA
+  steelBlue: '#537D96',   // AI/tech elements
+  softCoral: '#EC8F8D',   // Emotional accent (sparingly)
+  
+  // Neutral Palette
+  night: '#1C2321',       // Headings, primary text
+  carbon: '#3a3a36',      // Body text
+  stone: '#8a8a82',       // Labels, meta text
+  white: '#FFFFFF',       // Cards, clean surfaces
 }
 
-// Your Original Color Palette - preserved exactly
-const colors = {
-  primary: '#f7af00',      // Gold - for accents only
-  light: '#faf4e5',        // Light cream
-  lighter: '#f0eadd',      // Lighter cream
-  dark: '#050504',         // Near black
-  gray: '#31302f',         // Dark gray
+// Severity color mapping
+const getSeverityColors = (severity: string) => {
+  const severityMap: { [key: string]: { bg: string; border: string; text: string; icon: any } } = {
+    critical: { bg: '#EC8F8D15', border: '#EC8F8D', text: '#8B3A3A', icon: XCircle },
+    high: { bg: '#EC8F8D10', border: '#EC8F8D', text: '#B85C5C', icon: AlertCircle },
+    medium: { bg: '#537D9610', border: '#537D96', text: '#2C5F6E', icon: AlertTriangle },
+    low: { bg: '#44A19410', border: '#44A194', text: '#2E7D6E', icon: Info },
+  }
+  return severityMap[severity] || severityMap.low
 }
 
 // Animation variants
@@ -62,35 +105,41 @@ export default function AuditPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.light }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.cream }}>
         <div className="text-center px-4">
           <div
-            className="animate-spin h-12 w-12 sm:h-16 sm:w-16 rounded-full border-4 mx-auto mb-4"
-            style={{ borderColor: colors.lighter, borderTopColor: colors.primary }}
+            className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto mb-4 animate-spin border-4"
+            style={{ borderColor: colors.stone + '30', borderTopColor: colors.teal }}
           />
-          <p className="text-sm sm:text-base" style={{ color: colors.gray }}>Loading your audit results...</p>
+          <p className="font-['Jost'] text-sm sm:text-base" style={{ color: colors.carbon }}>Loading your audit results...</p>
         </div>
       </div>
     )
 
   if (!audit)
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.light }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.cream }}>
         <div className="text-center py-20 px-4 max-w-md mx-auto">
-          <p style={{ color: colors.dark }} className="text-lg sm:text-xl font-semibold mb-2">
+          <div className="mb-4 flex justify-center">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: colors.softCoral + '20' }}>
+              <AlertCircle size={32} style={{ color: colors.softCoral }} />
+            </div>
+          </div>
+          <p className="font-['Jost'] text-lg sm:text-xl font-semibold mb-2" style={{ color: colors.night }}>
             Audit not found
           </p>
-          <p style={{ color: colors.gray }} className="text-sm sm:text-base mb-6">
-            The audit you're looking for doesn't exist.
+          <p className="font-['Jost'] text-sm sm:text-base mb-6" style={{ color: colors.carbon }}>
+            The audit you're looking for doesn't exist or has been removed.
           </p>
           <button
             onClick={() => router.push('/audit')}
-            className="px-6 py-3 rounded-lg font-medium transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
+            className="font-['Jost'] px-6 py-3 rounded-lg font-medium transition-all hover:scale-105 active:scale-95 w-full sm:w-auto inline-flex items-center justify-center gap-2"
             style={{
-              backgroundColor: colors.primary,
-              color: colors.dark
+              backgroundColor: colors.teal,
+              color: colors.white
             }}
           >
+            <RefreshCw size={16} />
             Start New Audit
           </button>
         </div>
@@ -109,17 +158,7 @@ export default function AuditPage() {
   const metrics = audit.metrics || {}
   const performanceMetrics = metrics.performance || {}
 
-  const getSeverityColor = (severity: string) => {
-    const severityMap: { [key: string]: { bg: string; border: string; text: string } } = {
-      critical: { bg: '#fee2e2', border: '#fecaca', text: '#991b1b' },
-      high: { bg: '#fed7aa', border: '#fdba74', text: '#92400e' },
-      medium: { bg: '#fef3c7', border: '#fcd34d', text: '#78350f' },
-      low: { bg: '#dcfce7', border: '#bbf7d0', text: '#166534' },
-    }
-    return severityMap[severity] || severityMap.low
-  }
-
-  const severityColor = getSeverityColor(tab)
+  const severityColors = getSeverityColors(tab)
 
   // Flatten recommendations from all severity levels
   const getAllRecommendations = () => {
@@ -136,6 +175,7 @@ export default function AuditPage() {
 
   // Format text with proper line breaks and spacing
   const formatText = (text: string) => {
+    if (!text) return ''
     return text.split('\n').map((line, i) => (
       <span key={i}>
         {line}
@@ -144,8 +184,15 @@ export default function AuditPage() {
     ))
   }
 
+  const getScoreLabel = (score: number) => {
+    if (score >= 80) return { label: 'Excellent', icon: Award }
+    if (score >= 60) return { label: 'Good', icon: ThumbsUp }
+    if (score >= 40) return { label: 'Average', icon: Gauge }
+    return { label: 'Needs Improvement', icon: AlertCircle }
+  }
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: colors.light }}>
+    <div className="min-h-screen" style={{ backgroundColor: colors.cream }}>
 
       {/* ================= HERO SECTION ================= */}
       <motion.div
@@ -153,20 +200,20 @@ export default function AuditPage() {
         animate={{ opacity: 1 }}
         className="relative overflow-hidden"
         style={{
-          backgroundColor: colors.lighter,
-          borderBottom: `1px solid ${colors.lighter}`
+          backgroundColor: colors.white,
+          borderBottom: `1px solid ${colors.cream}`
         }}
       >
         {/* Decorative accent line */}
         <div
           className="absolute top-0 left-0 right-0 h-1"
-          style={{ backgroundColor: colors.primary }}
+          style={{ backgroundColor: colors.teal }}
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12 lg:py-16">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20">
 
           {/* Main Hero Content */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-12">
 
             {/* Left Column - Text Content */}
             <motion.div
@@ -176,32 +223,32 @@ export default function AuditPage() {
             >
               {/* Store Name Badge */}
               <div
-                className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4"
-                style={{ backgroundColor: colors.light }}
+                className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-5"
+                style={{ backgroundColor: colors.cream }}
               >
-                <span className="text-sm sm:text-base" style={{ color: colors.primary }}>🏪</span>
-                <span className="text-xs sm:text-sm font-medium truncate max-w-[200px] sm:max-w-none" style={{ color: colors.dark }}>
+                <Home size={14} style={{ color: colors.teal }} />
+                <span className="font-['Jost'] text-xs sm:text-sm font-medium truncate max-w-[200px] sm:max-w-none" style={{ color: colors.night }}>
                   {store.name || 'Your Store'}
                 </span>
               </div>
 
-              {/* Main Headline - from database */}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 leading-tight">
-                <span style={{ color: colors.dark }}>Store Performance</span>
+              {/* Main Headline */}
+              <h1 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-3 sm:mb-4 leading-tight">
+                <span style={{ color: colors.night }}>Store Performance</span>
                 <br className="hidden sm:block" />
-                <span style={{ color: colors.primary }}>Audit Report</span>
+                <span className="italic" style={{ color: colors.teal }}>Audit Report</span>
               </h1>
 
-              {/* Subheadline - from database */}
-              <p className="text-base sm:text-lg md:text-xl mb-4 sm:mb-6 max-w-2xl leading-relaxed" style={{ color: colors.gray }}>
-                {aiSummary ? aiSummary.substring(0, 120) + '...' : 'Comprehensive analysis of your store\'s performance metrics'}
+              {/* Subheadline */}
+              <p className="font-['Jost'] text-base sm:text-lg md:text-xl mb-5 sm:mb-6 max-w-2xl leading-relaxed" style={{ color: colors.carbon }}>
+                {aiSummary ? aiSummary.substring(0, 140) + '...' : 'Comprehensive analysis of your store\'s performance metrics and actionable insights'}
               </p>
 
               {/* Meta Information */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-sm sm:text-base" style={{ color: colors.primary }}>📅</span>
-                  <span className="text-xs sm:text-sm" style={{ color: colors.gray }}>
+              <div className="flex flex-wrap items-center gap-3 sm:gap-5 mb-6 sm:mb-8">
+                <div className="flex items-center gap-2">
+                  <Calendar size={14} style={{ color: colors.teal }} />
+                  <span className="font-['Jost'] text-xs sm:text-sm" style={{ color: colors.carbon }}>
                     {audit.completedAt ? new Date(audit.completedAt).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
@@ -209,65 +256,82 @@ export default function AuditPage() {
                     }) : 'Date not available'}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-sm sm:text-base" style={{ color: colors.primary }}>🌐</span>
-                  <span className="text-xs sm:text-sm truncate max-w-[150px] sm:max-w-[200px]" style={{ color: colors.gray }}>
+                <div className="flex items-center gap-2">
+                  <LinkIcon size={14} style={{ color: colors.teal }} />
+                  <span className="font-['Jost'] text-xs sm:text-sm truncate max-w-[180px] sm:max-w-[250px]" style={{ color: colors.carbon }}>
                     {store.url || 'URL not available'}
                   </span>
                 </div>
                 <div
-                  className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 rounded-full"
-                  style={{ backgroundColor: colors.light }}
+                  className="flex items-center gap-2 px-2 sm:px-3 py-1 rounded-full"
+                  style={{ backgroundColor: colors.cream }}
                 >
-                  <span className="text-xs sm:text-sm" style={{ color: colors.primary }}>✓</span>
-                  <span className="text-xs font-medium" style={{ color: colors.gray }}>
+                  <CheckCircle2 size={12} style={{ color: colors.teal }} />
+                  <span className="font-['Jost'] text-xs font-medium" style={{ color: colors.carbon }}>
                     {audit.status || 'Completed'}
                   </span>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <button
                   onClick={() => router.push('/audit')}
-                  className="flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium transition-all hover:scale-105 active:scale-95 text-sm sm:text-base w-full sm:w-auto"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all hover:scale-105 active:scale-95 font-['Jost'] text-sm"
                   style={{
-                    backgroundColor: colors.lighter,
-                    color: colors.gray
+                    backgroundColor: colors.cream,
+                    color: colors.carbon
                   }}
                 >
-                  <span className="text-base sm:text-lg">↻</span>
+                  <RefreshCw size={16} />
                   New Audit
                 </button>
-              </div>
+                
+                <button
+                  onClick={() => setShowShareMenu(!showShareMenu)}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all hover:scale-105 active:scale-95 font-['Jost'] text-sm relative"
+                  style={{
+                    backgroundColor: colors.teal,
+                    color: colors.white
+                  }}
+                >
+                  <Share2 size={16} />
+                  Share Report
+                </button>
 
-              {/* Share Menu Dropdown */}
-              <AnimatePresence>
-                {showShareMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute mt-2 w-48 rounded-lg shadow-lg z-10"
-                    style={{ backgroundColor: colors.light, border: `1px solid ${colors.lighter}` }}
-                  >
-                    <div className="py-2">
-                      {['Copy Link', 'Email Report', 'Download PDF'].map((option) => (
-                        <button
-                          key={option}
-                          className="w-full text-left px-4 py-2 text-sm transition-colors"
-                          style={{ color: colors.dark }}
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.lighter)}
-                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                          onClick={() => setShowShareMenu(false)}
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                {/* Share Menu Dropdown */}
+                <AnimatePresence>
+                  {showShareMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute mt-2 w-48 rounded-lg shadow-lg z-10"
+                      style={{ backgroundColor: colors.white, border: `1px solid ${colors.cream}` }}
+                    >
+                      <div className="py-2">
+                        {[
+                          { icon: Copy, label: 'Copy Link' },
+                          { icon: Mail, label: 'Email Report' },
+                          { icon: FileText, label: 'Download PDF' }
+                        ].map((option) => (
+                          <button
+                            key={option.label}
+                            className="font-['Jost'] w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2"
+                            style={{ color: colors.carbon }}
+                            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.cream)}
+                            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            onClick={() => setShowShareMenu(false)}
+                          >
+                            <option.icon size={14} />
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </motion.div>
 
             {/* Right Column - Overall Score */}
@@ -278,29 +342,38 @@ export default function AuditPage() {
               className="flex-shrink-0 mx-auto lg:mx-0"
             >
               <div
-                className="p-4 sm:p-6 rounded-2xl text-center"
-                style={{ backgroundColor: colors.light }}
+                className="p-6 sm:p-8 rounded-2xl text-center"
+                style={{ backgroundColor: colors.cream }}
               >
                 <div
-                  className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3"
+                  className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full flex items-center justify-center mx-auto mb-3"
                   style={{
-                    background: `conic-gradient(${colors.primary} ${(scores.overall || 0) * 3.6}deg, ${colors.lighter} 0deg)`
+                    background: `conic-gradient(${colors.teal} ${(scores.overall || 0) * 3.6}deg, ${colors.stone + '20'} 0deg)`
                   }}
                 >
                   <div
-                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: colors.light }}
+                    className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full flex flex-col items-center justify-center"
+                    style={{ backgroundColor: colors.white }}
                   >
-                    <span className="text-2xl sm:text-3xl font-bold" style={{ color: colors.primary }}>
+                    <span className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-light" style={{ color: colors.teal }}>
                       {scores.overall || 0}
                     </span>
+                    <span className="font-['Jost'] text-[10px] sm:text-xs" style={{ color: colors.stone }}>SCORE</span>
                   </div>
                 </div>
-                <p className="text-xs sm:text-sm font-medium" style={{ color: colors.gray }}>Overall Score</p>
-                <p className="text-xs mt-1" style={{ color: colors.gray }}>
-                  {(scores.overall || 0) >= 80 ? 'Excellent' :
-                    (scores.overall || 0) >= 60 ? 'Good' : 'Needs Improvement'}
-                </p>
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  {(() => {
+                    const { label, icon: ScoreIcon } = getScoreLabel(scores.overall || 0)
+                    return (
+                      <>
+                        <ScoreIcon size={14} style={{ color: colors.teal }} />
+                        <p className="font-['Jost'] text-xs font-medium" style={{ color: colors.carbon }}>
+                          {label}
+                        </p>
+                      </>
+                    )
+                  })()}
+                </div>
               </div>
             </motion.div>
           </div>
@@ -308,14 +381,14 @@ export default function AuditPage() {
       </motion.div>
 
       {/* ================= MAIN CONTENT ================= */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-10 space-y-6 md:space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12 space-y-8 md:space-y-10">
 
         {/* Score Cards Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4"
         >
           <motion.div variants={itemVariants}><ScoreCard score={scores.overall || 0} label="Overall" /></motion.div>
           <motion.div variants={itemVariants}><ScoreCard score={scores.performance || 0} label="Performance" /></motion.div>
@@ -325,25 +398,26 @@ export default function AuditPage() {
           <motion.div variants={itemVariants}><ScoreCard score={scores.trust || 0} label="Trust" /></motion.div>
         </motion.div>
 
-        {/* Performance Metrics Section - using metrics.performance */}
+        {/* Performance Metrics Section */}
         {performanceMetrics && Object.keys(performanceMetrics).length > 0 && (
           <motion.div
             variants={itemVariants}
             initial="hidden"
             animate="visible"
-            className="rounded-xl p-4 sm:p-5 md:p-6"
-            style={{ backgroundColor: colors.lighter }}
+            className="rounded-xl p-5 sm:p-6"
+            style={{ backgroundColor: colors.white }}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 mb-4">
-              <h2 className="font-semibold text-base sm:text-lg" style={{ color: colors.dark }}>
-                ⚡ Performance Metrics
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5">
+              <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-light flex items-center gap-2" style={{ color: colors.night }}>
+                <Gauge size={22} style={{ color: colors.teal }} />
+                Performance Metrics
               </h2>
-              <span className="text-xs px-2 py-1 rounded-full w-fit" style={{ backgroundColor: colors.light, color: colors.gray }}>
-                Real-time data
+              <span className="font-['Jost'] text-xs px-2 py-1 rounded-full w-fit" style={{ backgroundColor: colors.cream, color: colors.stone }}>
+                Real-time Core Web Vitals
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               {performanceMetrics.loadTime !== undefined && (
                 <MetricCard label="Load Time" value={`${(performanceMetrics.loadTime / 1000).toFixed(1)}s`} />
               )}
@@ -369,25 +443,27 @@ export default function AuditPage() {
           initial="hidden"
           animate="visible"
           className="rounded-xl overflow-hidden"
-          style={{ backgroundColor: colors.lighter }}
+          style={{ backgroundColor: colors.white }}
         >
           {/* Section Header */}
-          <div className="p-4 sm:p-5 md:p-6 border-b" style={{ borderColor: colors.light }}>
-            <h2 className="font-semibold text-base sm:text-lg mb-3" style={{ color: colors.dark }}>
-              🔍 Issues Found
+          <div className="p-5 sm:p-6 border-b" style={{ borderColor: colors.cream }}>
+            <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-light mb-4 flex items-center gap-2" style={{ color: colors.night }}>
+              <AlertCircle size={22} style={{ color: colors.teal }} />
+              Issues Found
             </h2>
 
-            {/* Severity Tabs - Mobile Optimized */}
+            {/* Severity Tabs */}
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
               {(['critical', 'high', 'medium', 'low'] as const).map((severity) => {
                 const count = audit.issues?.[severity]?.length || 0
-                const colors = getSeverityColor(severity)
+                const colors = getSeverityColors(severity)
+                const Icon = colors.icon
 
                 return (
                   <button
                     key={severity}
                     onClick={() => setTab(severity)}
-                    className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs font-medium transition-all ${tab === severity ? 'shadow-md scale-105 ring-2 ring-offset-1' : 'opacity-70 hover:opacity-100'
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${tab === severity ? 'shadow-md scale-105 ring-2 ring-offset-1' : 'opacity-70 hover:opacity-100'
                       }`}
                     style={{
                       backgroundColor: colors.bg,
@@ -395,10 +471,9 @@ export default function AuditPage() {
                       border: `1px solid ${colors.border}`
                     }}
                   >
-                    <div className="flex flex-col items-center">
-                      <span className="capitalize">{severity}</span>
-                      <span className="font-bold mt-0.5">{count}</span>
-                    </div>
+                    <Icon size={14} />
+                    <span className="capitalize">{severity}</span>
+                    <span className="font-bold ml-1">({count})</span>
                   </button>
                 )
               })}
@@ -406,7 +481,7 @@ export default function AuditPage() {
           </div>
 
           {/* Issues List */}
-          <div className="p-4 sm:p-5 md:p-6">
+          <div className="p-5 sm:p-6">
             <AnimatePresence mode="wait">
               {issues.length > 0 ? (
                 <motion.div
@@ -416,8 +491,9 @@ export default function AuditPage() {
                   exit={{ opacity: 0, x: 10 }}
                   className="space-y-3"
                 >
-                  {issues.map((issue: Issue, i: number) => {
-                    const severityColors = getSeverityColor(tab)
+                  {issues.map((issue: any, i: number) => {
+                    const severityColors = getSeverityColors(tab)
+                    const Icon = severityColors.icon
 
                     return (
                       <motion.div
@@ -425,39 +501,46 @@ export default function AuditPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="rounded-lg overflow-hidden cursor-pointer"
+                        className="rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-md"
                         style={{
                           backgroundColor: severityColors.bg,
-                          border: `1px solid ${severityColors.border}`
+                          border: `1px solid ${severityColors.border}50`
                         }}
                         onClick={() => setExpandedIssue(expandedIssue === i ? null : i)}
                       >
                         {/* Issue Header */}
-                        <div className="p-3 sm:p-4">
-                          <div className="flex items-start justify-between gap-2">
+                        <div className="p-4 sm:p-5">
+                          <div className="flex items-start justify-between gap-3">
                             <div className="flex-1">
-                              <h3 className="font-semibold text-sm sm:text-base leading-snug" style={{ color: severityColors.text }}>
-                                {issue.title}
-                              </h3>
+                              <div className="flex items-center gap-2 mb-2">
+                                <Icon size={16} style={{ color: severityColors.text }} />
+                                <h3 className="font-['Jost'] font-semibold text-sm sm:text-base leading-snug" style={{ color: severityColors.text }}>
+                                  {issue.title}
+                                </h3>
+                              </div>
 
                               {/* Quick Info Tags */}
-                              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
+                              <div className="flex flex-wrap gap-2 mt-2">
                                 {issue.impact && (
-                                  <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: severityColors.bg }}>
+                                  <span className="font-['Jost'] text-xs px-2 py-1 rounded-full" style={{ backgroundColor: severityColors.bg + '80', color: severityColors.text }}>
                                     Impact: {issue.impact}
                                   </span>
                                 )}
                                 {issue.element && (
-                                  <span className="text-xs px-2 py-1 rounded-full font-mono truncate max-w-[150px]" style={{ backgroundColor: severityColors.bg }}>
+                                  <span className="font-['Jost'] text-xs px-2 py-1 rounded-full font-mono truncate max-w-[180px]" style={{ backgroundColor: severityColors.bg + '80', color: severityColors.text }}>
                                     {issue.element}
                                   </span>
                                 )}
                               </div>
                             </div>
 
-                            <span className="text-lg sm:text-xl font-bold" style={{ color: severityColors.text }}>
-                              {expandedIssue === i ? '−' : '+'}
-                            </span>
+                            <div className="flex-shrink-0">
+                              {expandedIssue === i ? (
+                                <ChevronUp size={20} style={{ color: severityColors.text }} />
+                              ) : (
+                                <ChevronDown size={20} style={{ color: severityColors.text }} />
+                              )}
+                            </div>
                           </div>
                         </div>
 
@@ -470,14 +553,14 @@ export default function AuditPage() {
                               exit={{ opacity: 0, height: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="px-3 pb-3 sm:px-4 sm:pb-4 space-y-3" style={{ borderTop: `1px solid ${severityColors.border}` }}>
+                              <div className="px-4 pb-4 sm:px-5 sm:pb-5 space-y-3" style={{ borderTop: `1px solid ${severityColors.border}30` }}>
 
                                 {issue.description && (
                                   <div className="mt-3">
-                                    <p className="text-xs font-semibold mb-1" style={{ color: severityColors.text }}>
+                                    <p className="font-['Jost'] text-xs font-semibold mb-1 uppercase tracking-wide" style={{ color: severityColors.text }}>
                                       Description
                                     </p>
-                                    <p className="text-xs sm:text-sm leading-relaxed" style={{ color: severityColors.text }}>
+                                    <p className="font-['Jost'] text-xs sm:text-sm leading-relaxed" style={{ color: severityColors.text }}>
                                       {formatText(issue.description)}
                                     </p>
                                   </div>
@@ -485,18 +568,18 @@ export default function AuditPage() {
 
                                 {issue.solutionSteps && issue.solutionSteps.length > 0 && (
                                   <div>
-                                    <p className="text-xs font-semibold mb-2" style={{ color: severityColors.text }}>
+                                    <p className="font-['Jost'] text-xs font-semibold mb-2 uppercase tracking-wide" style={{ color: severityColors.text }}>
                                       Solution Steps:
                                     </p>
                                     <ul className="space-y-2">
-                                      {issue.solutionSteps.map((step, idx) => (
-                                        <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm">
+                                      {issue.solutionSteps.map((step: string, idx: number) => (
+                                        <li key={idx} className="flex items-start gap-2">
                                           <span className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
                                             style={{ backgroundColor: severityColors.bg, color: severityColors.text }}
                                           >
                                             {idx + 1}
                                           </span>
-                                          <span className="leading-relaxed" style={{ color: severityColors.text }}>{step}</span>
+                                          <span className="font-['Jost'] text-xs sm:text-sm leading-relaxed" style={{ color: severityColors.text }}>{step}</span>
                                         </li>
                                       ))}
                                     </ul>
@@ -505,10 +588,10 @@ export default function AuditPage() {
 
                                 {issue.recommendation && (
                                   <div className="mt-2 p-3 rounded" style={{ backgroundColor: severityColors.bg }}>
-                                    <p className="text-xs font-semibold mb-1" style={{ color: severityColors.text }}>
+                                    <p className="font-['Jost'] text-xs font-semibold mb-1 uppercase tracking-wide" style={{ color: severityColors.text }}>
                                       Recommendation
                                     </p>
-                                    <p className="text-xs sm:text-sm leading-relaxed" style={{ color: severityColors.text }}>
+                                    <p className="font-['Jost'] text-xs sm:text-sm leading-relaxed" style={{ color: severityColors.text }}>
                                       {formatText(issue.recommendation)}
                                     </p>
                                   </div>
@@ -525,10 +608,16 @@ export default function AuditPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-center py-8 sm:py-12"
+                  className="text-center py-12 sm:py-16"
                 >
-                  <p className="text-sm sm:text-base" style={{ color: colors.gray }}>
-                    No {tab} severity issues found. Great job! 🎉
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style={{ backgroundColor: colors.teal + '10' }}>
+                    <CheckCircle2 size={32} style={{ color: colors.teal }} />
+                  </div>
+                  <p className="font-['Jost'] text-base sm:text-lg" style={{ color: colors.carbon }}>
+                    No {tab} severity issues found!
+                  </p>
+                  <p className="font-['Jost'] text-sm mt-1" style={{ color: colors.stone }}>
+                    Great job maintaining your store
                   </p>
                 </motion.div>
               )}
@@ -537,7 +626,7 @@ export default function AuditPage() {
         </motion.div>
 
         {/* Quick Wins & Recommendations Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
 
           {/* Quick Wins */}
           {quickWins.length > 0 && (
@@ -545,25 +634,24 @@ export default function AuditPage() {
               variants={itemVariants}
               initial="hidden"
               animate="visible"
-              className="rounded-xl p-4 sm:p-5 md:p-6"
-              style={{ backgroundColor: '#dcfce7' }}
+              className="rounded-xl p-5 sm:p-6"
+              style={{ backgroundColor: colors.white }}
             >
-              <h2 className="font-semibold text-base sm:text-lg mb-3 sm:mb-4 flex items-center gap-2" style={{ color: '#166534' }}>
-                <span className="text-lg sm:text-xl">⚡</span>
+              <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-light mb-4 flex items-center gap-2" style={{ color: colors.night }}>
+                <Zap size={22} style={{ color: colors.teal }} />
                 Quick Wins
               </h2>
-              <ul className="space-y-2 sm:space-y-3">
+              <ul className="space-y-3">
                 {quickWins.map((win: string, i: number) => (
                   <motion.li
                     key={i}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-start gap-2 text-xs sm:text-sm leading-relaxed"
-                    style={{ color: '#166534' }}
+                    className="flex items-start gap-3"
                   >
-                    <span className="flex-shrink-0 font-bold">✓</span>
-                    <span>{win}</span>
+                    <CheckCircle2 size={16} style={{ color: colors.teal }} className="flex-shrink-0 mt-0.5" />
+                    <span className="font-['Jost'] text-sm leading-relaxed" style={{ color: colors.carbon }}>{win}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -576,25 +664,25 @@ export default function AuditPage() {
               variants={itemVariants}
               initial="hidden"
               animate="visible"
-              className="rounded-xl p-4 sm:p-5 md:p-6"
-              style={{ backgroundColor: colors.lighter }}
+              className="rounded-xl p-5 sm:p-6"
+              style={{ backgroundColor: colors.white }}
             >
-              <h2 className="font-semibold text-base sm:text-lg mb-3 sm:mb-4 flex items-center gap-2" style={{ color: colors.dark }}>
-                <span className="text-lg sm:text-xl">🎯</span>
+              <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-light mb-4 flex items-center gap-2" style={{ color: colors.night }}>
+                <Target size={22} style={{ color: colors.teal }} />
                 Recommendations
               </h2>
-              <ul className="space-y-2 sm:space-y-3">
-                {getAllRecommendations().map((rec: string, i: number) => (
+              <ul className="space-y-3">
+                {getAllRecommendations().slice(0, 5).map((rec: string, i: number) => (
                   <motion.li
                     key={i}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-start gap-2 text-xs sm:text-sm p-2 sm:p-3 rounded leading-relaxed"
-                    style={{ color: colors.dark, backgroundColor: colors.light }}
+                    className="flex items-start gap-3 p-3 rounded-lg"
+                    style={{ backgroundColor: colors.cream }}
                   >
-                    <span className="flex-shrink-0 font-bold" style={{ color: colors.primary }}>→</span>
-                    <span>{rec}</span>
+                    <ArrowRight size={14} style={{ color: colors.teal }} className="flex-shrink-0 mt-0.5" />
+                    <span className="font-['Jost'] text-sm leading-relaxed" style={{ color: colors.carbon }}>{rec}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -603,7 +691,7 @@ export default function AuditPage() {
         </div>
 
         {/* Priority Actions & Impact Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
 
           {/* Priority Actions */}
           {priorityActions.length > 0 && (
@@ -611,25 +699,30 @@ export default function AuditPage() {
               variants={itemVariants}
               initial="hidden"
               animate="visible"
-              className="lg:col-span-2 rounded-xl p-4 sm:p-5 md:p-6"
-              style={{ backgroundColor: '#fef3c7' }}
+              className="lg:col-span-2 rounded-xl p-5 sm:p-6"
+              style={{ backgroundColor: colors.white }}
             >
-              <h2 className="font-semibold text-base sm:text-lg mb-3 sm:mb-4 flex items-center gap-2" style={{ color: '#78350f' }}>
-                <span className="text-lg sm:text-xl">🔥</span>
+              <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-light mb-4 flex items-center gap-2" style={{ color: colors.night }}>
+                <Flame size={22} style={{ color: colors.softCoral }} />
                 Priority Actions
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {priorityActions.map((action: string, i: number) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-start gap-2 p-3 sm:p-4 rounded-lg text-xs sm:text-sm leading-relaxed"
-                    style={{ backgroundColor: '#fffbeb', color: '#78350f' }}
+                    className="flex items-start gap-3 p-4 rounded-lg"
+                    style={{ backgroundColor: colors.cream }}
                   >
-                    <span className="flex-shrink-0 font-bold">{i + 1}.</span>
-                    <span>{action}</span>
+                    <div
+                      className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                      style={{ backgroundColor: colors.teal, color: colors.white }}
+                    >
+                      {i + 1}
+                    </div>
+                    <span className="font-['Jost'] text-sm leading-relaxed flex-1" style={{ color: colors.carbon }}>{action}</span>
                   </motion.div>
                 ))}
               </div>
@@ -642,20 +735,20 @@ export default function AuditPage() {
               variants={itemVariants}
               initial="hidden"
               animate="visible"
-              className="rounded-xl p-4 sm:p-5 md:p-6"
-              style={{ backgroundColor: colors.lighter }}
+              className="rounded-xl p-5 sm:p-6"
+              style={{ backgroundColor: colors.white }}
             >
-              <h2 className="font-semibold text-base sm:text-lg mb-4" style={{ color: colors.dark }}>
-                📊 Estimated Impact
+              <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-light mb-4 flex items-center gap-2" style={{ color: colors.night }}>
+                <BarChart3 size={22} style={{ color: colors.teal }} />
+                Estimated Impact
               </h2>
-              <div className="space-y-4 sm:space-y-5">
+              <div className="space-y-4">
                 {Object.entries(estimatedImpact).map(([key, value]: [string, any], i) => {
                   // Extract percentage from string like "Increase by 5-8%"
                   const percentageMatch = String(value).match(/(\d+)(?:-(\d+))?%/);
                   let percentage = 0;
                   if (percentageMatch) {
                     if (percentageMatch[2]) {
-                      // Range like 5-8% - take average
                       percentage = (parseInt(percentageMatch[1]) + parseInt(percentageMatch[2])) / 2;
                     } else {
                       percentage = parseInt(percentageMatch[1]);
@@ -664,19 +757,19 @@ export default function AuditPage() {
 
                   return (
                     <div key={i}>
-                      <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm mb-1 gap-1">
-                        <span className="capitalize" style={{ color: colors.gray }}>
+                      <div className="flex justify-between text-xs sm:text-sm mb-1">
+                        <span className="font-['Jost'] capitalize" style={{ color: colors.stone }}>
                           {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
                         </span>
-                        <span className="font-medium" style={{ color: colors.dark }}>{value}</span>
+                        <span className="font-['Jost'] font-medium" style={{ color: colors.teal }}>{value}</span>
                       </div>
-                      <div className="w-full h-1.5 sm:h-2 rounded-full overflow-hidden" style={{ backgroundColor: colors.light }}>
+                      <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: colors.cream }}>
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${percentage}%` }}
                           transition={{ delay: 0.5 + i * 0.1, duration: 0.8 }}
                           className="h-full rounded-full"
-                          style={{ backgroundColor: colors.primary }}
+                          style={{ backgroundColor: colors.teal }}
                         />
                       </div>
                     </div>
@@ -687,46 +780,79 @@ export default function AuditPage() {
           )}
         </div>
 
-        {/* AI Summary */}
+        {/* AI Summary Section */}
         {aiSummary && (
           <motion.div
             variants={itemVariants}
             initial="hidden"
             animate="visible"
-            className="rounded-xl p-4 sm:p-5 md:p-6"
-            style={{ backgroundColor: colors.lighter }}
+            className="rounded-xl p-5 sm:p-6"
+            style={{ backgroundColor: colors.steelBlue + '05' }}
           >
-            <h2 className="font-semibold text-base sm:text-lg mb-3 flex items-center gap-2" style={{ color: colors.dark }}>
-              <span className="text-lg sm:text-xl">💡</span>
-              AI Summary
-            </h2>
-            <p className="text-xs sm:text-sm leading-relaxed" style={{ color: colors.gray }}>
-              {formatText(aiSummary)}
-            </p>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: colors.steelBlue + '15' }}>
+                  <Sparkles size={18} style={{ color: colors.steelBlue }} />
+                </div>
+              </div>
+              <div className="flex-1">
+                <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-light mb-3" style={{ color: colors.night }}>
+                  AI Summary
+                </h2>
+                <p className="font-['Jost'] text-sm leading-relaxed" style={{ color: colors.carbon }}>
+                  {formatText(aiSummary)}
+                </p>
 
-            {/* Key Stats */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4 sm:mt-5">
-              <div className="text-center p-2 sm:p-3 rounded" style={{ backgroundColor: colors.light }}>
-                <p className="text-xs sm:text-sm" style={{ color: colors.gray }}>Issues Found</p>
-                <p className="text-base sm:text-lg font-bold" style={{ color: colors.dark }}>
-                  {Object.values(audit.issues || {}).flat().length}
-                </p>
-              </div>
-              <div className="text-center p-2 sm:p-3 rounded" style={{ backgroundColor: colors.light }}>
-                <p className="text-xs sm:text-sm" style={{ color: colors.gray }}>Quick Wins</p>
-                <p className="text-base sm:text-lg font-bold" style={{ color: colors.dark }}>
-                  {quickWins.length}
-                </p>
-              </div>
-              <div className="text-center p-2 sm:p-3 rounded" style={{ backgroundColor: colors.light }}>
-                <p className="text-xs sm:text-sm" style={{ color: colors.gray }}>Critical</p>
-                <p className="text-base sm:text-lg font-bold" style={{ color: '#991b1b' }}>
-                  {audit.issues?.critical?.length || 0}
-                </p>
+                {/* Key Stats */}
+                <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t" style={{ borderColor: colors.cream }}>
+                  <div className="text-center">
+                    <p className="font-['Jost'] text-xs" style={{ color: colors.stone }}>Total Issues</p>
+                    <p className="font-['Cormorant_Garamond'] text-xl font-light" style={{ color: colors.teal }}>
+                      {Object.values(audit.issues || {}).flat().length}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-['Jost'] text-xs" style={{ color: colors.stone }}>Quick Wins</p>
+                    <p className="font-['Cormorant_Garamond'] text-xl font-light" style={{ color: colors.teal }}>
+                      {quickWins.length}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-['Jost'] text-xs" style={{ color: colors.stone }}>Critical Issues</p>
+                    <p className="font-['Cormorant_Garamond'] text-xl font-light" style={{ color: colors.softCoral }}>
+                      {audit.issues?.critical?.length || 0}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
         )}
+
+        {/* CTA Section - Start New Audit */}
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          animate="visible"
+          className="text-center py-8 sm:py-10"
+        >
+          <div className="inline-flex flex-col items-center gap-4">
+            <p className="font-['Jost'] text-sm" style={{ color: colors.stone }}>
+              Ready to optimize another store?
+            </p>
+            <button
+              onClick={() => router.push('/audit')}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all hover:scale-105 active:scale-95 font-['Jost']"
+              style={{
+                backgroundColor: colors.teal,
+                color: colors.white
+              }}
+            >
+              <RefreshCw size={16} />
+              Start New Audit
+            </button>
+          </div>
+        </motion.div>
       </div>
     </div>
   )
@@ -736,13 +862,13 @@ export default function AuditPage() {
 function MetricCard({ label, value }: { label: string; value: string | number }) {
   return (
     <div
-      className="rounded-lg p-2 sm:p-3 text-center"
-      style={{ backgroundColor: colors.light }}
+      className="rounded-lg p-3 text-center transition-all hover:shadow-md"
+      style={{ backgroundColor: colors.cream }}
     >
-      <p className="text-xs font-medium mb-1 truncate" style={{ color: colors.gray }}>
+      <p className="font-['Jost'] text-xs font-medium mb-1 truncate" style={{ color: colors.stone }}>
         {label}
       </p>
-      <p className="text-sm sm:text-base font-bold" style={{ color: colors.dark }}>
+      <p className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-light" style={{ color: colors.night }}>
         {value}
       </p>
     </div>
