@@ -626,7 +626,7 @@ export default function FormPage({ params }: FormPageProps) {
             {/* Finzie subsidiary line */}
             <div className="text-center pt-4">
               <span className="text-[10px] tracking-[0.2em] text-stone uppercase">
-                A Finzie Company
+                Priviously known as finzie
               </span>
             </div>
           </form>
