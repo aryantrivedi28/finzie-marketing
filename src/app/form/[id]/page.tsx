@@ -32,15 +32,15 @@ interface FormPageProps {
   }>
 }
 
-// Define all available fields with their metadata
+// Define all available fields with their metadata - using proper capitalization
 const ALL_AVAILABLE_FIELDS = {
   name: { label: "Full Name", type: "text", icon: User, placeholder: "Enter your full name" },
-  email: { label: "Email Address", type: "email", icon: Mail, placeholder: "your.email@example.com" },
+  email: { label: "Email", type: "email", icon: Mail, placeholder: "your.email@example.com" },
   phone: { label: "Phone Number", type: "tel", icon: Phone, placeholder: "+91 1234567890" },
   resume: { label: "Resume/CV", type: "file", icon: FileText, placeholder: "Upload your resume" },
   portfolio: { label: "Portfolio Link", type: "url", icon: Link, placeholder: "https://your-portfolio.com" },
   linkedin: { label: "LinkedIn Profile", type: "url", icon: Link, placeholder: "https://linkedin.com/in/yourprofile" },
-  experience: { label: "Years of Experience", type: "number", icon: Hash, placeholder: "e.g., 3.5" },
+  experience: { label: "Years of experience", type: "number", icon: Hash, placeholder: "e.g., 3.5" },
   rate: { label: "Expected Rate", type: "text", icon: DollarSign, placeholder: "₹50,000/month" },
   github: { label: "GitHub Profile", type: "url", icon: Github, placeholder: "https://github.com/yourusername" },
   location: { label: "Location", type: "text", icon: MapPin, placeholder: "City, Country" },
@@ -249,7 +249,7 @@ export default function FormPage({ params }: FormPageProps) {
       case "text":
         return (
           <div key={id} className="space-y-2">
-            <label className="block text-sm font-medium text-carbon">
+            <label className="block text-sm font-medium text-carbon normal-case">
               {label} {required && <span className="text-coral">*</span>}
             </label>
             <input
@@ -266,7 +266,7 @@ export default function FormPage({ params }: FormPageProps) {
       case "textarea":
         return (
           <div key={id} className="space-y-2">
-            <label className="block text-sm font-medium text-carbon">
+            <label className="block text-sm font-medium text-carbon normal-case">
               {label} {required && <span className="text-coral">*</span>}
             </label>
             <textarea
@@ -283,7 +283,7 @@ export default function FormPage({ params }: FormPageProps) {
       case "select":
         return (
           <div key={id} className="space-y-2">
-            <label className="block text-sm font-medium text-carbon">
+            <label className="block text-sm font-medium text-carbon normal-case">
               {label} {required && <span className="text-coral">*</span>}
             </label>
             <select
@@ -305,7 +305,7 @@ export default function FormPage({ params }: FormPageProps) {
       case "radio":
         return (
           <div key={id} className="space-y-2">
-            <label className="block text-sm font-medium text-carbon">
+            <label className="block text-sm font-medium text-carbon normal-case">
               {label} {required && <span className="text-coral">*</span>}
             </label>
             <div className="space-y-2">
@@ -330,7 +330,7 @@ export default function FormPage({ params }: FormPageProps) {
       case "checkbox":
         return (
           <div key={id} className="space-y-2">
-            <label className="block text-sm font-medium text-carbon">
+            <label className="block text-sm font-medium text-carbon normal-case">
               {label} {required && <span className="text-coral">*</span>}
             </label>
             <div className="space-y-2">
@@ -551,7 +551,7 @@ export default function FormPage({ params }: FormPageProps) {
               if (fieldKey === "experience") {
                 return (
                   <div key={fieldKey} className="space-y-2">
-                    <label className="block text-sm font-medium text-carbon">
+                    <label className="block text-sm font-medium text-carbon normal-case">
                       <Icon className="w-4 h-4 inline mr-2 text-stone" />
                       {label} {isRequired && <span className="text-coral">*</span>}
                     </label>
@@ -575,7 +575,7 @@ export default function FormPage({ params }: FormPageProps) {
 
               return (
                 <div key={fieldKey} className="space-y-2">
-                  <label className="block text-sm font-medium text-carbon">
+                  <label className="block text-sm font-medium text-carbon normal-case">
                     <Icon className="w-4 h-4 inline mr-2 text-stone" />
                     {label} {isRequired && <span className="text-coral">*</span>}
                   </label>
