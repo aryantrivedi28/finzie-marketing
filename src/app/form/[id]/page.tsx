@@ -6,7 +6,6 @@ import { motion } from "framer-motion"
 import { supabase } from "../../../lib/SupabaseAuthClient"
 import type { Form } from "../../../types/database"
 import { FileUpload } from "../../../components/file-upload"
-import { useRouter } from "next/navigation"
 import { 
   Loader2, 
   CheckCircle, 
@@ -71,7 +70,6 @@ export default function FormPage({ params }: FormPageProps) {
 
   const [formData, setFormData] = useState<Record<string, any>>({})
   const [customResponses, setCustomResponses] = useState<Record<string, any>>({})
-  const router = useRouter()
 
   useEffect(() => {
     const resolveParams = async () => {
@@ -114,7 +112,7 @@ export default function FormPage({ params }: FormPageProps) {
         // If no enabled fields in message, use required_fields + common fields
         if (enabledFieldsList.length === 0) {
           enabledFieldsList = [...(data.required_fields || []), "name", "email", "phone", "resume"]
-          enabledFieldsList = [...new Set(enabledFieldsList)] // Remove duplicates
+          enabledFieldsList = [...new Set(enabledFieldsList)]
         }
 
         setEnabledFields(enabledFieldsList)
@@ -232,7 +230,6 @@ export default function FormPage({ params }: FormPageProps) {
     if (!form?.message) return null
     try {
       const parsed = JSON.parse(form.message)
-      // Don't return the enabled_fields as display info
       if (parsed.enabled_fields) {
         const { enabled_fields, ...rest } = parsed
         return Object.keys(rest).length > 0 ? rest : null
@@ -252,15 +249,15 @@ export default function FormPage({ params }: FormPageProps) {
       case "text":
         return (
           <div key={id} className="space-y-2">
-            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-              {label} {required && <span className="text-[#EC8F8D]">*</span>}
+            <label className="block text-sm font-medium text-carbon">
+              {label} {required && <span className="text-coral">*</span>}
             </label>
             <input
               type="text"
               required={required}
               value={customResponses[id] || ""}
               onChange={(e) => handleCustomResponseChange(id, e.target.value, type)}
-              className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200"
+              className="w-full px-4 py-3 border border-stone/20 rounded-lg text-carbon placeholder:text-stone focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all duration-200"
               placeholder={`Enter ${label.toLowerCase()}`}
             />
           </div>
@@ -269,15 +266,15 @@ export default function FormPage({ params }: FormPageProps) {
       case "textarea":
         return (
           <div key={id} className="space-y-2">
-            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-              {label} {required && <span className="text-[#EC8F8D]">*</span>}
+            <label className="block text-sm font-medium text-carbon">
+              {label} {required && <span className="text-coral">*</span>}
             </label>
             <textarea
               required={required}
               value={customResponses[id] || ""}
               onChange={(e) => handleCustomResponseChange(id, e.target.value, type)}
               rows={4}
-              className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200 resize-none"
+              className="w-full px-4 py-3 border border-stone/20 rounded-lg text-carbon placeholder:text-stone focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all duration-200 resize-none"
               placeholder={`Enter ${label.toLowerCase()}`}
             />
           </div>
@@ -286,14 +283,14 @@ export default function FormPage({ params }: FormPageProps) {
       case "select":
         return (
           <div key={id} className="space-y-2">
-            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-              {label} {required && <span className="text-[#EC8F8D]">*</span>}
+            <label className="block text-sm font-medium text-carbon">
+              {label} {required && <span className="text-coral">*</span>}
             </label>
             <select
               required={required}
               value={customResponses[id] || ""}
               onChange={(e) => handleCustomResponseChange(id, e.target.value, type)}
-              className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200 bg-white"
+              className="w-full px-4 py-3 border border-stone/20 rounded-lg text-carbon focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all duration-200 bg-white"
             >
               <option value="">Select an option</option>
               {options?.map((option: string, index: number) => (
@@ -308,8 +305,8 @@ export default function FormPage({ params }: FormPageProps) {
       case "radio":
         return (
           <div key={id} className="space-y-2">
-            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-              {label} {required && <span className="text-[#EC8F8D]">*</span>}
+            <label className="block text-sm font-medium text-carbon">
+              {label} {required && <span className="text-coral">*</span>}
             </label>
             <div className="space-y-2">
               {options?.map((option: string, index: number) => (
@@ -320,10 +317,10 @@ export default function FormPage({ params }: FormPageProps) {
                     value={option}
                     checked={customResponses[id] === option}
                     onChange={(e) => handleCustomResponseChange(id, e.target.value, type)}
-                    className="mr-3 w-4 h-4 text-[#44A194] focus:ring-[#44A194] focus:ring-offset-0"
+                    className="mr-3 w-4 h-4 text-teal focus:ring-teal focus:ring-offset-0"
                     required={required}
                   />
-                  <span className="font-['Jost'] text-[#1C2321]">{option}</span>
+                  <span className="text-carbon">{option}</span>
                 </label>
               ))}
             </div>
@@ -333,8 +330,8 @@ export default function FormPage({ params }: FormPageProps) {
       case "checkbox":
         return (
           <div key={id} className="space-y-2">
-            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-              {label} {required && <span className="text-[#EC8F8D]">*</span>}
+            <label className="block text-sm font-medium text-carbon">
+              {label} {required && <span className="text-coral">*</span>}
             </label>
             <div className="space-y-2">
               {options?.map((option: string, index: number) => (
@@ -350,9 +347,9 @@ export default function FormPage({ params }: FormPageProps) {
                         : currentValues.filter((v: string) => v !== option)
                       handleCustomResponseChange(id, newValues, type)
                     }}
-                    className="mr-3 w-4 h-4 text-[#44A194] focus:ring-[#44A194] focus:ring-offset-0 rounded"
+                    className="mr-3 w-4 h-4 text-teal focus:ring-teal focus:ring-offset-0 rounded"
                   />
-                  <span className="font-['Jost'] text-[#1C2321]">{option}</span>
+                  <span className="text-carbon">{option}</span>
                 </label>
               ))}
             </div>
@@ -366,10 +363,10 @@ export default function FormPage({ params }: FormPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 text-[#44A194] animate-spin" />
-          <p className="font-['Jost'] text-[#8a8a82]">Loading form...</p>
+          <Loader2 className="w-8 h-8 text-teal animate-spin" />
+          <p className="text-stone">Loading form...</p>
         </div>
       </div>
     )
@@ -377,11 +374,11 @@ export default function FormPage({ params }: FormPageProps) {
 
   if (error && !form) {
     return (
-      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-cream flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <AlertCircle className="w-16 h-16 text-[#EC8F8D] mx-auto mb-4" />
-          <h1 className="font-['Cormorant_Garamond'] text-4xl font-light text-[#1C2321] mb-4">Form Not Found</h1>
-          <p className="font-['Jost'] text-[#3a3a36]">{error}</p>
+          <AlertCircle className="w-16 h-16 text-coral mx-auto mb-4" />
+          <h1 className="text-4xl font-light text-night mb-4">Form Not Found</h1>
+          <p className="text-carbon">{error}</p>
         </div>
       </div>
     )
@@ -389,13 +386,13 @@ export default function FormPage({ params }: FormPageProps) {
 
   if (form && !form.is_active) {
     return (
-      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-cream flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-[#EC8F8D]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Briefcase className="w-10 h-10 text-[#EC8F8D]" />
+          <div className="w-20 h-20 bg-coral/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Briefcase className="w-10 h-10 text-coral" />
           </div>
-          <h1 className="font-['Cormorant_Garamond'] text-4xl font-light text-[#1C2321] mb-4">Form Closed</h1>
-          <p className="font-['Jost'] text-[#3a3a36]">This form is currently not accepting submissions.</p>
+          <h1 className="text-4xl font-light text-night mb-4">Form Closed</h1>
+          <p className="text-carbon">This form is currently not accepting submissions.</p>
         </div>
       </div>
     )
@@ -403,24 +400,24 @@ export default function FormPage({ params }: FormPageProps) {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-cream flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="text-center bg-white rounded-2xl p-8 max-w-md mx-auto shadow-sm border border-[#44A194]/10"
+          className="text-center bg-white rounded-2xl p-8 max-w-md mx-auto shadow-sm border border-teal/10"
         >
-          <div className="w-20 h-20 bg-[#44A194]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-10 h-10 text-[#44A194]" />
+          <div className="w-20 h-20 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-10 h-10 text-teal" />
           </div>
-          <h2 className="font-['Cormorant_Garamond'] text-2xl font-light text-[#1C2321] mb-2">
+          <h2 className="text-2xl font-light text-night mb-2">
             Application Submitted!
           </h2>
-          <p className="font-['Jost'] text-[#8a8a82] mb-6">
+          <p className="text-stone mb-6">
             Thank you for your interest. Our team will review your application and get back to you soon.
           </p>
-          <div className="text-xs font-['Jost'] text-[#8a8a82]">
-            <span className="text-[#44A194]">ExecuMarketing</span> — A Finzie Company
+          <div className="text-xs text-stone uppercase tracking-wider">
+            <span className="text-teal">ExecuMarketing</span> — A Finzie Company
           </div>
         </motion.div>
       </div>
@@ -428,7 +425,7 @@ export default function FormPage({ params }: FormPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F0E4] py-12 px-4 pt-[100px] sm:pt-[120px]">
+    <div className="min-h-screen bg-cream py-12 px-4 pt-[100px] sm:pt-[120px]">
       <div className="max-w-3xl mx-auto">
         {/* Form Header */}
         <motion.div
@@ -437,23 +434,23 @@ export default function FormPage({ params }: FormPageProps) {
           transition={{ duration: 0.5 }}
           className="text-center mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full mb-6 border border-[#44A194]/20">
-            <Sparkles className="w-4 h-4 text-[#44A194]" />
-            <span className="font-['Jost'] text-xs font-medium text-[#1C2321] tracking-wide">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full mb-6 border border-teal/20">
+            <Sparkles className="w-4 h-4 text-teal" />
+            <span className="text-xs font-medium text-night tracking-wide">
               Apply Now
             </span>
           </div>
 
-          <h1 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-light text-[#1C2321] mb-4">
+          <h1 className="text-4xl sm:text-5xl font-light text-night mb-4">
             {form?.form_name}
           </h1>
           
           <div 
-            className="font-['Jost'] text-[#3a3a36] mb-6 leading-relaxed"
+            className="text-carbon mb-6 leading-relaxed"
             dangerouslySetInnerHTML={{
               __html: (form?.form_description || "No description provided.").replace(
                 /(https?:\/\/[^\s]+)/g,
-                '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#44A194] underline">$1</a>',
+                '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-teal underline">$1</a>',
               ),
             }}
           />
@@ -461,13 +458,13 @@ export default function FormPage({ params }: FormPageProps) {
           {/* Tags */}
           <div className="flex flex-wrap justify-center gap-3">
             {form?.category && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#44A194]/10 text-[#44A194] rounded-full font-['Jost'] text-xs font-medium">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal/10 text-teal rounded-full text-xs font-medium">
                 <Briefcase className="w-3 h-3" />
                 {form.category.charAt(0).toUpperCase() + form.category.slice(1)}
               </span>
             )}
             {form?.subcategory && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#537D96]/10 text-[#537D96] rounded-full font-['Jost'] text-xs font-medium">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue/10 text-blue rounded-full text-xs font-medium">
                 <FileText className="w-3 h-3" />
                 {form.subcategory.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
               </span>
@@ -478,19 +475,19 @@ export default function FormPage({ params }: FormPageProps) {
           {additionalInfo && (
             <div className="mt-6 flex flex-wrap justify-center gap-4">
               {additionalInfo.budget && (
-                <div className="flex items-center gap-2 text-sm font-['Jost'] text-[#8a8a82]">
+                <div className="flex items-center gap-2 text-sm text-stone">
                   <DollarSign className="w-4 h-4" />
                   <span>{additionalInfo.budget}</span>
                 </div>
               )}
               {additionalInfo.engagement_type && (
-                <div className="flex items-center gap-2 text-sm font-['Jost'] text-[#8a8a82]">
+                <div className="flex items-center gap-2 text-sm text-stone">
                   <Briefcase className="w-4 h-4" />
                   <span>{additionalInfo.engagement_type}</span>
                 </div>
               )}
               {additionalInfo.timeline && (
-                <div className="flex items-center gap-2 text-sm font-['Jost'] text-[#8a8a82]">
+                <div className="flex items-center gap-2 text-sm text-stone">
                   <Clock className="w-4 h-4" />
                   <span>{additionalInfo.timeline}</span>
                 </div>
@@ -504,9 +501,9 @@ export default function FormPage({ params }: FormPageProps) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-sm border border-[#44A194]/10 p-6 sm:p-8"
+          className="bg-white rounded-2xl shadow-sm border border-teal/10 p-6 sm:p-8"
         >
-          <h2 className="font-['Cormorant_Garamond'] text-2xl font-light text-[#1C2321] mb-6">
+          <h2 className="text-2xl font-light text-night mb-6">
             Submit Your Application
           </h2>
 
@@ -554,9 +551,9 @@ export default function FormPage({ params }: FormPageProps) {
               if (fieldKey === "experience") {
                 return (
                   <div key={fieldKey} className="space-y-2">
-                    <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-                      <Icon className="w-4 h-4 inline mr-2 text-[#8a8a82]" />
-                      {label} {isRequired && <span className="text-[#EC8F8D]">*</span>}
+                    <label className="block text-sm font-medium text-carbon">
+                      <Icon className="w-4 h-4 inline mr-2 text-stone" />
+                      {label} {isRequired && <span className="text-coral">*</span>}
                     </label>
                     <input
                       type="number"
@@ -566,7 +563,7 @@ export default function FormPage({ params }: FormPageProps) {
                       required={isRequired}
                       value={formData[fieldKey] || ""}
                       onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-                      className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200"
+                      className="w-full px-4 py-3 border border-stone/20 rounded-lg text-carbon placeholder:text-stone focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all duration-200"
                       placeholder={placeholder}
                     />
                   </div>
@@ -578,16 +575,16 @@ export default function FormPage({ params }: FormPageProps) {
 
               return (
                 <div key={fieldKey} className="space-y-2">
-                  <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-                    <Icon className="w-4 h-4 inline mr-2 text-[#8a8a82]" />
-                    {label} {isRequired && <span className="text-[#EC8F8D]">*</span>}
+                  <label className="block text-sm font-medium text-carbon">
+                    <Icon className="w-4 h-4 inline mr-2 text-stone" />
+                    {label} {isRequired && <span className="text-coral">*</span>}
                   </label>
                   <input
                     type={inputType}
                     required={isRequired}
                     value={formData[fieldKey] || ""}
                     onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-                    className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200"
+                    className="w-full px-4 py-3 border border-stone/20 rounded-lg text-carbon placeholder:text-stone focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all duration-200"
                     placeholder={placeholder}
                   />
                 </div>
@@ -599,8 +596,8 @@ export default function FormPage({ params }: FormPageProps) {
 
             {/* Error Display */}
             {error && (
-              <div className="bg-[#EC8F8D]/10 border-l-4 border-[#EC8F8D] p-4 rounded-r">
-                <p className="font-['Jost'] text-sm text-[#1C2321]">{error}</p>
+              <div className="bg-coral/10 border-l-4 border-coral p-4 rounded-r">
+                <p className="text-sm text-carbon">{error}</p>
               </div>
             )}
 
@@ -610,7 +607,7 @@ export default function FormPage({ params }: FormPageProps) {
               disabled={submitting}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group w-full bg-[#44A194] hover:bg-[#38857a] text-white font-['Jost'] font-medium py-4 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="group w-full bg-teal hover:bg-teal/90 text-white font-medium py-4 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
@@ -628,7 +625,7 @@ export default function FormPage({ params }: FormPageProps) {
 
             {/* Finzie subsidiary line */}
             <div className="text-center pt-4">
-              <span className="font-['Jost'] text-[10px] tracking-[0.2em] text-[#8a8a82] uppercase">
+              <span className="text-[10px] tracking-[0.2em] text-stone uppercase">
                 A Finzie Company
               </span>
             </div>

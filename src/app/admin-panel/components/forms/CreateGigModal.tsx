@@ -57,7 +57,7 @@ const categories = [
     description: "Meta, Google, TikTok campaigns" 
   },
   { 
-    id: "seo", 
+    id: "seo(Search Engine Optimization)", 
     name: "SEO Engine", 
     icon: Search, 
     description: "Keyword strategy, technical SEO" 
