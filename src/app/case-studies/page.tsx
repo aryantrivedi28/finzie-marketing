@@ -40,7 +40,6 @@ interface CaseStudy {
   slug: { current: string }
   description: string
   tags: string[]
-  category?: string
   mainImage: any
   ranking: number
   order: number
@@ -90,13 +89,10 @@ export default function CaseStudiesPage() {
       
       const data = await client.fetch(query)
       
-      // Map categories based on tags or add logic to determine category
-      const studiesWithCategory = data.map((study: CaseStudy) => ({
-        ...study,
-        category: determineCategory(study.tags || [])
-      }))
+      // Log the data to see what's coming from Sanity
+      console.log("Fetched case studies:", data)
       
-      setCaseStudies(studiesWithCategory)
+      setCaseStudies(data)
     } catch (error) {
       console.error("Error fetching case studies:", error)
     } finally {
@@ -104,33 +100,59 @@ export default function CaseStudiesPage() {
     }
   }
 
-  // Determine category based on tags
-  const determineCategory = (tags: string[]): string => {
-    const categoryMap: Record<string, string[]> = {
-      shopify: ["shopify", "ecommerce", "store", "shopify plus", "liquid"],
-      ads: ["ads", "paid ads", "meta ads", "google ads", "tiktok ads", "linkedin ads", "ppc"],
-      seo: ["seo", "search engine optimization", "organic", "keyword", "technical seo"],
-      content: ["content", "blog", "writing", "copywriting", "email", "newsletter"],
-      social: ["social media", "instagram", "linkedin", "twitter", "community", "engagement"],
-      design: ["design", "ui/ux", "graphic design", "creative", "branding", "visual"]
+  // Updated category matching with more comprehensive keywords
+  const getCaseStudyCategory = (study: CaseStudy): string => {
+    const tags = study.tags || []
+    const title = study.title?.toLowerCase() || ""
+    const description = study.description?.toLowerCase() || ""
+    const subtitle = study.subtitle?.toLowerCase() || ""
+    
+    // Combine all text for better matching
+    const searchText = `${tags.join(" ")} ${title} ${description} ${subtitle}`
+    
+    // Shopify keywords
+    if (searchText.match(/shopify|ecommerce|store|shopify plus|liquid|theme|product|cart|checkout|aov|conversion rate/i)) {
+      return "shopify"
     }
     
-    for (const [category, keywords] of Object.entries(categoryMap)) {
-      if (tags.some(tag => keywords.includes(tag.toLowerCase()))) {
-        return category
-      }
+    // Ads keywords
+    if (searchText.match(/ads?|paid ads|meta ads|facebook ads|google ads|tiktok ads|linkedin ads|ppc|pay per click|retargeting|youtube ads/i)) {
+      return "ads"
     }
+    
+    // SEO keywords
+    if (searchText.match(/seo|search engine optimization|organic traffic|keyword|technical seo|on page|off page|local seo|ecommerce seo|seo audit|backlink/i)) {
+      return "seo"
+    }
+    
+    // Content keywords
+    if (searchText.match(/content|blog|writing|copywriting|email|newsletter|article|case study|whitepaper|ghostwriting|thought leadership/i)) {
+      return "content"
+    }
+    
+    // Social Media keywords
+    if (searchText.match(/social media|instagram|linkedin|twitter|facebook|tiktok|community|engagement|influencer|social strategy|content calendar/i)) {
+      return "social"
+    }
+    
+    // Design keywords
+    if (searchText.match(/design|ui\/ux|graphic design|creative|branding|visual|ad creative|logo|wireframe|prototype/i)) {
+      return "design"
+    }
+    
     return "all"
   }
 
   // Filter case studies based on selected category and search query
   const filteredCaseStudies = caseStudies.filter(study => {
-    const matchesCategory = selectedCategory === "all" || study.category === selectedCategory
+    const studyCategory = getCaseStudyCategory(study)
+    const matchesCategory = selectedCategory === "all" || studyCategory === selectedCategory
     const matchesSearch = searchQuery === "" || 
-      study.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      study.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      study.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      study.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       study.subtitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       study.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    
     return matchesCategory && matchesSearch
   })
 
@@ -209,7 +231,7 @@ export default function CaseStudiesPage() {
         </div>
       </section>
 
-      {/* Filter Section - Now using categories */}
+      {/* Filter Section */}
       <section className="py-8 px-4 sticky top-20 bg-cream/95 backdrop-blur-sm z-20 border-b border-teal/10">
         <div className="max-w-7xl mx-auto">
           {/* Category Filter */}
@@ -297,8 +319,10 @@ export default function CaseStudiesPage() {
               className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {filteredCaseStudies.map((study, index) => {
-                const categoryIcon = CATEGORIES.find(c => c.id === study.category)?.icon || Briefcase
+                const studyCategory = getCaseStudyCategory(study)
+                const categoryIcon = CATEGORIES.find(c => c.id === studyCategory)?.icon || Briefcase
                 const CategoryIcon = categoryIcon
+                const categoryName = CATEGORIES.find(c => c.id === studyCategory)?.name
                 
                 return (
                   <motion.article
@@ -323,11 +347,11 @@ export default function CaseStudiesPage() {
                         )}
                         
                         {/* Category Badge */}
-                        {study.category && study.category !== "all" && (
+                        {studyCategory !== "all" && categoryName && (
                           <div className="absolute top-4 left-4">
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-sm text-teal text-xs rounded-full font-medium">
                               <CategoryIcon className="w-3 h-3" />
-                              {CATEGORIES.find(c => c.id === study.category)?.name}
+                              {categoryName}
                             </span>
                           </div>
                         )}
