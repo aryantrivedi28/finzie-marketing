@@ -2878,7 +2878,6 @@
 
 
 // app/admin-panel/page.tsx (Updated - Fixed Version)
-
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -3131,10 +3130,10 @@ export default function AdminPanel() {
     fetchRequests();
   };
 
-  // ✅ UPDATED: Handle successful form creation
+  // Handle successful form creation
   const handleGigFormSuccess = () => {
     toast.success('Gig form created successfully!');
-    loadForms(); // Refresh the forms list
+    loadForms();
     setShowCreateGigModal(false);
   };
 
@@ -3260,16 +3259,23 @@ export default function AdminPanel() {
 
       {/* Content */}
       <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
-        {/* Stats Cards */}
+        {/* Stats Cards - Fixed type issue */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-[1px] sm:gap-[2px] bg-[#1C2321]/10 mb-6 sm:mb-8">
           <StatCard value={stats.totalFreelancers} label="Total Freelancers" icon={Users} />
           <StatCard value={stats.totalRequests} label="Client Requests" icon={FileText} />
           <StatCard value={stats.totalForms} label="Active Gigs" icon={Briefcase} />
-          <StatCard
-            value={activeTab === "payments" ? `₹${stats.totalRevenue?.toLocaleString() || 0}` : stats.totalSubmissions}
-            label={activeTab === "payments" ? "Total Revenue" : "Total Submissions"}
-            icon={activeTab === "payments" ? CreditCard : FileCheck}
-          />
+          {/* ✅ Fixed: Show number for submissions, but for revenue we need to handle differently */}
+          {activeTab === "payments" ? (
+            <div className="bg-white p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[#8a8a82] uppercase tracking-wider">Total Revenue</p>
+                <p className="text-2xl font-semibold text-[#1C2321]">₹{stats.totalRevenue?.toLocaleString() || 0}</p>
+              </div>
+              <CreditCard className="w-8 h-8 text-[#44A194]" />
+            </div>
+          ) : (
+            <StatCard value={stats.totalSubmissions} label="Total Submissions" icon={FileCheck} />
+          )}
         </div>
 
         {/* Additional Payment Stats */}
@@ -3448,7 +3454,6 @@ export default function AdminPanel() {
         initialData={jdForm}
       />
 
-      {/* ✅ UPDATED: CreateGigModal with onSuccess callback */}
       <CreateGigModal
         isOpen={showCreateGigModal}
         onClose={() => setShowCreateGigModal(false)}

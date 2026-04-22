@@ -18,68 +18,146 @@ import {
   Hash,
   Sparkles,
   X,
-  Plus
+  Plus,
+  Users,
+  Youtube,
+  MapPin,
+  Mail,
+  PenTool,
+  Target,
+  Zap,
+  BarChart,
+  Heart,
+  Code,
+  Eye
 } from "lucide-react";
+
+// Calendar icon component
+const Calendar = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="16" y1="2" x2="16" y2="6"></line>
+    <line x1="8" y1="2" x2="8" y2="6"></line>
+    <line x1="3" y1="10" x2="21" y2="10"></line>
+  </svg>
+);
 
 // Category and Subcategory data
 const categories = [
-  { id: "shopify", name: "Shopify", icon: ShoppingBag, description: "Store setup, conversion optimization" },
-  { id: "ads", name: "Ads", icon: Megaphone, description: "Meta, Google, TikTok campaigns" },
-  { id: "seo", name: "SEO", icon: Search, description: "Keyword strategy, technical SEO" },
-  { id: "content", name: "Content", icon: FileText, description: "Blog, email, long-form content" },
-  { id: "social", name: "Social Media", icon: Share2, description: "Content creation, community management" },
-  { id: "design", name: "Design", icon: Palette, description: "UI/UX, graphics, ad creatives" },
+  { 
+    id: "shopify", 
+    name: "Shopify Engine", 
+    icon: ShoppingBag, 
+    description: "Store setup, conversion optimization" 
+  },
+  { 
+    id: "ads", 
+    name: "Paid Ads Engine", 
+    icon: Megaphone, 
+    description: "Meta, Google, TikTok campaigns" 
+  },
+  { 
+    id: "seo", 
+    name: "SEO Engine", 
+    icon: Search, 
+    description: "Keyword strategy, technical SEO" 
+  },
+  { 
+    id: "content", 
+    name: "Content Engine", 
+    icon: FileText, 
+    description: "Blog, email, long-form content" 
+  },
+  { 
+    id: "social", 
+    name: "Social Media Engine", 
+    icon: Share2, 
+    description: "Content creation, community management" 
+  },
+  { 
+    id: "design", 
+    name: "Design Engine", 
+    icon: Palette, 
+    description: "UI/UX, graphics, ad creatives" 
+  },
 ];
 
-const subcategoriesMap: Record<string, { id: string; name: string; description: string }[]> = {
+const subcategoriesMap: Record<string, { id: string; name: string; description: string; icon?: any }[]> = {
   shopify: [
-    { id: "store_setup", name: "Store Setup & Migration", description: "Shopify store setup, product migration" },
-    { id: "theme_dev", name: "Theme Development", description: "Custom theme, Liquid coding" },
-    { id: "cro", name: "CRO", description: "A/B testing, checkout optimization" },
-    { id: "app_integration", name: "App Integration", description: "Shopify apps, automation" },
+    { id: "store_setup", name: "Store Setup & Migration", description: "Shopify store setup, product migration", icon: ShoppingBag },
+    { id: "theme_dev", name: "Theme Development", description: "Custom theme, Liquid coding", icon: Code },
+    { id: "cro", name: "Conversion Rate Optimization", description: "A/B testing, checkout optimization", icon: Target },
+    { id: "app_integration", name: "App Integration", description: "Shopify apps, automation", icon: Zap },
+    { id: "shopify_plus", name: "Shopify Plus", description: "Enterprise Shopify solutions", icon: Briefcase },
+    { id: "liquid_dev", name: "Liquid Development", description: "Custom Liquid coding", icon: Code },
+    { id: "checkout_optimization", name: "Checkout Optimization", description: "Checkout flow improvements", icon: Target },
+    { id: "aov_strategy", name: "AOV Strategy", description: "Average order value optimization", icon: DollarSign },
   ],
   ads: [
-    { id: "meta_ads", name: "Meta Ads", description: "Facebook & Instagram advertising" },
-    { id: "google_ads", name: "Google Ads", description: "Search, Display, Shopping" },
-    { id: "tiktok_ads", name: "TikTok Ads", description: "TikTok advertising" },
-    { id: "linkedin_ads", name: "LinkedIn Ads", description: "B2B lead generation" },
+    { id: "meta_ads", name: "Meta Ads", description: "Facebook & Instagram advertising", icon: Megaphone },
+    { id: "google_ads", name: "Google Ads", description: "Search, Display, Shopping", icon: Search },
+    { id: "tiktok_ads", name: "TikTok Ads", description: "TikTok advertising", icon: Share2 },
+    { id: "linkedin_ads", name: "LinkedIn Ads", description: "B2B lead generation", icon: Users },
+    { id: "twitter_ads", name: "Twitter/X Ads", description: "Twitter advertising", icon: Share2 },
+    { id: "retargeting", name: "Retargeting", description: "Re-engage lost visitors", icon: Target },
+    { id: "youtube_ads", name: "YouTube Ads", description: "Video advertising", icon: Youtube },
   ],
   seo: [
-    { id: "technical_seo", name: "Technical SEO", description: "Site speed, crawlability" },
-    { id: "onpage_seo", name: "On-Page SEO", description: "Meta tags, content optimization" },
-    { id: "offpage_seo", name: "Off-Page SEO", description: "Link building, outreach" },
-    { id: "keyword_research", name: "Keyword Research", description: "Keyword strategy" },
+    { id: "technical_seo", name: "Technical SEO", description: "Site speed, crawlability", icon: Code },
+    { id: "onpage_seo", name: "On-Page SEO", description: "Meta tags, content optimization", icon: FileText },
+    { id: "offpage_seo", name: "Off-Page SEO", description: "Link building, outreach", icon: Share2 },
+    { id: "keyword_research", name: "Keyword Research", description: "Keyword strategy", icon: Search },
+    { id: "content_briefs", name: "Content Briefs", description: "SEO-optimized content outlines", icon: FileText },
+    { id: "local_seo", name: "Local SEO", description: "Local business optimization", icon: MapPin },
+    { id: "ecommerce_seo", name: "E-commerce SEO", description: "Product page optimization", icon: ShoppingBag },
+    { id: "seo_audits", name: "SEO Audits", description: "Comprehensive SEO analysis", icon: Eye },
   ],
   content: [
-    { id: "blog_writing", name: "Blog Writing", description: "SEO blog posts, articles" },
-    { id: "email_newsletters", name: "Email Newsletters", description: "Newsletter content" },
-    { id: "longform_articles", name: "Long-form Articles", description: "In-depth guides" },
-    { id: "case_studies", name: "Case Studies", description: "Success stories" },
+    { id: "blog_writing", name: "Blog Writing", description: "SEO blog posts, articles", icon: FileText },
+    { id: "email_newsletters", name: "Email Newsletters", description: "Newsletter content", icon: Mail },
+    { id: "longform_articles", name: "Long-form Articles", description: "In-depth guides", icon: PenTool },
+    { id: "thought_leadership", name: "Thought Leadership", description: "Authority building content", icon: Zap },
+    { id: "case_studies", name: "Case Studies", description: "Success stories", icon: BarChart },
+    { id: "whitepapers", name: "Whitepapers", description: "In-depth research documents", icon: FileText },
+    { id: "product_descriptions", name: "Product Descriptions", description: "E-commerce product copy", icon: ShoppingBag },
+    { id: "ghostwriting", name: "Ghostwriting", description: "Content written for others", icon: PenTool },
   ],
   social: [
-    { id: "instagram", name: "Instagram", description: "Feed, stories, reels" },
-    { id: "linkedin_strategy", name: "LinkedIn", description: "B2B engagement" },
-    { id: "twitter", name: "Twitter/X", description: "Tweet scheduling" },
-    { id: "community_mgmt", name: "Community", description: "Engagement, responses" },
+    { id: "instagram", name: "Instagram Management", description: "Feed, stories, reels", icon: Share2 },
+    { id: "linkedin_strategy", name: "LinkedIn Strategy", description: "B2B engagement", icon: Users },
+    { id: "twitter", name: "Twitter/X Management", description: "Tweet scheduling", icon: Share2 },
+    { id: "content_calendar", name: "Content Calendar", description: "Strategic content planning", icon: Calendar },
+    { id: "community_mgmt", name: "Community Management", description: "Engagement, responses", icon: Heart },
+    { id: "social_strategy", name: "Social Media Strategy", description: "Overall social presence", icon: Target },
+    { id: "influencer_outreach", name: "Influencer Outreach", description: "Partner with influencers", icon: Users },
+    { id: "social_analytics", name: "Social Analytics", description: "Performance tracking", icon: BarChart },
   ],
   design: [
-    { id: "ui_ux", name: "UI/UX Design", description: "User interface & user experience design" },
-    { id: "graphic_design", name: "Graphic Design", description: "Branding, posters, social creatives" },
-    { id: "ad_creatives", name: "Ad Creative Design", description: "High-converting ad visuals for campaigns" },
+    { id: "ui_ux", name: "UI/UX Design", description: "User interface & user experience design", icon: Palette },
+    { id: "graphic_design", name: "Graphic Design", description: "Branding, posters, social creatives", icon: PenTool },
+    { id: "ad_creatives", name: "Ad Creative Design", description: "High-converting ad visuals", icon: Target },
   ],
 };
 
-// Required fields options
-const requiredFieldsOptions = [
-  { id: "name", label: "Full Name", default: true },
-  { id: "email", label: "Email Address", default: true },
-  { id: "phone", label: "Phone Number", default: true },
-  { id: "resume", label: "Resume/CV", default: true },
-  { id: "portfolio", label: "Portfolio Link", default: false },
-  { id: "linkedin", label: "LinkedIn Profile", default: false },
-  { id: "experience", label: "Years of Experience", default: false },
-  { id: "rate", label: "Expected Rate", default: false },
+// Available fields with their configuration
+const availableFields = [
+  { id: "name", label: "Full Name", type: "text", defaultRequired: true, defaultEnabled: true },
+  { id: "email", label: "Email Address", type: "email", defaultRequired: true, defaultEnabled: true },
+  { id: "phone", label: "Phone Number", type: "tel", defaultRequired: true, defaultEnabled: true },
+  { id: "resume", label: "Resume/CV", type: "file", defaultRequired: true, defaultEnabled: true },
+  { id: "portfolio", label: "Portfolio Link", type: "url", defaultRequired: false, defaultEnabled: false },
+  { id: "linkedin", label: "LinkedIn Profile", type: "url", defaultRequired: false, defaultEnabled: false },
+  { id: "experience", label: "Years of Experience", type: "number", defaultRequired: false, defaultEnabled: false },
+  { id: "rate", label: "Expected Rate", type: "text", defaultRequired: false, defaultEnabled: false },
+  { id: "github", label: "GitHub Profile", type: "url", defaultRequired: false, defaultEnabled: false },
+  { id: "location", label: "Location", type: "text", defaultRequired: false, defaultEnabled: false },
+  { id: "availability", label: "Availability", type: "text", defaultRequired: false, defaultEnabled: false },
 ];
+
+interface FieldConfig {
+  enabled: boolean;
+  required: boolean;
+}
 
 interface CreateGigModalProps {
   isOpen: boolean;
@@ -102,7 +180,7 @@ interface FormPayload {
   form_description: string;
   category: string;
   subcategory: string;
-  message: string;
+  message: string | null;  // ✅ Changed to allow null
   is_active: boolean;
   created_by: string;
   required_fields: string[];
@@ -120,7 +198,19 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
   const [message, setMessage] = useState("");
-  const [requiredFields, setRequiredFields] = useState<string[]>(["name", "email", "phone", "resume"]);
+  
+  // Field configurations
+  const [fieldConfigs, setFieldConfigs] = useState<Record<string, FieldConfig>>(() => {
+    const configs: Record<string, FieldConfig> = {};
+    availableFields.forEach(field => {
+      configs[field.id] = {
+        enabled: field.defaultEnabled,
+        required: field.defaultRequired,
+      };
+    });
+    return configs;
+  });
+  
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   
   // UI state for adding custom questions
@@ -133,7 +223,7 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
     required: false,
   });
 
-  const [availableSubcategories, setAvailableSubcategories] = useState<{ id: string; name: string; description: string }[]>([]);
+  const [availableSubcategories, setAvailableSubcategories] = useState<{ id: string; name: string; description: string; icon?: any }[]>([]);
 
   // Generate form_id from form_name
   const generateFormId = (name: string): string => {
@@ -155,13 +245,34 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
     }
   };
 
-  // Toggle required field
-  const toggleRequiredField = (fieldId: string) => {
-    if (requiredFields.includes(fieldId)) {
-      setRequiredFields(requiredFields.filter(f => f !== fieldId));
-    } else {
-      setRequiredFields([...requiredFields, fieldId]);
-    }
+  // Toggle field enabled/disabled
+  const toggleFieldEnabled = (fieldId: string) => {
+    setFieldConfigs(prev => ({
+      ...prev,
+      [fieldId]: {
+        ...prev[fieldId],
+        enabled: !prev[fieldId].enabled,
+      }
+    }));
+  };
+
+  // Toggle field required status
+  const toggleFieldRequired = (fieldId: string) => {
+    if (!fieldConfigs[fieldId].enabled) return;
+    setFieldConfigs(prev => ({
+      ...prev,
+      [fieldId]: {
+        ...prev[fieldId],
+        required: !prev[fieldId].required,
+      }
+    }));
+  };
+
+  // Get the list of required fields
+  const getRequiredFields = (): string[] => {
+    return availableFields
+      .filter(field => fieldConfigs[field.id]?.enabled && fieldConfigs[field.id]?.required)
+      .map(field => field.id);
   };
 
   // Add custom question
@@ -181,7 +292,6 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
       }
     ]);
     
-    // Reset new question form
     setNewQuestion({
       id: "",
       type: "text",
@@ -211,10 +321,13 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
       setError("Please select a subcategory");
       return false;
     }
-    if (requiredFields.length === 0) {
-      setError("Please select at least one required field");
+    
+    const hasEnabledFields = Object.values(fieldConfigs).some(config => config.enabled);
+    if (!hasEnabledFields) {
+      setError("Please enable at least one field for the form");
       return false;
     }
+    
     return true;
   };
 
@@ -228,16 +341,19 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
 
     setLoading(true);
 
+    const requiredFieldsList = getRequiredFields();
+
+    // ✅ Fix: message can be null, not undefined
     const payload: FormPayload = {
       form_id: generateFormId(formName),
       form_name: formName,
       form_description: formDescription,
       category: category,
       subcategory: subcategory,
-      message: message || null,
+      message: message || null,  // ✅ Send null if empty string
       is_active: true,
       created_by: "admin",
-      required_fields: requiredFields,
+      required_fields: requiredFieldsList,
       custom_questions: customQuestions,
     };
 
@@ -264,10 +380,18 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
       setCategory("");
       setSubcategory("");
       setMessage("");
-      setRequiredFields(["name", "email", "phone", "resume"]);
+      
+      const resetConfigs: Record<string, FieldConfig> = {};
+      availableFields.forEach(field => {
+        resetConfigs[field.id] = {
+          enabled: field.defaultEnabled,
+          required: field.defaultRequired,
+        };
+      });
+      setFieldConfigs(resetConfigs);
+      
       setCustomQuestions([]);
       
-      // Close modal after 2 seconds
       setTimeout(() => {
         onClose();
         if (onSuccess) onSuccess();
@@ -287,6 +411,37 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
   };
 
   const SelectedCategoryIcon = category ? getCategoryIcon(category) : Briefcase;
+  
+  // Get field icon based on type
+  const getFieldIcon = (fieldId: string) => {
+    const icons: Record<string, any> = {
+      name: Briefcase,
+      email: Mail,
+      phone: Briefcase,
+      resume: FileText,
+      portfolio: Briefcase,
+      linkedin: Users,
+      experience: Hash,
+      rate: DollarSign,
+      github: Code,
+      location: MapPin,
+      availability: Clock,
+    };
+    return icons[fieldId] || FileText;
+  };
+
+  // Get category display name
+  const getCategoryDisplayName = (categoryId: string) => {
+    const cat = categories.find(c => c.id === categoryId);
+    return cat?.name || categoryId;
+  };
+
+  // Get subcategory display name
+  const getSubcategoryDisplayName = (subcategoryId: string) => {
+    if (!category) return subcategoryId;
+    const sub = availableSubcategories.find(s => s.id === subcategoryId);
+    return sub?.name || subcategoryId;
+  };
 
   return (
     <Modal
@@ -411,24 +566,90 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
           </div>
         </div>
 
-        {/* Required Fields */}
-        <div>
-          <label className="block font-['Jost'] text-[10px] tracking-[0.16em] uppercase text-[#8a8a82] mb-2">
-            Required Fields <span className="text-[#EC8F8D]">*</span>
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {requiredFieldsOptions.map(field => (
-              <label key={field.id} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={requiredFields.includes(field.id)}
-                  onChange={() => toggleRequiredField(field.id)}
-                  className="w-3.5 h-3.5 rounded border-[#1C2321]/20 text-[#44A194] focus:ring-[#44A194] focus:ring-offset-0"
-                />
-                <span className="font-['Jost'] text-xs text-[#1C2321]">{field.label}</span>
-              </label>
-            ))}
+        {/* Selected Category/Subcategory Preview */}
+        {category && subcategory && (
+          <div className="bg-[#44A194]/5 border border-[#44A194]/20 p-2 rounded flex items-center gap-2">
+            <Zap className="w-3 h-3 text-[#44A194]" />
+            <p className="font-['Jost'] text-xs text-[#1C2321]">
+              <span className="font-medium">{getCategoryDisplayName(category)}</span>
+              <span className="mx-1">→</span>
+              <span>{getSubcategoryDisplayName(subcategory)}</span>
+            </p>
           </div>
+        )}
+
+        {/* Form Fields Section */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block font-['Jost'] text-[10px] tracking-[0.16em] uppercase text-[#8a8a82]">
+              <FileText className="w-3 h-3 inline mr-1" />
+              Form Fields
+            </label>
+            <p className="font-['Jost'] text-[9px] text-[#8a8a82]">
+              Toggle to enable/disable fields
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            {availableFields.map(field => {
+              const FieldIcon = getFieldIcon(field.id);
+              const isEnabled = fieldConfigs[field.id]?.enabled;
+              const isRequired = fieldConfigs[field.id]?.required;
+              
+              return (
+                <div 
+                  key={field.id}
+                  className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 ${
+                    isEnabled 
+                      ? 'bg-white border-[#44A194]/30 hover:border-[#44A194]' 
+                      : 'bg-[#F4F0E4] border-[#1C2321]/10 opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 flex-1">
+                    <FieldIcon className="w-4 h-4 text-[#8a8a82]" />
+                    <div>
+                      <p className="font-['Jost'] text-sm text-[#1C2321]">{field.label}</p>
+                      <p className="font-['Jost'] text-xs text-[#8a8a82] capitalize">{field.type}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    {isEnabled && (
+                      <button
+                        type="button"
+                        onClick={() => toggleFieldRequired(field.id)}
+                        className={`px-2 py-1 text-[10px] font-['Jost'] font-medium rounded transition-all duration-200 ${
+                          isRequired
+                            ? 'bg-[#EC8F8D] text-white'
+                            : 'bg-[#1C2321]/10 text-[#8a8a82] hover:bg-[#1C2321]/20'
+                        }`}
+                      >
+                        {isRequired ? 'Required' : 'Optional'}
+                      </button>
+                    )}
+                    
+                    <button
+                      type="button"
+                      onClick={() => toggleFieldEnabled(field.id)}
+                      className={`w-8 h-4 rounded-full transition-all duration-200 ${
+                        isEnabled ? 'bg-[#44A194]' : 'bg-[#1C2321]/20'
+                      } relative`}
+                    >
+                      <div 
+                        className={`absolute w-3 h-3 rounded-full bg-white top-0.5 transition-all duration-200 ${
+                          isEnabled ? 'left-4' : 'left-0.5'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          <p className="font-['Jost'] text-[10px] text-[#8a8a82] mt-2">
+            {getRequiredFields().length} required field{getRequiredFields().length !== 1 ? 's' : ''} selected
+          </p>
         </div>
 
         {/* Custom Questions */}
@@ -448,7 +669,6 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
             </button>
           </div>
 
-          {/* Add Question Form */}
           {showAddQuestion && (
             <div className="bg-[#F4F0E4] p-3 rounded mb-3 space-y-3">
               <input
@@ -501,7 +721,6 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
             </div>
           )}
 
-          {/* Custom Questions List */}
           {customQuestions.length > 0 && (
             <div className="space-y-2 mt-2">
               {customQuestions.map((q, idx) => (
@@ -525,7 +744,7 @@ export const CreateGigModal = ({ isOpen, onClose, onSuccess }: CreateGigModalPro
           )}
         </div>
 
-        {/* Message (Optional - Internal note) */}
+        {/* Internal Message */}
         <div>
           <label className="block font-['Jost'] text-[10px] tracking-[0.16em] uppercase text-[#8a8a82] mb-1.5">
             <Briefcase className="w-3 h-3 inline mr-1" />
