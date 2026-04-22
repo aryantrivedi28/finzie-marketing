@@ -18,6 +18,7 @@ export interface Form {
   tools?: string // Changed from string[] to string to match database schema
   required_fields: string[] // Added required_fields for custom field selection
   custom_questions: CustomQuestion[] // Added custom_questions for dynamic form fields
+  message: string
   created_by?: string
   created_at: string
   is_active?: boolean // Added is_active field to control form status

@@ -2877,8 +2877,8 @@
 // }
 
 
+// app/admin-panel/page.tsx (Updated - Fixed Version)
 
-// app/admin-panel/page.tsx (Updated)
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -2891,7 +2891,7 @@ import {
   Filter,
   Plus,
   Download,
-  CreditCard, // Add this for payments tab
+  CreditCard,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -2901,7 +2901,7 @@ import { useResponsive } from "./hooks/useResponsive";
 import { useFreelancers } from "./hooks/useFreelancers";
 import { useClientRequests } from "./hooks/useClientRequests";
 import { useForms } from "./hooks/useForms";
-import { usePayments } from "./hooks/usePayments"; // New hook
+import { usePayments } from "./hooks/usePayments";
 
 // Components
 import { LoadingSpinner } from "./components/common/LoadingSpinner";
@@ -2925,7 +2925,7 @@ import { GigList } from "./components/forms/GigList";
 import { CreateGigModal } from "./components/forms/CreateGigModal";
 import { SubmissionsModal } from "./components/forms/SubmissionsModal";
 
-// Payment Components (New)
+// Payment Components
 import { PaymentsTable } from "./components/payments/PaymentsTable";
 import { DealModal } from "./components/payments/DealModal";
 import { PaymentFilters } from "./components/payments/PaymentFilters";
@@ -2980,7 +2980,7 @@ export default function AdminPanel() {
     downloadCSVForForm
   } = useForms();
 
-  // Payment hooks (New)
+  // Payment hooks
   const {
     deals,
     loading: paymentsLoading,
@@ -2993,10 +2993,10 @@ export default function AdminPanel() {
     releasePayment,
     downloadCSV: downloadPaymentsCSV,
     resetFilters: resetPaymentFilters,
-    addAdminMargin,           // New
-    sendClientAgreement,      // New
-    sendFreelancerAgreement,  // New
-    generateClientInvoice,    // New
+    addAdminMargin,
+    sendClientAgreement,
+    sendFreelancerAgreement,
+    generateClientInvoice,
     getDealStats
   } = usePayments();
 
@@ -3009,7 +3009,7 @@ export default function AdminPanel() {
   const [showCreateGigModal, setShowCreateGigModal] = useState(false);
   const [jdReqId, setJdReqId] = useState<string | null>(null);
 
-  // Payment modals (New)
+  // Payment modals
   const [selectedDeal, setSelectedDeal] = useState<any>(null);
   const [showDealModal, setShowDealModal] = useState(false);
   const [showCreateDealModal, setShowCreateDealModal] = useState(false);
@@ -3044,7 +3044,6 @@ export default function AdminPanel() {
       totalForms: forms.length,
       totalSubmissions: forms.reduce((sum, f) => sum + (f.submission_count || 0), 0),
       totalRequests: filteredRequests.length,
-      // Payment stats
       totalRevenue: paymentStats.totalRevenue,
       pendingPayments: paymentStats.pendingPayments,
       activeDeals: paymentStats.activeDeals
@@ -3132,8 +3131,10 @@ export default function AdminPanel() {
     fetchRequests();
   };
 
-  const handleCreateGig = () => {
-    toast.success('Gig form created');
+  // ✅ UPDATED: Handle successful form creation
+  const handleGigFormSuccess = () => {
+    toast.success('Gig form created successfully!');
+    loadForms(); // Refresh the forms list
     setShowCreateGigModal(false);
   };
 
@@ -3259,7 +3260,7 @@ export default function AdminPanel() {
 
       {/* Content */}
       <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
-        {/* Stats Cards - Updated for payments */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-[1px] sm:gap-[2px] bg-[#1C2321]/10 mb-6 sm:mb-8">
           <StatCard value={stats.totalFreelancers} label="Total Freelancers" icon={Users} />
           <StatCard value={stats.totalRequests} label="Client Requests" icon={FileText} />
@@ -3271,7 +3272,7 @@ export default function AdminPanel() {
           />
         </div>
 
-        {/* Additional Payment Stats when on payments tab */}
+        {/* Additional Payment Stats */}
         {activeTab === "payments" && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-white border border-[#1C2321]/10 p-4">
@@ -3388,13 +3389,13 @@ export default function AdminPanel() {
           <GigList
             forms={forms}
             loading={formsLoading}
-            onCopyLink={() => { }}
+            onCopyLink={() => {}}
             onViewSubmissions={(formId) => {
               setSelectedForm(formId);
               loadFormSubmissions(formId);
             }}
             onToggleStatus={toggleFormStatus}
-            onEdit={() => { }}
+            onEdit={() => {}}
             onDelete={deleteForm}
           />
         )}
@@ -3447,11 +3448,11 @@ export default function AdminPanel() {
         initialData={jdForm}
       />
 
+      {/* ✅ UPDATED: CreateGigModal with onSuccess callback */}
       <CreateGigModal
         isOpen={showCreateGigModal}
         onClose={() => setShowCreateGigModal(false)}
-        onSubmit={handleCreateGig}
-        requests={filteredRequests}
+        onSuccess={handleGigFormSuccess}
       />
 
       <SubmissionsModal
@@ -3467,7 +3468,6 @@ export default function AdminPanel() {
         isOpen={showCreateDealModal}
         onClose={() => setShowCreateDealModal(false)}
         onSubmit={handleCreateDeal}
-        // freelancers={freelancers}
         clientRequests={filteredRequests.filter(r => r.status === 'active')}
       />
 

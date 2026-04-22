@@ -2,31 +2,29 @@ import { NextResponse } from "next/server"
 import { supabaseAdmin } from "../../../lib/supabase-admin"
 import type { CreateFormData } from "../../../types/database"
 
-
-
-
 export async function POST(req: Request) {
   try {
     const body: CreateFormData = await req.json();
     console.log("Received form data:", body);
+    
     const {
       form_id,
       form_name,
       form_description,
-      industry,
+      category,
+      subcategory,
       created_by,
       is_active,
-      message,        // 👈 add this
+      message,
+      required_fields,
+      custom_questions,
     } = body;
 
-
-
-    // ✅ Validate required fields
-    if (!form_id || !form_name || !form_description || !industry) {
+    // ✅ Validate required fields (industry removed)
+    if (!form_id || !form_name) {
       return NextResponse.json(
         {
-          error:
-            "Missing required fields: form_id, form_name, category, subcategory, industry",
+          error: "Missing required fields: form_id, form_name",
         },
         { status: 400 }
       );
@@ -37,8 +35,7 @@ export async function POST(req: Request) {
     if (!formIdRegex.test(form_id)) {
       return NextResponse.json(
         {
-          error:
-            "Form ID must be lowercase letters, numbers, and hyphens only (e.g., reactjs-1, nodejs-2)",
+          error: "Form ID must be lowercase letters, numbers, and hyphens only (e.g., reactjs-1, nodejs-2)",
         },
         { status: 400 }
       );
@@ -58,20 +55,26 @@ export async function POST(req: Request) {
       );
     }
 
+    // ✅ Prepare insert data (industry removed)
+    const insertData: any = {
+      form_id,
+      form_name,
+      form_description: form_description || null,
+      message: message || null,
+      created_by: created_by || "admin",
+      is_active: is_active ?? true,
+    };
+
+    // Add optional fields if they exist
+    if (category) insertData.category = category;
+    if (subcategory) insertData.subcategory = subcategory;
+    if (required_fields) insertData.required_fields = required_fields;
+    if (custom_questions) insertData.custom_questions = custom_questions;
+
     // ✅ Insert
     const { data, error } = await supabaseAdmin
       .from("forms")
-      .insert([
-        {
-          form_id,
-          form_name,
-          form_description: form_description || null,
-          industry,
-          message: message || null,
-          created_by: created_by || "admin",
-          is_active: is_active ?? true,
-        },
-      ])
+      .insert([insertData])
       .select()
       .single();
 
@@ -103,21 +106,27 @@ export async function POST(req: Request) {
 // GET endpoint to list all forms (for admin dashboard)
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin.from("forms").select("*").order("created_at", { ascending: false })
+    const { data, error } = await supabaseAdmin
+      .from("forms")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    if (error) throw error
+    if (error) throw error;
 
-    return NextResponse.json({ forms: data })
+    return NextResponse.json({ forms: data });
   } catch (err: any) {
-    console.error("Error fetching forms:", err)
-    return NextResponse.json({ error: err.message || "Failed to fetch forms" }, { status: 500 })
+    console.error("Error fetching forms:", err);
+    return NextResponse.json(
+      { error: err.message || "Failed to fetch forms" },
+      { status: 500 }
+    );
   }
 }
 
 // PUT endpoint for updating forms
 export async function PUT(req: Request) {
   try {
-    const body = await req.json()
+    const body = await req.json();
     const {
       id,
       form_id,
@@ -125,92 +134,124 @@ export async function PUT(req: Request) {
       form_description,
       category,
       subcategory,
-      industry,
       tech_stack,
       tools,
       is_active,
       required_fields,
       custom_questions,
-    } = body
+      message,
+    } = body;
 
     // Validate required fields
     if (!id) {
-      return NextResponse.json({ error: "Form ID is required for update" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Form ID is required for update" },
+        { status: 400 }
+      );
     }
 
     // Check if form exists
-    const { data: existingForm } = await supabaseAdmin.from("forms").select("id").eq("id", id).single()
+    const { data: existingForm } = await supabaseAdmin
+      .from("forms")
+      .select("id")
+      .eq("id", id)
+      .single();
 
     if (!existingForm) {
-      return NextResponse.json({ error: "Form not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Form not found" },
+        { status: 404 }
+      );
     }
+
+    // Prepare update data (industry removed)
+    const updateData: any = {};
+
+    if (form_id !== undefined) updateData.form_id = form_id;
+    if (form_name !== undefined) updateData.form_name = form_name;
+    if (form_description !== undefined) updateData.form_description = form_description;
+    if (category !== undefined) updateData.category = category;
+    if (subcategory !== undefined) updateData.subcategory = subcategory;
+    if (tech_stack !== undefined) updateData.tech_stack = tech_stack;
+    if (tools !== undefined) updateData.tools = tools;
+    if (is_active !== undefined) updateData.is_active = is_active;
+    if (required_fields !== undefined) updateData.required_fields = required_fields;
+    if (custom_questions !== undefined) updateData.custom_questions = custom_questions;
+    if (message !== undefined) updateData.message = message;
 
     // Update form
     const { data, error } = await supabaseAdmin
       .from("forms")
-      .update({
-        form_id,
-        form_name,
-        form_description,
-        category,
-        subcategory,
-        industry,
-        tech_stack,
-        tools,
-        is_active,
-        required_fields,
-        custom_questions,
-      })
+      .update(updateData)
       .eq("id", id)
       .select()
-      .single()
+      .single();
 
     if (error) {
-      console.error("Supabase error:", error)
-      throw error
+      console.error("Supabase error:", error);
+      throw error;
     }
 
     return NextResponse.json({
       form: data,
       success: true,
-    })
+    });
   } catch (err: any) {
-    console.error("Error updating form:", err)
-    return NextResponse.json({ error: err.message || "Failed to update form" }, { status: 500 })
+    console.error("Error updating form:", err);
+    return NextResponse.json(
+      { error: err.message || "Failed to update form" },
+      { status: 500 }
+    );
   }
 }
 
 // DELETE endpoint for deleting forms
 export async function DELETE(req: Request) {
   try {
-    const { searchParams } = new URL(req.url)
-    const id = searchParams.get("id")
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ error: "Form ID is required for deletion" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Form ID is required for deletion" },
+        { status: 400 }
+      );
     }
 
     // Check if form exists
-    const { data: existingForm } = await supabaseAdmin.from("forms").select("id").eq("id", id).single()
+    const { data: existingForm } = await supabaseAdmin
+      .from("forms")
+      .select("id")
+      .eq("id", id)
+      .single();
 
     if (!existingForm) {
-      return NextResponse.json({ error: "Form not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Form not found" },
+        { status: 404 }
+      );
     }
 
     // Delete form (this will cascade delete submissions due to foreign key constraint)
-    const { error } = await supabaseAdmin.from("forms").delete().eq("id", id)
+    const { error } = await supabaseAdmin
+      .from("forms")
+      .delete()
+      .eq("id", id);
 
     if (error) {
-      console.error("Supabase error:", error)
-      throw error
+      console.error("Supabase error:", error);
+      throw error;
     }
 
     return NextResponse.json({
       success: true,
       message: "Form deleted successfully",
-    })
+    });
   } catch (err: any) {
-    console.error("Error deleting form:", err)
-    return NextResponse.json({ error: err.message || "Failed to delete form" }, { status: 500 })
+    console.error("Error deleting form:", err);
+    return NextResponse.json(
+      { error: err.message || "Failed to delete form" },
+      { status: 500 }
+    );
   }
 }

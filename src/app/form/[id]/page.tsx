@@ -7,6 +7,18 @@ import { supabase } from "../../../lib/SupabaseAuthClient"
 import type { Form } from "../../../types/database"
 import { FileUpload } from "../../../components/file-upload"
 import { useRouter } from "next/navigation"
+import { 
+  Loader2, 
+  CheckCircle, 
+  AlertCircle,
+  Briefcase,
+  Clock,
+  DollarSign,
+  FileText,
+  Send,
+  ArrowRight,
+  Sparkles
+} from "lucide-react"
 
 interface FormPageProps {
   params: Promise<{
@@ -40,8 +52,6 @@ export default function FormPage({ params }: FormPageProps) {
 
     const fetchForm = async () => {
       try {
-        const { data: allForms, error: listError } = await supabase.from("forms").select("*")
-
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(formId)
         const queryField = isUUID ? "id" : "form_id"
 
@@ -83,65 +93,6 @@ export default function FormPage({ params }: FormPageProps) {
     fetchForm()
   }, [formId])
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   setSubmitting(true)
-  //   setError(null)
-
-  //   try {
-  //     const submissionData: Record<string, any> = {
-  //       form_id: form?.id || formId,
-  //       custom_responses: customResponses,
-  //     }
-
-  //     const standardFields = [
-  //       "name",
-  //       "email",
-  //       "phone",
-  //       "portfolio_link",
-  //       "github_link",
-  //       "resume_link",
-  //       "years_experience",
-  //       "proposal_link",
-  //     ]
-
-  //     standardFields.forEach((field: string) => {
-  //       if (field === "years_experience") {
-  //         submissionData[field] = formData[field] ? Number(formData[field]) : null
-  //       } else {
-  //         submissionData[field] = formData[field] || null
-  //       }
-  //     })
-
-  //     const response = await fetch("/api/submissions", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(submissionData),
-  //     })
-
-  //     const data = await response.json()
-
-  //     if (!response.ok) {
-  //       throw new Error(data.error || "Failed to submit application")
-  //     }
-
-  //     setSubmitted(true)
-
-  //     // ✅ Redirect to freelancer dashboard after success
-  //     // setTimeout(() => {
-  //     //   router.push("/get-hired/freelancer/dashboard")
-  //     // }, 2000)
-
-  //   } catch (err: any) {
-  //     setError(err.message)
-  //   } finally {
-  //     setSubmitting(false)
-  //   }
-  // }
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
@@ -153,7 +104,6 @@ export default function FormPage({ params }: FormPageProps) {
         custom_responses: customResponses,
       }
 
-      // Map form data to match freelancer_submissions table
       const standardFields = [
         "name",
         "email",
@@ -173,7 +123,6 @@ export default function FormPage({ params }: FormPageProps) {
         }
       })
 
-      // Submit to your API
       const response = await fetch("/api/submissions", {
         method: "POST",
         headers: {
@@ -190,20 +139,12 @@ export default function FormPage({ params }: FormPageProps) {
 
       setSubmitted(true)
 
-      // Optional: You can redirect to the public profile after submission
-      // if (data.freelancerId) {
-      //   setTimeout(() => {
-      //     router.push(`/freelancer/temp/${data.freelancerId}`)
-      //   }, 2000)
-      // }
-
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSubmitting(false)
     }
   }
-
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -226,12 +167,24 @@ export default function FormPage({ params }: FormPageProps) {
       phone: "Phone Number",
       portfolio_link: "Portfolio URL",
       github_link: "GitHub Profile",
-      resume_link: "Resume",
+      resume_link: "Resume/CV",
       years_experience: "Years of Experience",
       proposal_link: "Proposal/Cover Letter",
     }
     return fieldLabels[fieldKey] || fieldKey
   }
+
+  // Parse message JSON to get additional info
+  const getAdditionalInfo = () => {
+    if (!form?.message) return null
+    try {
+      return JSON.parse(form.message)
+    } catch {
+      return null
+    }
+  }
+
+  const additionalInfo = getAdditionalInfo()
 
   const renderCustomQuestion = (question: any) => {
     const { id, type, label, required, options } = question
@@ -239,16 +192,16 @@ export default function FormPage({ params }: FormPageProps) {
     switch (type) {
       case "text":
         return (
-          <div key={id}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {label} {required && <span className="text-red-500">*</span>}
+          <div key={id} className="space-y-2">
+            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
+              {label} {required && <span className="text-[#EC8F8D]">*</span>}
             </label>
             <input
               type="text"
               required={required}
               value={customResponses[id] || ""}
               onChange={(e) => handleCustomResponseChange(id, e.target.value, type)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFE01B] focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200"
               placeholder={`Enter ${label.toLowerCase()}`}
             />
           </div>
@@ -256,16 +209,16 @@ export default function FormPage({ params }: FormPageProps) {
 
       case "textarea":
         return (
-          <div key={id}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {label} {required && <span className="text-red-500">*</span>}
+          <div key={id} className="space-y-2">
+            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
+              {label} {required && <span className="text-[#EC8F8D]">*</span>}
             </label>
             <textarea
               required={required}
               value={customResponses[id] || ""}
               onChange={(e) => handleCustomResponseChange(id, e.target.value, type)}
               rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFE01B] focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200 resize-none"
               placeholder={`Enter ${label.toLowerCase()}`}
             />
           </div>
@@ -273,15 +226,15 @@ export default function FormPage({ params }: FormPageProps) {
 
       case "select":
         return (
-          <div key={id}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {label} {required && <span className="text-red-500">*</span>}
+          <div key={id} className="space-y-2">
+            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
+              {label} {required && <span className="text-[#EC8F8D]">*</span>}
             </label>
             <select
               required={required}
               value={customResponses[id] || ""}
               onChange={(e) => handleCustomResponseChange(id, e.target.value, type)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFE01B] focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200 bg-white"
             >
               <option value="">Select an option</option>
               {options?.map((option: string, index: number) => (
@@ -295,23 +248,23 @@ export default function FormPage({ params }: FormPageProps) {
 
       case "radio":
         return (
-          <div key={id}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {label} {required && <span className="text-red-500">*</span>}
+          <div key={id} className="space-y-2">
+            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
+              {label} {required && <span className="text-[#EC8F8D]">*</span>}
             </label>
             <div className="space-y-2">
               {options?.map((option: string, index: number) => (
-                <label key={index} className="flex items-center">
+                <label key={index} className="flex items-center cursor-pointer">
                   <input
                     type="radio"
                     name={id}
                     value={option}
                     checked={customResponses[id] === option}
                     onChange={(e) => handleCustomResponseChange(id, e.target.value, type)}
-                    className="mr-2 text-[#FFE01B] focus:ring-[#FFE01B]"
+                    className="mr-3 w-4 h-4 text-[#44A194] focus:ring-[#44A194] focus:ring-offset-0"
                     required={required}
                   />
-                  <span className="text-gray-700">{option}</span>
+                  <span className="font-['Jost'] text-[#1C2321]">{option}</span>
                 </label>
               ))}
             </div>
@@ -320,13 +273,13 @@ export default function FormPage({ params }: FormPageProps) {
 
       case "checkbox":
         return (
-          <div key={id}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {label} {required && <span className="text-red-500">*</span>}
+          <div key={id} className="space-y-2">
+            <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
+              {label} {required && <span className="text-[#EC8F8D]">*</span>}
             </label>
             <div className="space-y-2">
               {options?.map((option: string, index: number) => (
-                <label key={index} className="flex items-center">
+                <label key={index} className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     value={option}
@@ -338,9 +291,9 @@ export default function FormPage({ params }: FormPageProps) {
                         : currentValues.filter((v: string) => v !== option)
                       handleCustomResponseChange(id, newValues, type)
                     }}
-                    className="mr-2 text-[#FFE01B] focus:ring-[#FFE01B]"
+                    className="mr-3 w-4 h-4 text-[#44A194] focus:ring-[#44A194] focus:ring-offset-0 rounded"
                   />
-                  <span className="text-gray-700">{option}</span>
+                  <span className="font-['Jost'] text-[#1C2321]">{option}</span>
                 </label>
               ))}
             </div>
@@ -354,18 +307,22 @@ export default function FormPage({ params }: FormPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#241C15] flex items-center justify-center">
-        <div className="text-white text-xl">Loading form...</div>
+      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 text-[#44A194] animate-spin" />
+          <p className="font-['Jost'] text-[#8a8a82]">Loading form...</p>
+        </div>
       </div>
     )
   }
 
   if (error && !form) {
     return (
-      <div className="min-h-screen bg-[#241C15] flex items-center justify-center px-4">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Form Not Found</h1>
-          <p className="text-gray-300 text-lg">{error}</p>
+      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-[#EC8F8D] mx-auto mb-4" />
+          <h1 className="font-['Cormorant_Garamond'] text-4xl font-light text-[#1C2321] mb-4">Form Not Found</h1>
+          <p className="font-['Jost'] text-[#3a3a36]">{error}</p>
         </div>
       </div>
     )
@@ -373,10 +330,13 @@ export default function FormPage({ params }: FormPageProps) {
 
   if (form && !form.is_active) {
     return (
-      <div className="min-h-screen bg-[#241C15] flex items-center justify-center px-4">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Form Closed</h1>
-          <p className="text-gray-300 text-lg">This form is currently not accepting submissions.</p>
+      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-[#EC8F8D]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Briefcase className="w-10 h-10 text-[#EC8F8D]" />
+          </div>
+          <h1 className="font-['Cormorant_Garamond'] text-4xl font-light text-[#1C2321] mb-4">Form Closed</h1>
+          <p className="font-['Jost'] text-[#3a3a36]">This form is currently not accepting submissions.</p>
         </div>
       </div>
     )
@@ -384,65 +344,112 @@ export default function FormPage({ params }: FormPageProps) {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#241C15] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center px-4">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="text-center bg-white rounded-lg p-8 max-w-md mx-auto"
+          transition={{ duration: 0.5 }}
+          className="text-center bg-white rounded-2xl p-8 max-w-md mx-auto shadow-sm border border-[#44A194]/10"
         >
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+          <div className="w-20 h-20 bg-[#44A194]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-10 h-10 text-[#44A194]" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Submitted!</h2>
-          <p className="text-gray-600 mb-6">
-            Thank you for your interest. We'll review your application and get back to you soon.
+          <h2 className="font-['Cormorant_Garamond'] text-2xl font-light text-[#1C2321] mb-2">
+            Application Submitted!
+          </h2>
+          <p className="font-['Jost'] text-[#8a8a82] mb-6">
+            Thank you for your interest. Our team will review your application and get back to you soon.
           </p>
+          <div className="text-xs font-['Jost'] text-[#8a8a82]">
+            <span className="text-[#44A194]">ExecuMarketing</span> — A Finzie Company
+          </div>
         </motion.div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#241C15] py-12 px-4 pt-[80px] sm:pt-[100px] lg:pt-[130px]">
+    <div className="min-h-screen bg-[#F4F0E4] py-12 px-4 pt-[100px] sm:pt-[120px]">
       <div className="max-w-3xl mx-auto">
         {/* Form Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-white mb-4">{form?.form_name}</h1>
-          <p
-            className="text-gray-300 mb-6"
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full mb-6 border border-[#44A194]/20">
+            <Sparkles className="w-4 h-4 text-[#44A194]" />
+            <span className="font-['Jost'] text-xs font-medium text-[#1C2321] tracking-wide">
+              Apply Now
+            </span>
+          </div>
+
+          <h1 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-light text-[#1C2321] mb-4">
+            {form?.form_name}
+          </h1>
+          
+          <div 
+            className="font-['Jost'] text-[#3a3a36] mb-6 leading-relaxed"
             dangerouslySetInnerHTML={{
               __html: (form?.form_description || "No description provided.").replace(
                 /(https?:\/\/[^\s]+)/g,
-                '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline">$1</a>',
+                '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-[#44A194] underline">$1</a>',
               ),
             }}
           />
 
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <span className="bg-[#FFE01B] text-black px-3 py-1 rounded-full font-medium">{form?.category}</span>
-            {form?.subcategory && (
-              <span className="bg-white/10 text-white px-3 py-1 rounded-full">{form.subcategory}</span>
+          {/* Tags */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {form?.category && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#44A194]/10 text-[#44A194] rounded-full font-['Jost'] text-xs font-medium">
+                <Briefcase className="w-3 h-3" />
+                {form.category.charAt(0).toUpperCase() + form.category.slice(1)}
+              </span>
             )}
-            <span className="bg-white/10 text-white px-3 py-1 rounded-full">{form?.industry}</span>
+            {form?.subcategory && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#537D96]/10 text-[#537D96] rounded-full font-['Jost'] text-xs font-medium">
+                <FileText className="w-3 h-3" />
+                {form.subcategory.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+              </span>
+            )}
           </div>
+
+          {/* Additional Info from message */}
+          {additionalInfo && (
+            <div className="mt-6 flex flex-wrap justify-center gap-4">
+              {additionalInfo.budget && (
+                <div className="flex items-center gap-2 text-sm font-['Jost'] text-[#8a8a82]">
+                  <DollarSign className="w-4 h-4" />
+                  <span>{additionalInfo.budget}</span>
+                </div>
+              )}
+              {additionalInfo.engagement_type && (
+                <div className="flex items-center gap-2 text-sm font-['Jost'] text-[#8a8a82]">
+                  <Briefcase className="w-4 h-4" />
+                  <span>{additionalInfo.engagement_type}</span>
+                </div>
+              )}
+              {additionalInfo.timeline && (
+                <div className="flex items-center gap-2 text-sm font-['Jost'] text-[#8a8a82]">
+                  <Clock className="w-4 h-4" />
+                  <span>{additionalInfo.timeline}</span>
+                </div>
+              )}
+            </div>
+          )}
         </motion.div>
 
         {/* Application Form */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-white rounded-lg shadow-xl p-8"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-white rounded-2xl shadow-sm border border-[#44A194]/10 p-6 sm:p-8"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Submit Your Application</h2>
+          <h2 className="font-['Cormorant_Garamond'] text-2xl font-light text-[#1C2321] mb-6">
+            Submit Your Application
+          </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {form?.required_fields?.map((fieldKey: string) => {
@@ -453,7 +460,7 @@ export default function FormPage({ params }: FormPageProps) {
                 return (
                   <FileUpload
                     key={fieldKey}
-                    label="Resume"
+                    label="Resume/CV"
                     required={isRequired}
                     accept=".pdf,.doc,.docx"
                     maxSize={5}
@@ -479,19 +486,20 @@ export default function FormPage({ params }: FormPageProps) {
 
               if (fieldKey === "years_experience") {
                 return (
-                  <div key={fieldKey}>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {label} {isRequired && <span className="text-red-500">*</span>}
+                  <div key={fieldKey} className="space-y-2">
+                    <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
+                      {label} <span className="text-[#EC8F8D]">*</span>
                     </label>
                     <input
                       type="number"
                       min="0"
                       max="50"
+                      step="0.5"
                       required={isRequired}
                       value={formData[fieldKey] || ""}
                       onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFE01B] focus:border-transparent transition-all duration-200"
-                      placeholder="e.g., 3"
+                      className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200"
+                      placeholder="e.g., 3.5"
                     />
                   </div>
                 )
@@ -507,23 +515,23 @@ export default function FormPage({ params }: FormPageProps) {
                       : "text"
 
               return (
-                <div key={fieldKey}>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {label} {isRequired && <span className="text-red-500">*</span>}
+                <div key={fieldKey} className="space-y-2">
+                  <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
+                    {label} <span className="text-[#EC8F8D]">*</span>
                   </label>
                   <input
                     type={inputType}
                     required={isRequired}
                     value={formData[fieldKey] || ""}
                     onChange={(e) => handleInputChange(fieldKey, e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFE01B] focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200"
                     placeholder={
                       fieldKey === "name"
                         ? "Enter your full name"
                         : fieldKey === "email"
                           ? "your.email@example.com"
                           : fieldKey === "phone"
-                            ? "1234567890"
+                            ? "+91 1234567890"
                             : fieldKey.includes("link")
                               ? `https://your${fieldKey.replace("_link", "")}.com`
                               : `Enter your ${label.toLowerCase()}`
@@ -537,8 +545,8 @@ export default function FormPage({ params }: FormPageProps) {
 
             {/* Error Display */}
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-700">{error}</p>
+              <div className="bg-[#EC8F8D]/10 border-l-4 border-[#EC8F8D] p-4 rounded-r">
+                <p className="font-['Jost'] text-sm text-[#1C2321]">{error}</p>
               </div>
             )}
 
@@ -548,10 +556,28 @@ export default function FormPage({ params }: FormPageProps) {
               disabled={submitting}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full bg-[#FFE01B] hover:bg-[#FCD34D] text-black font-semibold py-4 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group w-full bg-[#44A194] hover:bg-[#38857a] text-white font-['Jost'] font-medium py-4 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {submitting ? "Submitting Application..." : "Submit Application"}
+              {submitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Submitting Application...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  Submit Application
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </motion.button>
+
+            {/* Finzie subsidiary line */}
+            <div className="text-center pt-4">
+              <span className="font-['Jost'] text-[10px] tracking-[0.2em] text-[#8a8a82] uppercase">
+                A Finzie Company
+              </span>
+            </div>
           </form>
         </motion.div>
       </div>
