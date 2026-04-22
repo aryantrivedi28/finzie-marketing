@@ -17,13 +17,47 @@ import {
   FileText,
   Send,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Mail,
+  Phone,
+  User,
+  Link,
+  Github,
+  MapPin,
+  Hash
 } from "lucide-react"
 
 interface FormPageProps {
   params: Promise<{
     id: string
   }>
+}
+
+// Define all available fields with their metadata
+const ALL_AVAILABLE_FIELDS = {
+  name: { label: "Full Name", type: "text", icon: User, placeholder: "Enter your full name" },
+  email: { label: "Email Address", type: "email", icon: Mail, placeholder: "your.email@example.com" },
+  phone: { label: "Phone Number", type: "tel", icon: Phone, placeholder: "+91 1234567890" },
+  resume: { label: "Resume/CV", type: "file", icon: FileText, placeholder: "Upload your resume" },
+  portfolio: { label: "Portfolio Link", type: "url", icon: Link, placeholder: "https://your-portfolio.com" },
+  linkedin: { label: "LinkedIn Profile", type: "url", icon: Link, placeholder: "https://linkedin.com/in/yourprofile" },
+  experience: { label: "Years of Experience", type: "number", icon: Hash, placeholder: "e.g., 3.5" },
+  rate: { label: "Expected Rate", type: "text", icon: DollarSign, placeholder: "₹50,000/month" },
+  github: { label: "GitHub Profile", type: "url", icon: Github, placeholder: "https://github.com/yourusername" },
+  location: { label: "Location", type: "text", icon: MapPin, placeholder: "City, Country" },
+  availability: { label: "Availability", type: "text", icon: Clock, placeholder: "Immediate / 2 weeks notice" },
+}
+
+// Map field keys to their database column names
+const FIELD_TO_COLUMN: Record<string, string> = {
+  name: "name",
+  email: "email",
+  phone: "phone",
+  portfolio: "portfolio_link",
+  github: "github_link",
+  resume: "resume_link",
+  experience: "years_experience",
+  proposal: "proposal_link",
 }
 
 export default function FormPage({ params }: FormPageProps) {
@@ -33,6 +67,7 @@ export default function FormPage({ params }: FormPageProps) {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [enabledFields, setEnabledFields] = useState<string[]>([])
 
   const [formData, setFormData] = useState<Record<string, any>>({})
   const [customResponses, setCustomResponses] = useState<Record<string, any>>({})
@@ -46,7 +81,7 @@ export default function FormPage({ params }: FormPageProps) {
     resolveParams()
   }, [params])
 
-  // Fetch form details
+  // Fetch form details and parse enabled fields from message
   useEffect(() => {
     if (!formId) return
 
@@ -63,12 +98,35 @@ export default function FormPage({ params }: FormPageProps) {
 
         setForm(data)
 
+        // Parse enabled fields from message (if stored)
+        let enabledFieldsList: string[] = []
+        if (data.message) {
+          try {
+            const parsedMessage = JSON.parse(data.message)
+            if (parsedMessage.enabled_fields) {
+              enabledFieldsList = parsedMessage.enabled_fields.map((f: any) => f.id)
+            }
+          } catch {
+            // Message is not JSON, ignore
+          }
+        }
+
+        // If no enabled fields in message, use required_fields + common fields
+        if (enabledFieldsList.length === 0) {
+          enabledFieldsList = [...(data.required_fields || []), "name", "email", "phone", "resume"]
+          enabledFieldsList = [...new Set(enabledFieldsList)] // Remove duplicates
+        }
+
+        setEnabledFields(enabledFieldsList)
+
+        // Initialize form data for all enabled fields
         const initialData: Record<string, any> = {}
-        data.required_fields?.forEach((field: string) => {
+        enabledFieldsList.forEach((field: string) => {
           initialData[field] = ""
         })
         setFormData(initialData)
 
+        // Initialize custom responses
         const initialCustomResponses: Record<string, any> = {}
         data.custom_questions?.forEach((question: any) => {
           if (question.type === "checkbox") {
@@ -104,24 +162,15 @@ export default function FormPage({ params }: FormPageProps) {
         custom_responses: customResponses,
       }
 
-      const standardFields = [
-        "name",
-        "email",
-        "phone",
-        "portfolio_link",
-        "github_link",
-        "resume_link",
-        "years_experience",
-        "proposal_link",
-      ]
-
-      standardFields.forEach((field: string) => {
-        if (field === "years_experience") {
-          submissionData[field] = formData[field] ? Number(formData[field]) : null
+      // Map form data to database columns
+      for (const [field, value] of Object.entries(formData)) {
+        const columnName = FIELD_TO_COLUMN[field] || field
+        if (field === "experience") {
+          submissionData[columnName] = value ? Number(value) : null
         } else {
-          submissionData[field] = formData[field] || null
+          submissionData[columnName] = value || null
         }
-      })
+      }
 
       const response = await fetch("/api/submissions", {
         method: "POST",
@@ -161,24 +210,34 @@ export default function FormPage({ params }: FormPageProps) {
   }
 
   const getFieldLabel = (fieldKey: string): string => {
-    const fieldLabels: Record<string, string> = {
-      name: "Full Name",
-      email: "Email Address",
-      phone: "Phone Number",
-      portfolio_link: "Portfolio URL",
-      github_link: "GitHub Profile",
-      resume_link: "Resume/CV",
-      years_experience: "Years of Experience",
-      proposal_link: "Proposal/Cover Letter",
-    }
-    return fieldLabels[fieldKey] || fieldKey
+    return ALL_AVAILABLE_FIELDS[fieldKey as keyof typeof ALL_AVAILABLE_FIELDS]?.label || fieldKey
+  }
+
+  const getFieldIcon = (fieldKey: string) => {
+    const Icon = ALL_AVAILABLE_FIELDS[fieldKey as keyof typeof ALL_AVAILABLE_FIELDS]?.icon
+    return Icon || FileText
+  }
+
+  const getFieldPlaceholder = (fieldKey: string): string => {
+    return ALL_AVAILABLE_FIELDS[fieldKey as keyof typeof ALL_AVAILABLE_FIELDS]?.placeholder || `Enter your ${getFieldLabel(fieldKey).toLowerCase()}`
+  }
+
+  // Check if a field is required
+  const isFieldRequired = (fieldKey: string): boolean => {
+    return form?.required_fields?.includes(fieldKey) || false
   }
 
   // Parse message JSON to get additional info
   const getAdditionalInfo = () => {
     if (!form?.message) return null
     try {
-      return JSON.parse(form.message)
+      const parsed = JSON.parse(form.message)
+      // Don't return the enabled_fields as display info
+      if (parsed.enabled_fields) {
+        const { enabled_fields, ...rest } = parsed
+        return Object.keys(rest).length > 0 ? rest : null
+      }
+      return parsed
     } catch {
       return null
     }
@@ -452,15 +511,22 @@ export default function FormPage({ params }: FormPageProps) {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {form?.required_fields?.map((fieldKey: string) => {
-              const label = getFieldLabel(fieldKey)
-              const isRequired = true
+            {/* Render all enabled fields from the form configuration */}
+            {enabledFields.map((fieldKey) => {
+              const fieldConfig = ALL_AVAILABLE_FIELDS[fieldKey as keyof typeof ALL_AVAILABLE_FIELDS]
+              if (!fieldConfig) return null
+              
+              const label = fieldConfig.label
+              const isRequired = isFieldRequired(fieldKey)
+              const Icon = getFieldIcon(fieldKey)
+              const placeholder = getFieldPlaceholder(fieldKey)
 
-              if (fieldKey === "resume_link") {
+              // Handle file upload fields
+              if (fieldKey === "resume") {
                 return (
                   <FileUpload
                     key={fieldKey}
-                    label="Resume/CV"
+                    label={label}
                     required={isRequired}
                     accept=".pdf,.doc,.docx"
                     maxSize={5}
@@ -470,11 +536,11 @@ export default function FormPage({ params }: FormPageProps) {
                 )
               }
 
-              if (fieldKey === "proposal_link") {
+              if (fieldKey === "proposal") {
                 return (
                   <FileUpload
                     key={fieldKey}
-                    label="Proposal/Cover Letter"
+                    label={label}
                     required={isRequired}
                     accept=".pdf,.doc,.docx"
                     maxSize={5}
@@ -484,11 +550,13 @@ export default function FormPage({ params }: FormPageProps) {
                 )
               }
 
-              if (fieldKey === "years_experience") {
+              // Handle number field (experience)
+              if (fieldKey === "experience") {
                 return (
                   <div key={fieldKey} className="space-y-2">
                     <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-                      {label} <span className="text-[#EC8F8D]">*</span>
+                      <Icon className="w-4 h-4 inline mr-2 text-[#8a8a82]" />
+                      {label} {isRequired && <span className="text-[#EC8F8D]">*</span>}
                     </label>
                     <input
                       type="number"
@@ -499,25 +567,20 @@ export default function FormPage({ params }: FormPageProps) {
                       value={formData[fieldKey] || ""}
                       onChange={(e) => handleInputChange(fieldKey, e.target.value)}
                       className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200"
-                      placeholder="e.g., 3.5"
+                      placeholder={placeholder}
                     />
                   </div>
                 )
               }
 
-              const inputType =
-                fieldKey === "email"
-                  ? "email"
-                  : fieldKey.includes("link")
-                    ? "url"
-                    : fieldKey === "phone"
-                      ? "tel"
-                      : "text"
+              // Determine input type
+              const inputType = fieldConfig.type
 
               return (
                 <div key={fieldKey} className="space-y-2">
                   <label className="block font-['Jost'] text-sm font-medium text-[#1C2321]">
-                    {label} <span className="text-[#EC8F8D]">*</span>
+                    <Icon className="w-4 h-4 inline mr-2 text-[#8a8a82]" />
+                    {label} {isRequired && <span className="text-[#EC8F8D]">*</span>}
                   </label>
                   <input
                     type={inputType}
@@ -525,22 +588,13 @@ export default function FormPage({ params }: FormPageProps) {
                     value={formData[fieldKey] || ""}
                     onChange={(e) => handleInputChange(fieldKey, e.target.value)}
                     className="w-full px-4 py-3 border border-[#1C2321]/10 rounded-lg font-['Jost'] text-[#1C2321] placeholder:text-[#8a8a82] focus:outline-none focus:border-[#44A194] focus:ring-2 focus:ring-[#44A194]/20 transition-all duration-200"
-                    placeholder={
-                      fieldKey === "name"
-                        ? "Enter your full name"
-                        : fieldKey === "email"
-                          ? "your.email@example.com"
-                          : fieldKey === "phone"
-                            ? "+91 1234567890"
-                            : fieldKey.includes("link")
-                              ? `https://your${fieldKey.replace("_link", "")}.com`
-                              : `Enter your ${label.toLowerCase()}`
-                    }
+                    placeholder={placeholder}
                   />
                 </div>
               )
             })}
 
+            {/* Custom Questions */}
             {form?.custom_questions?.map((question: any) => renderCustomQuestion(question))}
 
             {/* Error Display */}
