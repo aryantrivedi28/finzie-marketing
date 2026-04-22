@@ -2,9 +2,8 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail, Lock, ArrowRight, ArrowLeft, Briefcase, AlertCircle, LogIn, UserPlus } from "lucide-react"
+import { Mail, Lock, ArrowRight, ArrowLeft, Briefcase, AlertCircle, LogIn, Sparkles } from "lucide-react"
 
 export default function FreelancerPage() {
   const [email, setEmail] = useState("")
@@ -64,14 +63,7 @@ export default function FreelancerPage() {
         return
       }
 
-      // ✅ Redirect user according to profile completion
-      if (data.redirectTo === "/get-hired/freelancer/profile-data") {
-        // User is new or incomplete profile
-        window.location.href = data.redirectTo
-      } else {
-        // User already completed profile
-        window.location.href = data.redirectTo
-      }
+      window.location.href = data.redirectTo
     } catch (err) {
       setError("An error occurred. Please try again.")
       console.error(err)
@@ -80,51 +72,42 @@ export default function FreelancerPage() {
     }
   }
 
-  // Button hover handler
-  const handleButtonHover = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const target = e.currentTarget
-    target.style.transform = 'scale(1.03)'
-    target.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease'
-    target.style.boxShadow = '0 4px 12px rgba(36, 28, 21, 0.1)'
-  }
-
-  const handleButtonLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const target = e.currentTarget
-    target.style.transform = 'scale(1)'
-    target.style.boxShadow = '0 2px 6px rgba(36, 28, 21, 0.05)'
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#faf4e5' }}>
+    <div className="min-h-screen bg-cream flex items-center justify-center p-4">
       <div className="w-full max-w-xl">
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-4 rounded-full mb-4" style={{ backgroundColor: '#f7af00' }}>
-            <Briefcase className="h-10 w-10" style={{ color: '#050504' }} />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-teal/10 rounded-full mb-4">
+            <Briefcase className="h-8 w-8 text-teal" />
           </div>
-          <h1 className="text-4xl font-medium mb-2" style={{ color: '#050504' }}>
-            Freelancers
+          <h1 className="text-4xl font-light text-night mb-2">
+            Freelancer Portal
           </h1>
-          <p className="text-xl" style={{ color: '#31302f' }}>
-            Access your Dashboard
+          <p className="text-lg text-carbon">
+            Access your dashboard
           </p>
+          <div className="mt-2">
+            <span className="text-xs tracking-[0.2em] text-stone uppercase">
+              A Finzie Company
+            </span>
+          </div>
         </div>
 
-        <Card className="border shadow-sm rounded-lg" style={{ backgroundColor: '#f0eadd' }}>
-          <CardHeader className="space-y-3 border-b pb-6" style={{ borderBottomColor: '#f7af00' }}>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="p-2 rounded-lg" style={{ backgroundColor: '#f0eadd' }}>
+        <Card className="border border-teal/10 shadow-sm rounded-2xl bg-white">
+          <CardHeader className="space-y-3 border-b border-teal/10 pb-6">
+            <div className="flex items-center justify-center gap-2">
+              <div className="p-2 rounded-lg bg-teal/5">
                 {step === "email" ? (
-                  <Mail className="h-5 w-5" style={{ color: '#f7af00' }} />
+                  <Mail className="h-5 w-5 text-teal" />
                 ) : (
-                  <Lock className="h-5 w-5" style={{ color: '#f7af00' }} />
+                  <Lock className="h-5 w-5 text-teal" />
                 )}
               </div>
-              <CardTitle className="text-2xl font-medium" style={{ color: '#050504' }}>
-                {step === "email" ? "Sign Up" : "Verify OTP"}
+              <CardTitle className="text-2xl font-light text-night">
+                {step === "email" ? "Sign in" : "Verify OTP"}
               </CardTitle>
             </div>
-            <CardDescription className="text-center text-base" style={{ color: '#31302f' }}>
+            <CardDescription className="text-center text-base text-carbon normal-case">
               {step === "email" 
                 ? "Enter your email to receive a one-time password" 
                 : `We sent a 6-digit code to ${email}`}
@@ -133,11 +116,13 @@ export default function FreelancerPage() {
 
           <CardContent className="pt-6">
             {error && (
-              <div className="mb-6 p-4 rounded-lg border flex items-start space-x-3" style={{ backgroundColor: '#f0eadd', borderColor: '#241C15' }}>
-                <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: '#241C15' }} />
-                <div>
-                  <p className="text-sm font-medium" style={{ color: '#31302f' }}>Error</p>
-                  <p className="text-sm" style={{ color: '#31302f' }}>{error}</p>
+              <div className="mb-6 p-4 rounded-lg bg-coral/10 border-l-4 border-coral">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-coral flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-carbon normal-case">Error</p>
+                    <p className="text-sm text-carbon normal-case">{error}</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -145,55 +130,43 @@ export default function FreelancerPage() {
             {step === "email" ? (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium" style={{ color: '#31302f' }}>
+                  <label className="block text-sm font-medium text-carbon normal-case">
                     Email Address
                   </label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                      <Mail className="h-5 w-5" style={{ color: '#31302f' }} />
+                      <Mail className="h-5 w-5 text-stone" />
                     </div>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="your@email.com"
+                      placeholder="your.email@example.com"
                       required
                       disabled={loading}
-                      className="w-full pl-11 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-offset-0 transition-all disabled:opacity-50"
-                      style={{ 
-                        borderColor: '#241C15', 
-                        color: '#31302f',
-                        backgroundColor: '#f0eadd'
-                      }}
+                      className="w-full pl-11 pr-4 py-3 border border-stone/20 rounded-lg text-carbon placeholder:text-stone focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all duration-200 disabled:opacity-50 bg-white"
                     />
                   </div>
                 </div>
 
-                <Button 
+                <button 
                   onClick={handleSendOTP}
                   disabled={loading || !email}
-                  className="w-full text-base font-semibold py-3 flex items-center justify-center space-x-2 transition-all disabled:opacity-50 rounded-lg"
-                  style={{ 
-                    backgroundColor: '#f7af00', 
-                    color: '#050504',
-                    boxShadow: "0 2px 6px rgba(36, 28, 21, 0.05)"
-                  }}
-                  onMouseEnter={handleButtonHover}
-                  onMouseLeave={handleButtonLeave}
+                  className="group w-full bg-teal hover:bg-teal/90 text-white font-medium py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <span>{loading ? "Sending..." : "Send OTP"}</span>
-                  {!loading && <ArrowRight className="h-5 w-5" />}
-                </Button>
+                  {!loading && <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />}
+                </button>
               </div>
             ) : (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium" style={{ color: '#31302f' }}>
-                    One-Time Password
+                  <label className="block text-sm font-medium text-carbon normal-case">
+                    One-time password
                   </label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                      <Lock className="h-5 w-5" style={{ color: '#31302f' }} />
+                      <Lock className="h-5 w-5 text-stone" />
                     </div>
                     <input
                       type="text"
@@ -203,57 +176,37 @@ export default function FreelancerPage() {
                       maxLength={6}
                       required
                       disabled={loading}
-                      className="w-full pl-11 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-1 focus:ring-offset-0 transition-all disabled:opacity-50 text-center text-2xl font-bold tracking-widest"
-                      style={{ 
-                        borderColor: '#241C15', 
-                        color: '#31302f',
-                        backgroundColor: '#f0eadd',
-                        letterSpacing: '0.5em'
-                      }}
+                      className="w-full pl-11 pr-4 py-3 border border-stone/20 rounded-lg text-carbon placeholder:text-stone focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all duration-200 disabled:opacity-50 text-center text-2xl font-mono tracking-[0.5em] bg-white"
                     />
                   </div>
-                  <p className="text-xs text-center" style={{ color: '#31302f' }}>
+                  <p className="text-xs text-center text-stone normal-case">
                     Enter the 6-digit code sent to your email
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  <Button 
+                  <button 
                     onClick={handleVerifyOTP}
                     disabled={loading || otp.length !== 6}
-                    className="w-full text-base font-semibold py-3 flex items-center justify-center space-x-2 transition-all disabled:opacity-50 rounded-lg"
-                    style={{ 
-                      backgroundColor: '#f7af00', 
-                      color: '#050504',
-                      boxShadow: "0 2px 6px rgba(36, 28, 21, 0.05)"
-                    }}
-                    onMouseEnter={handleButtonHover}
-                    onMouseLeave={handleButtonLeave}
+                    className="group w-full bg-teal hover:bg-teal/90 text-white font-medium py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     <LogIn className="h-5 w-5" />
                     <span>{loading ? "Verifying..." : "Verify & Continue"}</span>
-                  </Button>
+                    {!loading && <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />}
+                  </button>
 
-                  <Button
+                  <button
                     onClick={() => {
                       setStep("email")
                       setOtp("")
                       setError("")
                     }}
                     disabled={loading}
-                    className="w-full text-base font-semibold py-3 flex items-center justify-center space-x-2 transition-all duration-200 rounded-lg disabled:opacity-50"
-                    style={{ 
-                      borderColor: '#241C15', 
-                      color: '#31302f',
-                      backgroundColor: 'transparent',
-                      border: '1px solid #241C15'
-                    }}
-                    onMouseEnter={handleButtonHover}
-                    onMouseLeave={handleButtonLeave}
+                    className="w-full border border-stone/20 hover:border-teal text-carbon font-medium py-3 rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 bg-white"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    <span>Back to Email</span>
-                  </Button>
+                    <span>Back to email</span>
+                  </button>
                 </div>
 
                 {/* Resend OTP */}
@@ -261,8 +214,7 @@ export default function FreelancerPage() {
                   <button
                     onClick={handleSendOTP}
                     disabled={loading}
-                    className="text-sm font-medium transition-colors disabled:opacity-50 hover:underline"
-                    style={{ color: '#241C15' }}
+                    className="text-sm text-teal hover:text-teal/80 transition-colors disabled:opacity-50 normal-case"
                   >
                     Didn't receive the code? Resend OTP
                   </button>
@@ -272,14 +224,13 @@ export default function FreelancerPage() {
           </CardContent>
         </Card>
 
-        {/* Already Registered Link */}
+        {/* Info Message */}
         {step === "email" && (
           <div className="mt-6 text-center">
-            <div className="inline-flex items-center space-x-2 p-4 rounded-lg border" style={{ backgroundColor: '#f0eadd', borderColor: '#f7af00' }}>
-              <UserPlus className="h-5 w-5" style={{ color: '#f7af00' }} />
-              <p className="text-lg" style={{ color: '#31302f' }}>
-                <span>Already have an account? </span>
-                <span className="font-medium">Just enter your email above to login</span>
+            <div className="inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-teal/5 border border-teal/20">
+              <Sparkles className="h-5 w-5 text-teal" />
+              <p className="text-carbon normal-case">
+                <span className="font-medium text-teal">First time?</span> Just enter your email above to get started
               </p>
             </div>
           </div>
@@ -287,15 +238,15 @@ export default function FreelancerPage() {
 
         {/* Footer Links */}
         <div className="mt-8 text-center space-y-2">
-          <p className="text-xs" style={{ color: '#31302f' }}>
+          <p className="text-xs text-stone normal-case">
             By continuing, you agree to our Terms of Service and Privacy Policy
           </p>
-          <div className="flex items-center justify-center space-x-4 text-xs">
-            <a href="#" className="hover:underline font-medium" style={{ color: '#31302f' }}>
+          <div className="flex items-center justify-center gap-4 text-xs">
+            <a href="#" className="text-stone hover:text-teal transition-colors normal-case">
               Help Center
             </a>
-            <span style={{ color: '#31302f' }}>•</span>
-            <a href="#" className="hover:underline font-medium" style={{ color: '#31302f' }}>
+            <span className="text-stone">•</span>
+            <a href="#" className="text-stone hover:text-teal transition-colors normal-case">
               Contact Support
             </a>
           </div>
