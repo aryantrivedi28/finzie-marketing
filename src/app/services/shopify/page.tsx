@@ -302,7 +302,6 @@ export default function ShopifyCategoryPage() {
                     <p className="text-xs text-stone leading-relaxed mb-3">{service.description}</p>
                     <div className="flex items-center justify-between text-xs mb-4">
                       <span className="text-teal font-medium">⏱ {service.timeline}</span>
-                      <span className="text-night font-body">{service.price}</span>
                     </div>
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-teal uppercase tracking-wide group-hover:gap-2 transition-all">View Service → <ArrowRight className="w-3 h-3" /></span>
                   </div>
