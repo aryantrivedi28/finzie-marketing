@@ -60,7 +60,6 @@ export default function ShopifyCategoryPage() {
       name: 'Theme Development',
       description: 'Custom theme development, Liquid coding, template customization that matches your brand.',
       timeline: '5-10 days',
-      price: 'From $1,997',
       icon: Palette,
     },
     {
@@ -68,7 +67,6 @@ export default function ShopifyCategoryPage() {
       name: 'Conversion Rate Optimization',
       description: 'A/B testing, checkout optimization, and conversion funnel improvement to boost sales.',
       timeline: 'Ongoing',
-      price: 'From $1,497/mo',
       icon: TrendingUp,
     },
     {
@@ -76,7 +74,6 @@ export default function ShopifyCategoryPage() {
       name: 'App Integration',
       description: 'Shopify apps, automation, workflows, and API connections to streamline operations.',
       timeline: '2-4 days',
-      price: 'From $497',
       icon: Plug,
     },
     {
@@ -84,7 +81,6 @@ export default function ShopifyCategoryPage() {
       name: 'Shopify Plus',
       description: 'Enterprise Shopify, multi-store management, and advanced features for scaling brands.',
       timeline: 'Custom',
-      price: 'Custom pricing',
       icon: Diamond,
     },
     {
@@ -92,7 +88,6 @@ export default function ShopifyCategoryPage() {
       name: 'Liquid Development',
       description: 'Liquid templating, custom sections, dynamic content for advanced functionality.',
       timeline: '3-7 days',
-      price: 'From $797',
       icon: Code,
     },
     {
@@ -100,7 +95,6 @@ export default function ShopifyCategoryPage() {
       name: 'Checkout Optimization',
       description: 'Custom checkout, post-purchase upsells, and cart abandonment recovery.',
       timeline: '3-5 days',
-      price: 'From $1,297',
       icon: ShoppingCart,
     },
     {
@@ -108,7 +102,6 @@ export default function ShopifyCategoryPage() {
       name: 'AOV Strategy',
       description: 'Bundle offers, cross-sells, volume discounts to increase average order value.',
       timeline: '2-3 days',
-      price: 'From $597',
       icon: Wallet,
     }
   ]
