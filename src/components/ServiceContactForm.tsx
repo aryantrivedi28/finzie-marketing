@@ -382,7 +382,7 @@ export default function ServiceContactForm({
                 </button>
 
                 <p className="text-center text-[9px] text-[#8a8a82]">
-                    Response within 24 hours
+                    Response with an hours
                 </p>
             </form>
         </div>

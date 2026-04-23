@@ -32,7 +32,6 @@ export default function ShopifyCategoryPage() {
       name: 'Store Setup',
       description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
       timeline: '3-5 days',
-      price: 'From $997',
       icon: Store,
     },
     {
@@ -40,7 +39,6 @@ export default function ShopifyCategoryPage() {
       name: 'Store Migration',
       description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
       timeline: '3-5 days',
-      price: 'From $997',
       icon: Store,
     },
     {
@@ -48,7 +46,6 @@ export default function ShopifyCategoryPage() {
       name: 'Store Development',
       description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
       timeline: '3-5 days',
-      price: 'From $997',
       icon: Store,
     },
     {
@@ -56,7 +53,6 @@ export default function ShopifyCategoryPage() {
       name: 'Website Development',
       description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
       timeline: '3-5 days',
-      price: 'From $997',
       icon: Store,
     },
     {
