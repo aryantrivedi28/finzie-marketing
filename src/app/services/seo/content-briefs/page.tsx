@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
 import { FileText, ListTree, Link as LinkIcon, HelpCircle, Network, LineChart, Image, FileCheck, ClipboardCheck } from 'lucide-react';
+import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export const metadata = {
   title: 'SEO Content Briefs Services | Content Strategy | ExecuMarketing',
@@ -49,11 +50,13 @@ export default function ContentBriefsPage() {
                 <Link href="#included" className="bg-transparent text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all">What's Included</Link>
               </div>
             </div>
-            <div className="bg-white/10 border border-white/15 rounded-2xl p-6 md:p-8">
-              <h3 className="text-[0.68rem] font-bold uppercase tracking-[0.08em] text-white/50 mb-5">Content Brief Stats</h3>
-              <div className="flex items-center gap-4 py-3 border-b border-white/10"><div className="text-[1.4rem] font-extrabold text-[#44A194] min-w-[80px]">200+</div><div className="text-[0.78rem] text-white/50">Content briefs created</div></div>
-              <div className="flex items-center gap-4 py-3 border-b border-white/10"><div className="text-[1.4rem] font-extrabold text-[#44A194] min-w-[80px]">50%</div><div className="text-[0.78rem] text-white/50">Faster content production</div></div>
-              <div className="flex items-center gap-4 py-3"><div className="text-[1.4rem] font-extrabold text-[#44A194] min-w-[80px]">3x</div><div className="text-[0.78rem] text-white/50">Higher ranking success rate</div></div>
+            {/* Contact Form */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6">
+              <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
+              <ServiceContactForm
+                preSelectedCategory="Shopify Engine"
+                preSelectedSubCategory="Store Setup & Migration"
+              />
             </div>
           </div>
         </div>

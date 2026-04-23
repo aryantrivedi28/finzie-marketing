@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
 import { Users, Star, Mail, BarChart3, TrendingUp, Calendar, Award, Target, Handshake } from 'lucide-react';
+import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export const metadata = {
   title: 'Influencer Outreach Services | Influencer Marketing | ExecuMarketing',
@@ -49,11 +50,13 @@ export default function InfluencerOutreachPage() {
                 <Link href="#included" className="bg-transparent text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all">What's Included</Link>
               </div>
             </div>
-            <div className="bg-white/10 border border-white/15 rounded-2xl p-6 md:p-8">
-              <h3 className="text-[0.68rem] font-bold uppercase tracking-[0.08em] text-white/50 mb-5">Influencer Stats</h3>
-              <div className="flex items-center gap-4 py-3 border-b border-white/10"><div className="text-[1.4rem] font-extrabold text-[#44A194] min-w-[80px]">200+</div><div className="text-[0.78rem] text-white/50">Influencer partnerships</div></div>
-              <div className="flex items-center gap-4 py-3 border-b border-white/10"><div className="text-[1.4rem] font-extrabold text-[#44A194] min-w-[80px]]">5x</div><div className="text-[0.78rem] text-white/50">Avg ROI from campaigns</div></div>
-              <div className="flex items-center gap-4 py-3"><div className="text-[1.4rem] font-extrabold text-[#44A194] min-w-[80px]]">50+</div><div className="text-[0.78rem] text-white/50">Campaigns managed</div></div>
+            {/* Contact Form */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6">
+              <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
+              <ServiceContactForm
+                preSelectedCategory="Shopify Engine"
+                preSelectedSubCategory="Store Setup & Migration"
+              />
             </div>
           </div>
         </div>
@@ -113,7 +116,7 @@ export default function InfluencerOutreachPage() {
       <section className="py-16 md:py-20 bg-[#F4F0E4]">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8">
           <div className="max-w-[600px] mb-12"><div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3"><span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>Our Process</div>
-          <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">How We Build<br /><span className="text-[#44A194]">Influencer Campaigns</span></h2></div>
+            <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">How We Build<br /><span className="text-[#44A194]">Influencer Campaigns</span></h2></div>
           <div className="flex flex-col">{[
             { title: 'Influencer Identification', description: 'We find influencers in your niche based on audience, engagement, and brand alignment.' },
             { title: 'Vetting & Qualification', description: 'We verify authentic engagement, audience quality, and past brand partnerships.' },
@@ -132,7 +135,7 @@ export default function InfluencerOutreachPage() {
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8">
           <div className="text-center max-w-[600px] mx-auto mb-12"><div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3 justify-center"><span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>FAQs</div>
-          <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">Common Questions About<br /><span className="text-[#44A194]">Influencer Outreach</span></h2></div>
+            <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">Common Questions About<br /><span className="text-[#44A194]">Influencer Outreach</span></h2></div>
           <div className="max-w-[800px] mx-auto">{faqs.map((faq, index) => (
             <div key={index} className="border-b border-[rgba(28,35,33,0.08)]"><details className="group py-5"><summary className="flex justify-between items-center cursor-pointer list-none text-[0.92rem] font-semibold text-[#1C2321] hover:text-[#44A194] transition-colors">{faq.q}<span className="text-[0.7rem] text-[#8a8a82] group-open:rotate-180 transition-transform">▼</span></summary><p className="text-[0.85rem] font-light text-[#8a8a82] leading-relaxed pt-2 pb-3">{faq.a}</p></details></div>
           ))}</div>

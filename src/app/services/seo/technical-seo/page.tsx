@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
 import { FaSearch, FaTachometerAlt, FaSpider, FaCode, FaLink, FaMobileAlt, FaShieldAlt, FaGlobe, FaChartLine } from 'react-icons/fa';
+import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export const metadata = {
   title: 'Technical SEO Services | Site Audit & Optimization | ExecuMarketing',
@@ -52,26 +53,13 @@ export default function TechnicalSEOPage() {
                 </Link>
               </div>
             </div>
-            <div>
-              <div className="bg-white/10 border border-white/15 rounded-2xl p-6 md:p-8">
-                <h3 className="text-[0.68rem] font-bold uppercase tracking-[0.08em] text-white/50 mb-5">Technical SEO Stats</h3>
-                <div className="flex items-center gap-4 py-3 border-b border-white/10">
-                  <div className="text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] min-w-[80px]">200+</div>
-                  <div className="text-[0.78rem] text-white/50">Site audits completed</div>
-                </div>
-                <div className="flex items-center gap-4 py-3 border-b border-white/10">
-                  <div className="text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] min-w-[80px]">40%</div>
-                  <div className="text-[0.78rem] text-white/50">Faster load times</div>
-                </div>
-                <div className="flex items-center gap-4 py-3 border-b border-white/10">
-                  <div className="text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] min-w-[80px]">50+</div>
-                  <div className="text-[0.78rem] text-white/50">Indexing issues fixed</div>
-                </div>
-                <div className="flex items-center gap-4 py-3">
-                  <div className="text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] min-w-[80px]">100%</div>
-                  <div className="text-[0.78rem] text-white/50">Crawl budget optimized</div>
-                </div>
-              </div>
+            {/* Contact Form */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6">
+              <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
+              <ServiceContactForm
+                preSelectedCategory="Shopify Engine"
+                preSelectedSubCategory="Store Setup & Migration"
+              />
             </div>
           </div>
         </div>
@@ -198,7 +186,7 @@ export default function TechnicalSEOPage() {
       </section>
 
       {/* CTA Band */}
-      <CtaBand 
+      <CtaBand
         title='Fix Your Sites Foundation.<br /><span class="hl-green">Get Your Free Technical SEO Audit.</span>'
         description="We'll analyze your site and provide a roadmap to fix every technical issue holding back your rankings. No obligation."
         primaryText="Get Free Audit →"
