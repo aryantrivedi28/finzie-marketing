@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
 import { BarChart3, Users, FileText, Target, TrendingUp, Award, Clock, BookOpen, Presentation } from 'lucide-react';
+import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export const metadata = {
   title: 'Case Study Writing Services | Success Stories | ExecuMarketing',
