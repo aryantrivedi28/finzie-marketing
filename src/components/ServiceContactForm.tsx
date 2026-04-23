@@ -17,7 +17,9 @@ const SERVICE_CATEGORIES = {
         'Shopify Plus',
         'Liquid Development',
         'Checkout Optimization',
-        'AOV Strategy'
+        'AOV Strategy',
+        'Website Development',
+        'Store Development'
     ],
     'Paid Ads Engine': [
         'Meta Ads',

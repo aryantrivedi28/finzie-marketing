@@ -1,71 +1,70 @@
-// app/services/shopify/store-setup/page.tsx
+// app/services/shopify/website-development/page.tsx
 import Link from 'next/link';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
 import {
-    Store,
-    Palette,
-    Settings,
+    Globe,
+    Layout,
     Smartphone,
-    Plug,
-    GraduationCap,
+    Rocket,
+    Search,
+    TrendingUp,
+    Users,
+    ShoppingBag,
     ArrowRight,
     CheckCircle2,
     ChevronDown,
-    Rocket,
     Zap,
-    Globe,
-    Shield,
-    Layout,
-    Sparkles
+    Eye,
+    BarChart3
 } from 'lucide-react';
 import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export const metadata = {
-    title: 'Shopify Store Setup Services | Launch Your E-commerce Store | ExecuMarketing',
-    description: 'Professional Shopify store setup from scratch. Complete configuration, theme selection, branding, and launch within 5-7 days. Start selling online today.',
-    keywords: 'Shopify store setup, launch Shopify store, e-commerce setup, Shopify configuration, online store setup'
+    title: 'Shopify Website Development Services | Shopify Web Design | ExecuMarketing',
+    description: 'Professional Shopify website development for landing pages, campaign pages, and brand websites. Fast, responsive, and conversion-focused web design.',
+    keywords: 'Shopify website development, Shopify web design, Shopify landing pages, campaign pages, brand website'
 };
 
-export default function StoreSetupClient() {
+export default function ShopifyWebsiteDevelopmentPage() {
     const includedItems = [
-        { icon: Store, title: 'Complete Store Configuration', description: 'Full Shopify store setup from scratch including store settings, currency, language, and regional configurations.' },
-        { icon: Palette, title: 'Theme Selection & Customization', description: 'Professional theme selection and basic customization to match your brand identity and requirements.' },
-        { icon: Layout, title: 'Custom Pages Creation', description: 'Create essential pages including Home, About, Contact, FAQ, Returns, and Terms & Conditions.' },
-        { icon: Settings, title: 'Payment & Shipping Setup', description: 'Configure payment gateways (Stripe, PayPal, Shopify Payments), shipping zones, rates, and tax settings.' },
-        { icon: Smartphone, title: 'Mobile-Responsive Design', description: 'Ensure your store looks perfect on all devices with mobile-first responsive design optimization.' },
-        { icon: Globe, title: 'Domain Configuration', description: 'Custom domain setup, SSL certificate installation, and DNS configuration for professional branding.' },
-        { icon: Plug, title: 'Essential Apps Installation', description: 'Install and configure must-have apps for email marketing, reviews, analytics, and customer support.' },
-        { icon: Shield, title: 'Security & Compliance', description: 'Setup security best practices, GDPR compliance, cookie consent, and privacy policy pages.' },
-        { icon: GraduationCap, title: 'Launch Support & Training', description: '30 days post-launch support including training on store management, product uploads, and order processing.' },
+        { icon: Globe, title: 'Landing Page Development', description: 'High-converting landing pages for product launches, promotions, and marketing campaigns.' },
+        { icon: Layout, title: 'Brand Website Design', description: 'Complete brand website design that tells your story and showcases your products.' },
+        { icon: Smartphone, title: 'Mobile-First Development', description: 'Responsive websites optimized for all devices with mobile-first design approach.' },
+        { icon: Rocket, title: 'Fast Loading Pages', description: 'Lightning-fast page load times optimized for Core Web Vitals and user experience.' },
+        { icon: Search, title: 'SEO-Ready Structure', description: 'SEO-optimized page structure, meta tags, and semantic HTML for better rankings.' },
+        { icon: TrendingUp, title: 'Conversion-Focused Design', description: 'Strategic design elements that drive conversions — CTAs, trust signals, and social proof.' },
+        { icon: Users, title: 'Lead Capture Integration', description: 'Email signup forms, contact forms, and lead capture integration with your CRM.' },
+        { icon: ShoppingBag, title: 'Product Showcase Pages', description: 'Beautiful product showcase pages with custom layouts and interactive elements.' },
+        { icon: Zap, title: 'Analytics & Tracking Setup', description: 'GA4, Facebook Pixel, and conversion tracking setup for campaign measurement.' },
     ];
 
-    const processSteps = [
-        { title: 'Discovery & Planning', description: 'We discuss your business goals, target audience, product range, and design preferences. We create a detailed setup roadmap.' },
-        { title: 'Store Configuration', description: 'We configure your Shopify store settings, set up payment gateways, shipping zones, taxes, and legal pages.' },
-        { title: 'Theme Setup & Customization', description: 'We select and install your theme, customize colors, fonts, and layouts to match your brand identity.' },
-        { title: 'Product Upload & Organization', description: 'We upload your products, organize collections, optimize product descriptions, and set up inventory management.' },
-        { title: 'Launch & Training', description: 'We perform final testing, launch your store, and provide comprehensive training on managing your new Shopify store.' },
+    const websiteTypes = [
+        { type: 'Landing Pages', desc: 'High-converting pages for paid campaigns and promotions', time: '3-5 days' },
+        { type: 'Product Showcase', desc: 'Feature-rich product catalog and category pages', time: '5-7 days' },
+        { type: 'Brand Story', desc: 'About us, mission, and brand narrative pages', time: '3-5 days' },
+        { type: 'Campaign Microsites', desc: 'Standalone sites for product launches and events', time: '7-10 days' },
+        { type: 'Resource Hubs', desc: 'Blog, guides, and educational content hubs', time: '5-7 days' },
     ];
 
     const faqs = [
-        { q: 'How long does it take to set up a Shopify store?', a: 'A complete store setup typically takes 5-7 business days. This includes configuration, theme customization, product uploads, and testing.' },
-        { q: 'Do I need to have products ready before starting?', a: 'Having product information (images, descriptions, prices) ready helps speed up the process, but we can also help you organize and optimize your product data.' },
-        { q: 'Can you help with custom design?', a: 'Yes. We offer theme customization to match your brand. For completely custom designs, check out our Theme Development service.' },
-        { q: 'What platform do you use?', a: 'We specialize in Shopify. It\'s the most reliable, scalable, and user-friendly e-commerce platform for businesses of all sizes.' },
-        { q: 'Will my store be mobile-friendly?', a: 'Absolutely. All our stores are built with mobile-first design, ensuring perfect display and functionality on smartphones and tablets.' },
-        { q: 'Do you provide training after launch?', a: 'Yes. We provide comprehensive training on managing your store, adding products, processing orders, and using Shopify\'s features.' },
+        { q: 'How long does website development take?', a: 'Landing pages: 3-5 days. Full brand websites: 7-14 days. Complex custom sites: 2-3 weeks.' },
+        { q: 'Do you provide content?', a: 'We provide content structure and recommendations. Copywriting and images can be provided by you or our content team.' },
+        { q: 'Can you integrate with my email marketing?', a: 'Yes. We integrate with Klaviyo, Mailchimp, Omnisend, and other email platforms for lead capture.' },
+        { q: 'Will my website be mobile-friendly?', a: 'Absolutely. All our websites are built mobile-first and tested on all devices and screen sizes.' },
+        { q: 'Do you provide revisions?', a: 'Yes. We provide up to 3 rounds of revisions to ensure the website meets your expectations.' },
+        { q: 'Can you add e-commerce functionality later?', a: 'Yes. We can start with a brand website and add e-commerce functionality as you scale.' },
     ];
 
     const relatedServices = [
-        { title: 'Theme Development', description: 'Custom Shopify theme development with Liquid coding. Make your store unique and branded.', href: '/services/shopify/theme-development' },
-        { title: 'Conversion Rate Optimization', description: 'Optimize your checkout, product pages, and funnel to convert more visitors into customers.', href: '/services/shopify/cro' },
-        { title: 'App Integration', description: 'Connect essential Shopify apps, automation workflows, and custom integrations.', href: '/services/shopify/app-integration' },
+        { title: 'Store Setup', description: 'Full Shopify store setup from scratch.', href: '/services/shopify/store-setup' },
+        { title: 'Conversion Rate Optimization', description: 'Optimize your website for conversions.', href: '/services/shopify/cro' },
+        { title: 'SEO Services', description: 'Rank higher with SEO-optimized websites.', href: '/services/seo' },
     ];
 
     return (
         <>
-            <Breadcrumb items={[{ label: 'Services', href: '/services' }, { label: 'Shopify Engine', href: '/services/shopify' }, { label: 'Store Setup' }]} />
+            <Breadcrumb items={[{ label: 'Services', href: '/services' }, { label: 'Shopify Engine', href: '/services/shopify' }, { label: 'Website Development' }]} />
 
             {/* Hero Section */}
             <section className="bg-gradient-to-b from-[#1C2321] to-[#0F1513] text-white py-16 md:py-20 relative overflow-hidden">
@@ -77,15 +76,15 @@ export default function StoreSetupClient() {
                                 Shopify Service
                             </div>
                             <h1 className="text-[clamp(2rem,4vw,2.8rem)] font-extrabold tracking-[-0.03em] leading-[1.1] mb-4">
-                                Store Setup<br />
-                                <span className="text-[#44A194]">From Scratch</span>
+                                Website Development<br />
+                                <span className="text-[#44A194]">For Shopify</span>
                             </h1>
                             <p className="text-[0.95rem] font-light text-white/60 leading-relaxed max-w-[520px] mb-8">
-                                Launch your online store with <strong className="text-white/90 font-medium">complete Shopify setup from scratch</strong>. We handle everything from configuration to launch — you start selling within a week.
+                                Build <strong className="text-white/90 font-medium">fast, responsive, and conversion-focused websites on Shopify</strong>. Landing pages, brand sites, and campaign pages that drive results.
                             </p>
                             <div className="flex gap-3.5 flex-wrap">
                                 <Link href="/contact" className="bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
-                                    Get Started
+                                    Get Free Quote
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <Link href="#included" className="bg-transparent text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all">
@@ -105,6 +104,21 @@ export default function StoreSetupClient() {
                 </div>
             </section>
 
+            {/* Website Types */}
+            <div className="bg-[#1C2321] border-y border-white/10 py-6">
+                <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                        {websiteTypes.map((type, idx) => (
+                            <div key={idx} className="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+                                <div className="text-white/90 text-sm font-medium mb-1">{type.type}</div>
+                                <div className="text-white/40 text-xs">{type.desc}</div>
+                                <div className="text-[#44A194] text-xs mt-2">{type.time}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             {/* What's Included */}
             <section className="py-16 md:py-20 bg-[#F4F0E4]" id="included">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
@@ -114,11 +128,11 @@ export default function StoreSetupClient() {
                             What's Included
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
-                            Complete Store Setup<br />
+                            Complete Website Development<br />
                             <span className="text-[#44A194]">Package</span>
                         </h2>
                         <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed max-w-[580px] mx-auto">
-                            Everything you need to launch your Shopify store from scratch.
+                            Everything you need for a professional Shopify website.
                         </p>
                     </div>
 
@@ -149,22 +163,22 @@ export default function StoreSetupClient() {
                                 Who Is This For
                             </div>
                             <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-4 text-[#1C2321]">
-                                Is Store Setup<br />
+                                Is Website Development<br />
                                 <span className="text-[#44A194]">Right for Your Business?</span>
                             </h2>
                             <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed mb-4">
-                                Ready to start selling online but don't know where to begin? We handle the entire setup process so you can focus on your products and customers.
+                                Need a professional online presence? We build websites that look great, load fast, and convert visitors into customers.
                             </p>
                             <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed mb-4">
-                                <strong className="font-semibold text-[#1C2321]">Store setup makes sense if you are:</strong>
+                                <strong className="font-semibold text-[#1C2321]">Website development makes sense if you are:</strong>
                             </p>
                             <div className="space-y-2.5 mt-5">
                                 {[
-                                    'Launching your first online store',
-                                    'Moving from a physical store to online',
-                                    'Starting a new e-commerce brand',
-                                    'Wanting a professional setup without technical hassle',
-                                    'Looking for a quick launch within days',
+                                    'Launching a new brand or product',
+                                    'Running paid campaigns that need landing pages',
+                                    'Wanting a professional brand website',
+                                    'Needing a fast, mobile-responsive site',
+                                    'Looking to improve conversion rates',
                                 ].map((item, idx) => (
                                     <div key={idx} className="flex gap-2.5 text-[0.85rem] font-normal text-[#8a8a82] leading-relaxed">
                                         <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
@@ -174,15 +188,15 @@ export default function StoreSetupClient() {
                             </div>
                         </div>
                         <div className="bg-[#1C2321] rounded-2xl p-8 text-white">
-                            <h3 className="text-[1.1rem] font-bold mb-4">Launch Faster, Better</h3>
-                            <p className="text-[0.85rem] font-light text-white/60 leading-relaxed mb-3">DIY store setup takes weeks of learning, trial and error, and costly mistakes. Our professional setup gets you online in days with everything configured correctly.</p>
+                            <h3 className="text-[1.1rem] font-bold mb-4">The Website Advantage</h3>
+                            <p className="text-[0.85rem] font-light text-white/60 leading-relaxed mb-3">A professional website builds trust, drives conversions, and serves as your 24/7 salesperson. Don't let a poor website cost you customers.</p>
                             <div className="flex items-center gap-3 py-3 border-t border-white/10">
-                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">5-7 days</div>
-                                <div className="text-[0.78rem] text-white/50">vs 3-4 weeks DIY</div>
+                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">40%</div>
+                                <div className="text-[0.78rem] text-white/50">Higher conversion with professional design</div>
                             </div>
                             <div className="flex items-center gap-3 py-3 border-t border-white/10">
-                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">100%</div>
-                                <div className="text-[0.78rem] text-white/50">Correct configuration guaranteed</div>
+                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">53%</div>
+                                <div className="text-[0.78rem] text-white/50">Mobile users abandon slow sites</div>
                             </div>
                         </div>
                     </div>
@@ -195,24 +209,25 @@ export default function StoreSetupClient() {
                     <div className="max-w-[600px] mb-12">
                         <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3">
                             <span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>
-                            Our Setup Process
+                            Our Process
                         </div>
-                        <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
-                            How We Launch Your<br />
-                            <span className="text-[#44A194]">Store</span>
+                        <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
+                            How We Build Your<br />
+                            <span className="text-[#44A194]">Website</span>
                         </h2>
-                        <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed">A proven 5-step process for launching your Shopify store.</p>
+                        <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed">A simple 4-step process to launch your website.</p>
                     </div>
-                    <div className="flex flex-col">
-                        {processSteps.map((step, index) => (
-                            <div key={index} className="grid md:grid-cols-[80px_1fr] gap-6 py-8 border-b border-[rgba(28,35,33,0.08)] last:border-b-0">
-                                <div className="w-16 h-16 rounded-full bg-[#1C2321] flex items-center justify-center text-[0.9rem] font-extrabold text-[#44A194] flex-shrink-0">
-                                    {String(index + 1).padStart(2, '0')}
-                                </div>
-                                <div>
-                                    <h3 className="text-base font-bold text-[#1C2321] mb-1.5">{step.title}</h3>
-                                    <p className="text-[0.85rem] font-light text-[#8a8a82] leading-relaxed">{step.description}</p>
-                                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        {[
+                            { step: '01', title: 'Brief & Planning', desc: 'We understand your goals, audience, and design preferences.' },
+                            { step: '02', title: 'Design & Review', desc: 'We create designs and share for your feedback and approval.' },
+                            { step: '03', title: 'Development', desc: 'We build your website with clean, optimized code.' },
+                            { step: '04', title: 'Launch & Support', desc: 'We deploy your site and provide post-launch support.' },
+                        ].map((step, idx) => (
+                            <div key={idx} className="text-center p-6 bg-white rounded-xl border border-[rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">
+                                <div className="w-12 h-12 rounded-full bg-[#44A194] text-white flex items-center justify-center text-lg font-bold mx-auto mb-3">{step.step}</div>
+                                <h3 className="text-base font-bold text-[#1C2321] mb-1">{step.title}</h3>
+                                <p className="text-xs text-[#8a8a82] leading-relaxed">{step.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -227,9 +242,9 @@ export default function StoreSetupClient() {
                             <span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>
                             Frequently Asked Questions
                         </div>
-                        <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
+                        <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
                             Common Questions About<br />
-                            <span className="text-[#44A194]">Store Setup</span>
+                            <span className="text-[#44A194]">Website Development</span>
                         </h2>
                     </div>
                     <div className="max-w-[800px] mx-auto">
@@ -255,7 +270,7 @@ export default function StoreSetupClient() {
                             Related Services
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
-                            Maximize Your Store's Potential<br />
+                            Complete Your Online Presence<br />
                             <span className="text-[#44A194]">With These Services</span>
                         </h2>
                     </div>
@@ -274,9 +289,9 @@ export default function StoreSetupClient() {
             </section>
 
             <CtaBand
-                title='Ready to Launch Your Shopify Store?<br /><span class="hl-green">Get Started Today.</span>'
-                description="Launch in days, not weeks. Professional setup with everything configured correctly."
-                primaryText="Get Free Consultation →"
+                title='Ready to Build Your Shopify Website?<br /><span class="hl-green">Get a Free Website Quote.</span>'
+                description="Fast, responsive, and conversion-focused websites that drive results."
+                primaryText="Get Free Quote →"
                 primaryHref="/contact"
             />
         </>

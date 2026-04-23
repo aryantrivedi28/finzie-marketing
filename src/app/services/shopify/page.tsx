@@ -29,7 +29,31 @@ export default function ShopifyCategoryPage() {
   const subcategories = [
     {
       id: 'store-setup',
-      name: 'Store Setup & Migration',
+      name: 'Store Setup',
+      description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
+      timeline: '3-5 days',
+      price: 'From $997',
+      icon: Store,
+    },
+    {
+      id: 'store-migration',
+      name: 'Store Migration',
+      description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
+      timeline: '3-5 days',
+      price: 'From $997',
+      icon: Store,
+    },
+    {
+      id: 'store-development',
+      name: 'Store Development',
+      description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
+      timeline: '3-5 days',
+      price: 'From $997',
+      icon: Store,
+    },
+    {
+      id: 'website-development',
+      name: 'Website Development',
       description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
       timeline: '3-5 days',
       price: 'From $997',

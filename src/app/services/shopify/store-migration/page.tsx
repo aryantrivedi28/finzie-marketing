@@ -1,71 +1,75 @@
-// app/services/shopify/store-setup/page.tsx
+// app/services/shopify/store-migration/page.tsx
 import Link from 'next/link';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
 import {
-    Store,
-    Palette,
+    Database,
+    Package,
+    Users,
+    FileText,
+    Link as LinkIcon,
     Settings,
-    Smartphone,
-    Plug,
-    GraduationCap,
+    Shield,
+    Zap,
     ArrowRight,
     CheckCircle2,
     ChevronDown,
     Rocket,
-    Zap,
-    Globe,
-    Shield,
-    Layout,
-    Sparkles
+    Cloud,
+    Server,
+    RefreshCw
 } from 'lucide-react';
 import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export const metadata = {
-    title: 'Shopify Store Setup Services | Launch Your E-commerce Store | ExecuMarketing',
-    description: 'Professional Shopify store setup from scratch. Complete configuration, theme selection, branding, and launch within 5-7 days. Start selling online today.',
-    keywords: 'Shopify store setup, launch Shopify store, e-commerce setup, Shopify configuration, online store setup'
+    title: 'Shopify Store Migration Services | Move to Shopify | ExecuMarketing',
+    description: 'Professional Shopify store migration from WooCommerce, Magento, BigCommerce, and more. Zero downtime, complete data preservation, and SEO protection.',
+    keywords: 'Shopify migration, migrate to Shopify, WooCommerce to Shopify, Magento to Shopify, BigCommerce to Shopify'
 };
 
-export default function StoreSetupClient() {
+export default function StoreMigrationPage() {
     const includedItems = [
-        { icon: Store, title: 'Complete Store Configuration', description: 'Full Shopify store setup from scratch including store settings, currency, language, and regional configurations.' },
-        { icon: Palette, title: 'Theme Selection & Customization', description: 'Professional theme selection and basic customization to match your brand identity and requirements.' },
-        { icon: Layout, title: 'Custom Pages Creation', description: 'Create essential pages including Home, About, Contact, FAQ, Returns, and Terms & Conditions.' },
-        { icon: Settings, title: 'Payment & Shipping Setup', description: 'Configure payment gateways (Stripe, PayPal, Shopify Payments), shipping zones, rates, and tax settings.' },
-        { icon: Smartphone, title: 'Mobile-Responsive Design', description: 'Ensure your store looks perfect on all devices with mobile-first responsive design optimization.' },
-        { icon: Globe, title: 'Domain Configuration', description: 'Custom domain setup, SSL certificate installation, and DNS configuration for professional branding.' },
-        { icon: Plug, title: 'Essential Apps Installation', description: 'Install and configure must-have apps for email marketing, reviews, analytics, and customer support.' },
-        { icon: Shield, title: 'Security & Compliance', description: 'Setup security best practices, GDPR compliance, cookie consent, and privacy policy pages.' },
-        { icon: GraduationCap, title: 'Launch Support & Training', description: '30 days post-launch support including training on store management, product uploads, and order processing.' },
+        { icon: Database, title: 'Complete Data Migration', description: 'Migrate all products, customers, orders, and content from your current platform to Shopify with zero data loss.' },
+        { icon: Package, title: 'Product Transfer', description: 'Migrate products with images, variants, inventory, SEO metadata, collections, and pricing intact.' },
+        { icon: Users, title: 'Customer Data Migration', description: 'Secure transfer of customer accounts, order history, passwords, and customer groups.' },
+        { icon: FileText, title: 'Content Migration', description: 'Migrate blog posts, pages, CMS content, and media files from your existing platform.' },
+        { icon: LinkIcon, title: '301 Redirects Setup', description: 'Comprehensive 301 redirect mapping to preserve SEO rankings and prevent broken links.' },
+        { icon: Settings, title: 'Platform-Specific Migration', description: 'Specialized migration from WooCommerce, Magento, BigCommerce, Squarespace, Wix, and custom platforms.' },
+        { icon: Shield, title: 'SEO Preservation', description: 'Maintain URL structures, meta data, and implement redirects to protect your search rankings.' },
+        { icon: Zap, title: 'Zero Downtime Migration', description: 'Your current store stays live during migration. We switch with zero downtime when ready.' },
+        { icon: RefreshCw, title: 'Post-Migration Testing', description: 'Thorough testing of all data, functionality, and SEO elements before going live.' },
     ];
 
     const processSteps = [
-        { title: 'Discovery & Planning', description: 'We discuss your business goals, target audience, product range, and design preferences. We create a detailed setup roadmap.' },
-        { title: 'Store Configuration', description: 'We configure your Shopify store settings, set up payment gateways, shipping zones, taxes, and legal pages.' },
-        { title: 'Theme Setup & Customization', description: 'We select and install your theme, customize colors, fonts, and layouts to match your brand identity.' },
-        { title: 'Product Upload & Organization', description: 'We upload your products, organize collections, optimize product descriptions, and set up inventory management.' },
-        { title: 'Launch & Training', description: 'We perform final testing, launch your store, and provide comprehensive training on managing your new Shopify store.' },
+        { title: 'Discovery & Audit', description: 'We audit your current store, map all data structures, and create a detailed migration plan with timelines.' },
+        { title: 'Data Mapping & Preparation', description: 'We map data fields, prepare migration scripts, and set up your new Shopify store environment.' },
+        { title: 'Migration Execution', description: 'We migrate all data using automated tools with manual verification. Your current store stays live.' },
+        { title: 'Testing & Verification', description: 'We verify all migrated data, test functionality, and ensure SEO elements are preserved.' },
+        { title: 'Go-Live & Support', description: 'We switch DNS, verify everything works, and provide 30 days of post-migration support.' },
     ];
 
     const faqs = [
-        { q: 'How long does it take to set up a Shopify store?', a: 'A complete store setup typically takes 5-7 business days. This includes configuration, theme customization, product uploads, and testing.' },
-        { q: 'Do I need to have products ready before starting?', a: 'Having product information (images, descriptions, prices) ready helps speed up the process, but we can also help you organize and optimize your product data.' },
-        { q: 'Can you help with custom design?', a: 'Yes. We offer theme customization to match your brand. For completely custom designs, check out our Theme Development service.' },
-        { q: 'What platform do you use?', a: 'We specialize in Shopify. It\'s the most reliable, scalable, and user-friendly e-commerce platform for businesses of all sizes.' },
-        { q: 'Will my store be mobile-friendly?', a: 'Absolutely. All our stores are built with mobile-first design, ensuring perfect display and functionality on smartphones and tablets.' },
-        { q: 'Do you provide training after launch?', a: 'Yes. We provide comprehensive training on managing your store, adding products, processing orders, and using Shopify\'s features.' },
+        { q: 'Which platforms can you migrate from?', a: 'We migrate from WooCommerce, Magento, BigCommerce, Squarespace, Wix, Shopify 1.0 to 2.0, and custom-built e-commerce platforms.' },
+        { q: 'How long does migration take?', a: 'Migration typically takes 3-7 days depending on data volume. Complex migrations with 10,000+ products may take 10-14 days.' },
+        { q: 'Will my SEO be affected?', a: 'We preserve URL structures and implement 301 redirects to maintain SEO rankings. Most clients see no drop in traffic.' },
+        { q: 'Is there any downtime?', a: 'No. We use a "migrate then switch" approach. Your current store stays live until the new store is ready.' },
+        { q: 'What about my customers\' passwords?', a: 'Customer passwords are migrated securely. Your customers can log in with their existing credentials on the new store.' },
+        { q: 'Do you handle custom features?', a: 'Yes. We analyze your custom features and find Shopify equivalents or develop custom solutions.' },
     ];
 
     const relatedServices = [
-        { title: 'Theme Development', description: 'Custom Shopify theme development with Liquid coding. Make your store unique and branded.', href: '/services/shopify/theme-development' },
-        { title: 'Conversion Rate Optimization', description: 'Optimize your checkout, product pages, and funnel to convert more visitors into customers.', href: '/services/shopify/cro' },
-        { title: 'App Integration', description: 'Connect essential Shopify apps, automation workflows, and custom integrations.', href: '/services/shopify/app-integration' },
+        { title: 'Theme Development', description: 'Custom Shopify theme to match your existing brand.', href: '/services/shopify/theme-development' },
+        { title: 'App Integration', description: 'Recreate your app ecosystem on Shopify.', href: '/services/shopify/app-integration' },
+        { title: 'SEO Services', description: 'Optimize your migrated store for search engines.', href: '/services/seo' },
+    ];
+
+    const supportedPlatforms = [
+        'WooCommerce', 'Magento', 'BigCommerce', 'Squarespace', 'Wix', 'Shopify 1.0', 'Custom Platforms'
     ];
 
     return (
         <>
-            <Breadcrumb items={[{ label: 'Services', href: '/services' }, { label: 'Shopify Engine', href: '/services/shopify' }, { label: 'Store Setup' }]} />
+            <Breadcrumb items={[{ label: 'Services', href: '/services' }, { label: 'Shopify Engine', href: '/services/shopify' }, { label: 'Store Migration' }]} />
 
             {/* Hero Section */}
             <section className="bg-gradient-to-b from-[#1C2321] to-[#0F1513] text-white py-16 md:py-20 relative overflow-hidden">
@@ -77,15 +81,15 @@ export default function StoreSetupClient() {
                                 Shopify Service
                             </div>
                             <h1 className="text-[clamp(2rem,4vw,2.8rem)] font-extrabold tracking-[-0.03em] leading-[1.1] mb-4">
-                                Store Setup<br />
-                                <span className="text-[#44A194]">From Scratch</span>
+                                Store Migration<br />
+                                <span className="text-[#44A194]">To Shopify</span>
                             </h1>
                             <p className="text-[0.95rem] font-light text-white/60 leading-relaxed max-w-[520px] mb-8">
-                                Launch your online store with <strong className="text-white/90 font-medium">complete Shopify setup from scratch</strong>. We handle everything from configuration to launch — you start selling within a week.
+                                Move your store to Shopify with <strong className="text-white/90 font-medium">zero downtime and complete data preservation</strong>. Seamless migration from any platform with SEO protection.
                             </p>
                             <div className="flex gap-3.5 flex-wrap">
                                 <Link href="/contact" className="bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
-                                    Get Started
+                                    Get Free Migration Quote
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <Link href="#included" className="bg-transparent text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all">
@@ -105,6 +109,18 @@ export default function StoreSetupClient() {
                 </div>
             </section>
 
+            {/* Supported Platforms */}
+            <div className="bg-[#1C2321] border-y border-white/10 py-4">
+                <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+                    <div className="flex flex-wrap justify-center items-center gap-4">
+                        <span className="text-white/50 text-xs tracking-wide">Supported Platforms:</span>
+                        {supportedPlatforms.map((platform, idx) => (
+                            <span key={idx} className="text-white/80 text-sm font-medium">{platform}</span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             {/* What's Included */}
             <section className="py-16 md:py-20 bg-[#F4F0E4]" id="included">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
@@ -114,11 +130,11 @@ export default function StoreSetupClient() {
                             What's Included
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
-                            Complete Store Setup<br />
+                            Complete Migration<br />
                             <span className="text-[#44A194]">Package</span>
                         </h2>
                         <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed max-w-[580px] mx-auto">
-                            Everything you need to launch your Shopify store from scratch.
+                            Everything you need for a seamless, risk-free migration to Shopify.
                         </p>
                     </div>
 
@@ -149,22 +165,22 @@ export default function StoreSetupClient() {
                                 Who Is This For
                             </div>
                             <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-4 text-[#1C2321]">
-                                Is Store Setup<br />
+                                Is Migration<br />
                                 <span className="text-[#44A194]">Right for Your Business?</span>
                             </h2>
                             <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed mb-4">
-                                Ready to start selling online but don't know where to begin? We handle the entire setup process so you can focus on your products and customers.
+                                If your current platform is limiting your growth, slowing down your site, or making it hard to manage your store, it's time to migrate to Shopify.
                             </p>
                             <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed mb-4">
-                                <strong className="font-semibold text-[#1C2321]">Store setup makes sense if you are:</strong>
+                                <strong className="font-semibold text-[#1C2321]">Migration makes sense if you are:</strong>
                             </p>
                             <div className="space-y-2.5 mt-5">
                                 {[
-                                    'Launching your first online store',
-                                    'Moving from a physical store to online',
-                                    'Starting a new e-commerce brand',
-                                    'Wanting a professional setup without technical hassle',
-                                    'Looking for a quick launch within days',
+                                    'Currently on WooCommerce, Magento, or BigCommerce',
+                                    'Experiencing slow load times and poor performance',
+                                    'Limited by your current platform\'s features',
+                                    'Spending too much on hosting and maintenance',
+                                    'Ready to scale but your platform can\'t keep up',
                                 ].map((item, idx) => (
                                     <div key={idx} className="flex gap-2.5 text-[0.85rem] font-normal text-[#8a8a82] leading-relaxed">
                                         <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
@@ -174,15 +190,19 @@ export default function StoreSetupClient() {
                             </div>
                         </div>
                         <div className="bg-[#1C2321] rounded-2xl p-8 text-white">
-                            <h3 className="text-[1.1rem] font-bold mb-4">Launch Faster, Better</h3>
-                            <p className="text-[0.85rem] font-light text-white/60 leading-relaxed mb-3">DIY store setup takes weeks of learning, trial and error, and costly mistakes. Our professional setup gets you online in days with everything configured correctly.</p>
+                            <h3 className="text-[1.1rem] font-bold mb-4">The Cost of Staying</h3>
+                            <p className="text-[0.85rem] font-light text-white/60 leading-relaxed mb-3">Every day on an outdated platform costs you sales. Slow loading times, poor mobile experience, and limited features directly impact your bottom line.</p>
                             <div className="flex items-center gap-3 py-3 border-t border-white/10">
-                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">5-7 days</div>
-                                <div className="text-[0.78rem] text-white/50">vs 3-4 weeks DIY</div>
+                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">30%</div>
+                                <div className="text-[0.78rem] text-white/50">Higher conversion rate on Shopify</div>
                             </div>
                             <div className="flex items-center gap-3 py-3 border-t border-white/10">
-                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">100%</div>
-                                <div className="text-[0.78rem] text-white/50">Correct configuration guaranteed</div>
+                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">2x</div>
+                                <div className="text-[0.78rem] text-white/50">Faster load times after migration</div>
+                            </div>
+                            <div className="flex items-center gap-3 py-3 border-t border-white/10">
+                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">100+</div>
+                                <div className="text-[0.78rem] text-white/50">Successful migrations completed</div>
                             </div>
                         </div>
                     </div>
@@ -195,13 +215,13 @@ export default function StoreSetupClient() {
                     <div className="max-w-[600px] mb-12">
                         <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3">
                             <span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>
-                            Our Setup Process
+                            Our Migration Process
                         </div>
-                        <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
-                            How We Launch Your<br />
-                            <span className="text-[#44A194]">Store</span>
+                        <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
+                            How We Migrate Your<br />
+                            <span className="text-[#44A194]">Store to Shopify</span>
                         </h2>
-                        <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed">A proven 5-step process for launching your Shopify store.</p>
+                        <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed">A proven 5-step process for seamless migration with zero downtime.</p>
                     </div>
                     <div className="flex flex-col">
                         {processSteps.map((step, index) => (
@@ -229,7 +249,7 @@ export default function StoreSetupClient() {
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
                             Common Questions About<br />
-                            <span className="text-[#44A194]">Store Setup</span>
+                            <span className="text-[#44A194]">Store Migration</span>
                         </h2>
                     </div>
                     <div className="max-w-[800px] mx-auto">
@@ -255,7 +275,7 @@ export default function StoreSetupClient() {
                             Related Services
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
-                            Maximize Your Store's Potential<br />
+                            Complete Your Migration<br />
                             <span className="text-[#44A194]">With These Services</span>
                         </h2>
                     </div>
@@ -274,9 +294,9 @@ export default function StoreSetupClient() {
             </section>
 
             <CtaBand
-                title='Ready to Launch Your Shopify Store?<br /><span class="hl-green">Get Started Today.</span>'
-                description="Launch in days, not weeks. Professional setup with everything configured correctly."
-                primaryText="Get Free Consultation →"
+                title='Ready to Migrate Your Store to Shopify?<br /><span class="hl-green">Get a Free Migration Quote.</span>'
+                description="Zero downtime migration with complete data preservation and SEO protection."
+                primaryText="Get Free Quote →"
                 primaryHref="/contact"
             />
         </>
