@@ -110,6 +110,9 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
         { name: 'Liquid Development', path: '/services/shopify/liquid-development' },
         { name: 'Checkout Optimization', path: '/services/shopify/checkout-optimization' },
         { name: 'AOV Strategy', path: '/services/shopify/aov-strategy' },
+        { name: 'Store Development', path: '/services/shopify/store-development' },
+        { name: 'Website Development', path: '/services/shopify/website-development' },
+
       ]
     },
     {
