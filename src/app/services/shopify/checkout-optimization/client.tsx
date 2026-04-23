@@ -2,15 +2,15 @@
 import Link from 'next/link';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
-import { 
-  ShoppingCart, 
-  Target, 
-  Zap, 
-  FileText, 
-  CreditCard, 
-  Shield, 
-  Smartphone, 
-  Gift, 
+import {
+  ShoppingCart,
+  Target,
+  Zap,
+  FileText,
+  CreditCard,
+  Shield,
+  Smartphone,
+  Gift,
   BarChart3,
   ArrowRight,
   CheckCircle2,
@@ -19,6 +19,7 @@ import {
   DollarSign,
   Percent
 } from 'lucide-react';
+import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 
 export default function CheckoutOptimizationClient() {
@@ -88,28 +89,13 @@ export default function CheckoutOptimizationClient() {
                 </Link>
               </div>
             </div>
-            <div>
-              <div className="bg-white/10 border border-white/15 rounded-2xl p-5 sm:p-6 md:p-8">
-                <h3 className="text-[0.68rem] font-bold uppercase tracking-[0.08em] text-white/50 mb-4 sm:mb-5">Checkout Stats</h3>
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                    <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">35%</div>
-                    <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Average abandonment reduction</div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                    <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">15-20%</div>
-                    <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">AOV increase from upsells</div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                    <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">70%</div>
-                    <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Average abandonment rate</div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3">
-                    <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">2-3x</div>
-                    <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">ROI from optimization</div>
-                  </div>
-                </div>
-              </div>
+            {/* Contact Form */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6">
+              <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
+              <ServiceContactForm
+                preSelectedCategory="Shopify Engine"
+                preSelectedSubCategory="Store Setup & Migration"
+              />
             </div>
           </div>
         </div>
@@ -222,7 +208,7 @@ export default function CheckoutOptimizationClient() {
             </h2>
             <p className="text-sm sm:text-[0.9rem] font-light text-[#8a8a82] leading-relaxed">A data-driven approach to reducing abandonment and increasing revenue.</p>
           </div>
-          
+
           <div className="flex flex-col">
             {processSteps.map((step, index) => (
               <div key={index} className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 py-6 sm:py-8 border-b border-[rgba(28,35,33,0.08)] last:border-b-0">
@@ -240,7 +226,7 @@ export default function CheckoutOptimizationClient() {
       </section>
 
       {/* CTA Band */}
-      <CtaBand 
+      <CtaBand
         title='Stop Losing 70% of Your Customers at Checkout.<br /><span class="hl-green">Get a Free Abandonment Audit.</span>'
         description="We'll analyze your checkout and identify exactly where customers drop off. Plus a roadmap to recover lost revenue."
         primaryText="Get Free Audit →"
@@ -261,7 +247,7 @@ export default function CheckoutOptimizationClient() {
             </h2>
           </div>
 
-<div className="max-w-[800px] mx-auto">
+          <div className="max-w-[800px] mx-auto">
             {faqs.map((faq, index) => (
               <details key={index} className="group border-b border-[rgba(28,35,33,0.08)]">
                 <summary className="flex justify-between items-center cursor-pointer list-none py-4 sm:py-5 text-[0.92rem] font-semibold text-[#1C2321] hover:text-[#44A194] transition-colors">
@@ -288,7 +274,7 @@ export default function CheckoutOptimizationClient() {
               <span className="text-[#44A194]">With These Services</span>
             </h2>
           </div>
-          
+
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {relatedServices.map((service, index) => (
               <div key={index} className="bg-white border border-[rgba(28,35,33,0.08)] rounded-xl p-5 md:p-7 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">

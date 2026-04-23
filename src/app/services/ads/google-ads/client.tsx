@@ -1,6 +1,6 @@
 // app/services/ads/google-ads/client.tsx
 import Link from 'next/link';
-import { 
+import {
   Search,
   ShoppingBag,
   Tv,
@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   ChevronDown
 } from 'lucide-react';
+import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export default function GoogleAdsClient() {
   const includedItems = [
@@ -92,28 +93,13 @@ export default function GoogleAdsClient() {
                 </Link>
               </div>
             </div>
-            <div>
-              <div className="bg-white/10 border border-white/15 rounded-2xl p-5 sm:p-6 md:p-8">
-                <h3 className="text-[0.68rem] font-bold uppercase tracking-[0.08em] text-white/50 mb-4 sm:mb-5">Google Ads Stats</h3>
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                    <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">100+</div>
-                    <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Campaigns managed</div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                    <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">35%</div>
-                    <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Lower CPC on average</div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                    <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">2.5x</div>
-                    <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Average ROAS</div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3">
-                    <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">24/7</div>
-                    <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Campaign optimization</div>
-                  </div>
-                </div>
-              </div>
+            {/* Contact Form */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6">
+              <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
+              <ServiceContactForm
+                preSelectedCategory="Shopify Engine"
+                preSelectedSubCategory="Store Setup & Migration"
+              />
             </div>
           </div>
         </div>
@@ -226,7 +212,7 @@ export default function GoogleAdsClient() {
             </h2>
             <p className="text-sm sm:text-[0.9rem] font-light text-[#8a8a82] leading-relaxed">A systematic approach to profitable Google advertising.</p>
           </div>
-          
+
           <div className="flex flex-col">
             {processSteps.map((step, index) => (
               <div key={index} className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 py-6 sm:py-8 border-b border-[rgba(28,35,33,0.08)] last:border-b-0">
@@ -301,7 +287,7 @@ export default function GoogleAdsClient() {
               <span className="text-[#44A194]">With These Services</span>
             </h2>
           </div>
-          
+
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {relatedServices.map((service, index) => (
               <div key={index} className="bg-white border border-[rgba(28,35,33,0.08)] rounded-xl p-5 md:p-7 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">

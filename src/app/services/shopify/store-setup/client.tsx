@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import Breadcrumb from '../../../../components/layout/Breadcrumb';
 import CtaBand from '../../../../components/sections/CtaBand';
+import ContactForm from '../../../../components/contactForm';
 import {
     Store,
     Package,
@@ -20,6 +21,7 @@ import {
     Database,
     Shield
 } from 'lucide-react';
+import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 
 export default function StoreSetupClient() {
@@ -67,7 +69,7 @@ export default function StoreSetupClient() {
             <section className="bg-gradient-to-b from-[#1C2321] to-[#0F1513] text-white py-12 sm:py-16 md:py-20 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_60%_30%,rgba(68,161,148,0.12),transparent)] pointer-events-none"></div>
                 <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 relative z-10">
-                    <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-8 md:gap-14 items-center">
+                    <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-8 md:gap-14 items-start">
                         <div className="text-center md:text-left">
                             <div className="inline-flex items-center gap-2 bg-[rgba(68,161,148,0.12)] border border-[rgba(68,161,148,0.2)] text-[#44A194] text-[0.65rem] font-bold tracking-[0.12em] uppercase px-3 sm:px-4 py-1.5 rounded-full mb-4 sm:mb-5">
                                 Shopify Service
@@ -80,7 +82,7 @@ export default function StoreSetupClient() {
                                 We handle <strong className="text-white/90 font-medium">full Shopify store setup and seamless migration from WooCommerce, Magento, BigCommerce, or any platform</strong> with zero downtime and complete data preservation.
                             </p>
                             <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-3.5">
-                                <Link href="/contact" className="bg-[#44A194] text-white px-5 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-3.5 rounded-[10px] text-sm sm:text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
+                                <Link href="#contact-form" className="bg-[#44A194] text-white px-5 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-3.5 rounded-[10px] text-sm sm:text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
                                     Get Started
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
@@ -89,28 +91,14 @@ export default function StoreSetupClient() {
                                 </Link>
                             </div>
                         </div>
-                        <div>
-                            <div className="bg-white/10 border border-white/15 rounded-2xl p-5 sm:p-6 md:p-8">
-                                <h3 className="text-[0.68rem] font-bold uppercase tracking-[0.08em] text-white/50 mb-4 sm:mb-5">Migration Stats</h3>
-                                <div className="space-y-2 sm:space-y-3">
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                                        <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">3-5 days</div>
-                                        <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Average migration time</div>
-                                    </div>
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                                        <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">0</div>
-                                        <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Downtime guaranteed</div>
-                                    </div>
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3 border-b border-white/10">
-                                        <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">100%</div>
-                                        <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Data preservation</div>
-                                    </div>
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 py-2 sm:py-3">
-                                        <div className="text-xl sm:text-[1.4rem] font-extrabold text-[#44A194] tracking-[-0.03em] sm:min-w-[80px]">45+</div>
-                                        <div className="text-[0.7rem] sm:text-[0.78rem] text-white/50">Successful migrations</div>
-                                    </div>
-                                </div>
-                            </div>
+                        
+                        {/* Contact Form */}
+                        <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6">
+                            <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
+                            <ServiceContactForm 
+                                preSelectedCategory="Shopify Engine"
+                                preSelectedSubCategory="Store Setup & Migration"
+                            />
                         </div>
                     </div>
                 </div>
@@ -297,13 +285,15 @@ export default function StoreSetupClient() {
                 </div>
             </section>
 
-            {/* CTA Band */}
-            <CtaBand
-                title='Ready to Launch Your Shopify Store?<br /><span class="hl-green">Get Started Today.</span>'
-                description="Launch in days, not weeks. Zero downtime migration with complete data preservation. Book your free consultation."
-                primaryText="Get Free Consultation →"
-                primaryHref="/contact"
-            />
+            {/* Contact Form Section (Anchor) */}
+            <div id="contact-form">
+                <CtaBand
+                    title='Ready to Launch Your Shopify Store?<br /><span class="hl-green">Get Started Today.</span>'
+                    description="Launch in days, not weeks. Zero downtime migration with complete data preservation. Book your free consultation."
+                    primaryText="Get Free Consultation →"
+                    primaryHref="/contact"
+                />
+            </div>
         </>
     );
 }
