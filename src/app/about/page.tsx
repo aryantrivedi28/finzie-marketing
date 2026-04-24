@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { motion, useScroll, useTransform, Variants } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, ExternalLink, Award, Zap, Shield, Linkedin, Mail, ChevronRight, Star, Users, Briefcase, Calendar, TrendingUp } from 'lucide-react'
+import { ArrowRight, ExternalLink, Award, Zap, Shield, Linkedin, Mail, ChevronRight, Star, Users, Briefcase, Calendar, TrendingUp, Play } from 'lucide-react'
 
 // Animation variants
 const fadeInUp: Variants = {
@@ -91,7 +91,8 @@ export default function AboutPage() {
     finzie: false,
     team: false
   })
-  
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+
   const heroRef = useRef<HTMLElement>(null)
   const timelineRef = useRef<HTMLElement>(null)
   const valuesRef = useRef<HTMLElement>(null)
@@ -102,6 +103,9 @@ export default function AboutPage() {
   const { scrollYProgress } = useScroll()
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.8])
 
+  // YouTube video ID (replace with your actual video ID)
+  const youtubeVideoId = "tGBID831V8g"
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -110,6 +114,30 @@ export default function AboutPage() {
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // Handle anchor link clicks for smooth scrolling
+  // useEffect(() => {
+  //   const handleAnchorClick = (e: MouseEvent) => {
+  //     const target = e.target as HTMLElement
+  //     const anchor = target.closest('a')
+
+  //     if (anchor && anchor.hash && anchor.hash.startsWith('#') && anchor.pathname === window.location.pathname) {
+  //       e.preventDefault()
+  //       const element = document.querySelector(anchor.hash)
+  //       if (element) {
+  //         element.scrollIntoView({
+  //           behavior: 'smooth',
+  //           block: 'start'
+  //         })
+  //         // Update URL without triggering scroll
+  //         window.history.pushState(null, '', anchor.hash)
+  //       }
+  //     }
+  //   }
+
+  //   document.addEventListener('click', handleAnchorClick)
+  //   return () => document.removeEventListener('click', handleAnchorClick)
+  // }, [])
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -123,7 +151,7 @@ export default function AboutPage() {
       entries.forEach(entry => {
         const target = entry.target as HTMLElement
         const section = target.dataset.section as keyof typeof hasAnimated
-        
+
         if (entry.isIntersecting && !hasAnimated[section]) {
           setHasAnimated(prev => ({ ...prev, [section]: true }))
         }
@@ -429,23 +457,16 @@ export default function AboutPage() {
 
   TeamMemberCard.displayName = 'TeamMemberCard'
 
-  const scrollToSection = useCallback((sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }, [])
-
   return (
     <main className="flex-1 min-h-screen bg-[#F4F0E4] overflow-x-hidden">
-      {/* Hero Section */}
-      <section 
+      {/* Hero Section with Video */}
+      <section
         ref={heroRef}
         data-section="hero"
         className="relative px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 lg:py-24"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-[60px] items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-[60px] items-start">
             <motion.div
               initial="hidden"
               animate={hasAnimated.hero ? "visible" : "hidden"}
@@ -472,31 +493,110 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-9">
-                <Link href="/contact">
+                <Link href="#team">
                   <button className="w-full sm:w-auto bg-[#44A194] text-white border-none px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#38857a] active:scale-95">
+                    Meet Our Team
+                  </button>
+                </Link>
+                <Link href="/contact">
+                  <button className="w-full sm:w-auto bg-transparent border border-[#44A194] text-[#44A194] px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#44A194] hover:text-white">
                     Work With Us
                   </button>
                 </Link>
-                <button 
-                  onClick={() => scrollToSection('team')}
-                  className="w-full sm:w-auto bg-transparent border border-[#44A194] text-[#44A194] px-6 sm:px-7 py-3 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-200 hover:bg-[#44A194] hover:text-white"
-                >
-                  Meet Our Team
-                </button>
               </div>
             </motion.div>
 
-            <div className="space-y-3 sm:space-y-4">
-              {stats.map((stat, index) => (
-                <StatCard key={stat.label} {...stat} />
-              ))}
-            </div>
+            {/* Video Section - Replacing Stats */}
+            <motion.div
+              initial="hidden"
+              animate={hasAnimated.hero ? "visible" : "hidden"}
+              variants={fadeInUp}
+              className="space-y-4"
+            >
+              <div className="bg-white border border-[rgba(28,35,33,0.08)] p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Play className="w-4 h-4 text-[#EC8F8D]" />
+                  <span className="text-[10px] tracking-[0.2em] uppercase text-[#44A194] font-['Jost',sans-serif]">
+                    Watch Our Founder's Message
+                  </span>
+                </div>
+
+                {!isVideoPlaying ? (
+                  // Video Thumbnail
+                  <div
+                    className="relative aspect-video rounded-lg overflow-hidden cursor-pointer group"
+                    onClick={() => setIsVideoPlaying(true)}
+                  >
+                    <img
+                      src={`https://img.youtube.com/vi/${youtubeVideoId}/maxresdefault.jpg`}
+                      alt="Video thumbnail - Founder's message"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`
+                      }}
+                    />
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/30 group-hover:bg-black/40 transition-all duration-300" />
+
+                    {/* Play Button */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-all duration-300" />
+                        <div className="relative bg-[#44A194] rounded-full p-4 md:p-5 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                          <Play className="w-6 h-6 md:w-8 md:h-8 text-white ml-0.5" fill="white" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Caption */}
+                    <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-md">
+                      <p className="text-white text-xs font-['Jost',sans-serif]">
+                        Aryan Trivedi, Founder & CEO
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  // YouTube Video Player
+                  <div className="aspect-video rounded-lg overflow-hidden">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&rel=0&modestbranding=1`}
+                      title="Founder's message - ExecuMarketing"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+                )}
+
+                <p className="text-[11px] text-[#8a8a82] mt-3 text-center leading-relaxed">
+                  Watch this video to understand our approach and how we can help you succeed.
+                </p>
+              </div>
+
+              {/* Stats moved below video in a compact form */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="bg-white/80 border border-[rgba(28,35,33,0.06)] p-3 text-center hover:border-[#44A194] transition-colors duration-200">
+                    <div className="font-['Cormorant_Garamond',serif] text-xl sm:text-2xl font-light text-[#1C2321]">
+                      {stat.value}
+                    </div>
+                    <div className="text-[9px] font-medium text-[#1C2321] mt-0.5">
+                      {stat.label}
+                    </div>
+                    <div className="text-[8px] text-[#8a8a82] mt-0.5">
+                      {stat.description}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Timeline Section */}
-      <section 
+      <section
         ref={timelineRef}
         data-section="timeline"
         className="px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 lg:py-24 border-t border-[rgba(28,35,33,0.08)]"
@@ -566,7 +666,7 @@ export default function AboutPage() {
         id="team"
         ref={teamRef}
         data-section="team"
-        className="px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 lg:py-24 border-t border-[rgba(28,35,33,0.08)]"
+        className="px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 lg:py-24 border-t border-[rgba(28,35,33,0.08)] scroll-mt-20"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -664,6 +764,24 @@ export default function AboutPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Add global styles for smooth scrolling */}
+      <style jsx global>{`
+        html {
+          scroll-behavior: smooth;
+        }
+        
+        /* Smooth scroll offset for anchor links */
+        * {
+          scroll-margin-top: 80px;
+        }
+        
+        @media (max-width: 768px) {
+          * {
+            scroll-margin-top: 60px;
+          }
+        }
+      `}</style>
     </main>
   )
 }
