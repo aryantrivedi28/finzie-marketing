@@ -19,7 +19,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
   const getActivePageFromPath = () => {
     const path = pathname || '/'
     if (path === '/') return 'home'
-    if (path === '/systems') return 'systems'
+    if (path === '/case-studies') return 'case-studies'
     // if (path === '/business') return 'business'
     if (path === '/how') return 'how'
     if (path === '/pricing') return 'pricing'
@@ -71,7 +71,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
     setActiveCategory(null)
 
     if (page === 'home') router.push('/')
-    else if (page === 'systems') router.push('/systems')
+    else if (page === 'case-studies') router.push('/case-studies')
     else if (page === 'how') router.push('/how')
     else if (page === 'pricing') router.push('/pricing')
     else if (page === 'about') router.push('/about')
@@ -355,6 +355,12 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
               isActive={activePage === 'about'}
               onClick={() => handleNavClick('about')}
             />
+            <NavButton
+              label="Case Study"
+              pageId="case-studies"
+              isActive={activePage === 'case-studies'}
+              onClick={() => handleNavClick('case-studies')}
+            />
             <button
               onClick={() => handleNavClick('contact')}
               className="bg-[#44A194] text-white border-none px-5 lg:px-[22px] py-2.5 font-['Jost',sans-serif] text-[11px] tracking-[0.18em] uppercase cursor-pointer transition-all duration-300 hover:bg-[#38857a] hover:scale-105 active:scale-95 whitespace-nowrap"
@@ -421,6 +427,12 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
                 <MobileNavButton
                   label="About Us"
                   pageId="about"
+                  isActive={activePage === 'about'}
+                  onClick={() => handleNavClick('about')}
+                />
+                <MobileNavButton
+                  label="Case Study"
+                  pageId="case-studies"
                   isActive={activePage === 'about'}
                   onClick={() => handleNavClick('about')}
                 />
