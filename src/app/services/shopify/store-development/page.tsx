@@ -27,6 +27,7 @@ import {
     Mail
 } from 'lucide-react';
 import ServiceContactForm from '@/src/components/ServiceContactForm';
+import ServiceQuoteForm from '@/src/components/ServiceQuoteForm';
 
 export const metadata = {
     title: 'Custom Shopify Store Development Services in India | Enterprise E-commerce | ExecuMarketing',
@@ -37,29 +38,29 @@ export const metadata = {
 export default function ShopifyStoreDevelopmentPage() {
     // CHANGE 4: Outcome-based services grid (5 cards)
     const outcomeServices = [
-        { 
-            icon: ShoppingCart, 
-            title: 'HIGH-CONVERTING CHECKOUT', 
+        {
+            icon: ShoppingCart,
+            title: 'HIGH-CONVERTING CHECKOUT',
             description: 'Reduce cart abandonment with one-page checkout, guest checkout option, and trust badges. Our stores average 3.2% checkout conversion vs 1.8% industry standard.'
         },
-        { 
-            icon: Smartphone, 
-            title: 'MOBILE-FIRST DESIGN', 
+        {
+            icon: Smartphone,
+            title: 'MOBILE-FIRST DESIGN',
             description: '70% of Indian traffic is mobile. We design for thumb-friendly navigation, fast load times, and easy checkout on small screens.'
         },
-        { 
-            icon: CreditCard, 
-            title: 'INDIAN PAYMENT INTEGRATION', 
+        {
+            icon: CreditCard,
+            title: 'INDIAN PAYMENT INTEGRATION',
             description: 'Accept UPI, cards, wallets, net banking, and COD. We handle Razorpay integration, COD verification, and failed payment recovery.'
         },
-        { 
-            icon: Database, 
-            title: 'SCALABLE ARCHITECTURE', 
+        {
+            icon: Database,
+            title: 'SCALABLE ARCHITECTURE',
             description: 'Custom Liquid code that handles 1000+ orders/day without slowdowns. Built for growth, not just launch.'
         },
-        { 
-            icon: BarChart3, 
-            title: 'CONVERSION TRACKING', 
+        {
+            icon: BarChart3,
+            title: 'CONVERSION TRACKING',
             description: 'Google Analytics 4, Facebook Pixel, and Google Ads conversion tracking set up correctly from day one. No data loss.'
         },
     ];
@@ -115,17 +116,17 @@ export default function ShopifyStoreDevelopmentPage() {
                                 Custom Shopify Store<br />
                                 <span className="text-[#44A194]">Development Services in India</span>
                             </h1>
-                            
+
                             {/* CHANGE 2: Updated Subheadline */}
                             <p className="text-[0.95rem] font-light text-white/60 leading-relaxed max-w-[520px] mb-6">
                                 Enterprise-grade custom stores for brands doing ₹5L+ monthly revenue | Starting from ₹1,20,000 | 6-8 week delivery
                             </p>
-                            
+
                             {/* SEO Keywords Paragraph - Added for consistency with other page */}
                             <p className="text-[0.85rem] text-white/40 leading-relaxed max-w-[520px] mb-8 border-l-2 border-[#44A194] pl-4">
                                 As a leading custom Shopify store development company in India, we build enterprise-grade e-commerce solutions for brands ready to scale. Our Shopify development services include custom Liquid development, payment integration, mobile optimization, and advanced checkout functionality. Whether you need a complete custom store build or specialized Shopify development services, we deliver high-performing stores in 6-8 weeks.
                             </p>
-                            
+
                             <div className="flex gap-3.5 flex-wrap">
                                 <Link href="#contact-form" className="bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
                                     Get Free Quote
@@ -139,9 +140,10 @@ export default function ShopifyStoreDevelopmentPage() {
                         {/* Contact Form */}
                         <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6" id="contact-form">
                             <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
-                            <ServiceContactForm
-                                preSelectedCategory="Shopify Engine"
-                                preSelectedSubCategory="Store Setup & Migration"
+                            <ServiceQuoteForm
+                                title="Request a Quote"
+                                subtitle="Fill out the form and our team will get back to you within 24 hours."
+                                buttonText="Submit →"
                             />
                             <p className="text-[0.65rem] text-white/30 text-center mt-3">For businesses doing ₹5L+ monthly revenue</p>
                         </div>
@@ -210,7 +212,7 @@ export default function ShopifyStoreDevelopmentPage() {
                                 Is Custom Store Development<br />
                                 <span className="text-[#44A194]">Right for Your Business?</span>
                             </h2>
-                            
+
                             {/* Right For You Section */}
                             <div className="bg-[#1C2321] rounded-2xl p-6 mb-6">
                                 <h3 className="text-[1rem] font-bold text-white mb-4 flex items-center gap-2">
@@ -271,7 +273,7 @@ export default function ShopifyStoreDevelopmentPage() {
                                 </p>
                                 <p className="text-[0.85rem] font-semibold text-white mb-1">— Priya Sharma, Founder</p>
                                 <p className="text-[0.75rem] text-white/50 mb-6">[Client Brand Name]</p>
-                                
+
                                 <div className="border-t border-white/10 pt-5 mt-2">
                                     <h4 className="text-[0.8rem] font-semibold text-white mb-3">Results:</h4>
                                     <div className="space-y-2">

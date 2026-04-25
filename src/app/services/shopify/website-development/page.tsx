@@ -23,6 +23,7 @@ import {
     Star
 } from 'lucide-react';
 import ServiceContactForm from '@/src/components/ServiceContactForm';
+import ServiceQuoteForm from '@/src/components/ServiceQuoteForm';
 
 export const metadata = {
     title: 'Shopify Website Development Services in India | Professional Shopify Developers | ExecuMarketing',
@@ -64,17 +65,17 @@ export default function ShopifyWebsiteDevelopmentPage() {
                                 Shopify Website Development<br />
                                 <span className="text-[#44A194]">Services in India</span>
                             </h1>
-                            
+
                             {/* CHANGE 2: Updated Subheadline */}
                             <p className="text-[0.95rem] font-light text-white/60 leading-relaxed max-w-[520px] mb-6">
                                 Professional Shopify development for growing brands | Starting from ₹50,000 | 4-6 week delivery
                             </p>
-                            
+
                             {/* CHANGE 4: Added SEO Keywords Paragraph */}
                             <p className="text-[0.85rem] text-white/40 leading-relaxed max-w-[520px] mb-8 border-l-2 border-[#44A194] pl-4">
                                 As a leading Shopify website development company in India, we build custom stores and sites for brands ready to scale. Our Shopify development services include everything from theme customization to payment integration, mobile optimization, and conversion tracking. Whether you need a complete store build or specialized Shopify website design services, we deliver high-performing sites in 4-6 weeks.
                             </p>
-                            
+
                             <div className="flex gap-3.5 flex-wrap">
                                 {/* CHANGE 3: Updated CTA button */}
                                 <Link href="#contact-form" className="bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
@@ -86,7 +87,7 @@ export default function ShopifyWebsiteDevelopmentPage() {
                                 </Link>
                             </div>
                         </div>
-                        
+
                         {/* CHANGE 3: Trust Signals replacing the form above the fold */}
                         <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-6">
                             <div className="text-center mb-5">
@@ -316,10 +317,10 @@ export default function ShopifyWebsiteDevelopmentPage() {
                         </div>
                         <div className="bg-[#1C2321] rounded-2xl p-6 border border-white/15">
                             <h3 className="text-white text-lg font-semibold mb-4">Request a Custom Quote</h3>
-                            <ServiceContactForm
-                                preSelectedCategory="Shopify Engine"
-                                preSelectedSubCategory="Store Setup & Migration"
-                                // showBudgetField={true}
+                            <ServiceQuoteForm
+                                title="Request a Quote"
+                                subtitle="Fill out the form and our team will get back to you within 24 hours."
+                                buttonText="Submit →"
                             />
                             <p className="text-[0.7rem] text-white/40 text-center mt-4">
                                 We respect your privacy. Your information is safe with us.
