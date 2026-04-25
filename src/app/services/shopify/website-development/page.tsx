@@ -16,44 +16,28 @@ import {
     ChevronDown,
     Zap,
     Eye,
-    BarChart3
+    BarChart3,
+    Award,
+    Briefcase,
+    IndianRupee,
+    Star
 } from 'lucide-react';
 import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export const metadata = {
-    title: 'Shopify Website Development Services | Shopify Web Design | ExecuMarketing',
-    description: 'Professional Shopify website development for landing pages, campaign pages, and brand websites. Fast, responsive, and conversion-focused web design.',
-    keywords: 'Shopify website development, Shopify web design, Shopify landing pages, campaign pages, brand website'
+    title: 'Shopify Website Development Services in India | Professional Shopify Developers | ExecuMarketing',
+    description: 'Professional Shopify website development services in India starting from ₹50,000. Custom Shopify stores, theme customization, payment integration & 4-6 week delivery.',
+    keywords: 'Shopify website development company India, Shopify development services, Shopify website design services, custom Shopify store, Shopify developers India'
 };
 
 export default function ShopifyWebsiteDevelopmentPage() {
-    const includedItems = [
-        { icon: Globe, title: 'Landing Page Development', description: 'High-converting landing pages for product launches, promotions, and marketing campaigns.' },
-        { icon: Layout, title: 'Brand Website Design', description: 'Complete brand website design that tells your story and showcases your products.' },
-        { icon: Smartphone, title: 'Mobile-First Development', description: 'Responsive websites optimized for all devices with mobile-first design approach.' },
-        { icon: Rocket, title: 'Fast Loading Pages', description: 'Lightning-fast page load times optimized for Core Web Vitals and user experience.' },
-        { icon: Search, title: 'SEO-Ready Structure', description: 'SEO-optimized page structure, meta tags, and semantic HTML for better rankings.' },
-        { icon: TrendingUp, title: 'Conversion-Focused Design', description: 'Strategic design elements that drive conversions — CTAs, trust signals, and social proof.' },
-        { icon: Users, title: 'Lead Capture Integration', description: 'Email signup forms, contact forms, and lead capture integration with your CRM.' },
-        { icon: ShoppingBag, title: 'Product Showcase Pages', description: 'Beautiful product showcase pages with custom layouts and interactive elements.' },
-        { icon: Zap, title: 'Analytics & Tracking Setup', description: 'GA4, Facebook Pixel, and conversion tracking setup for campaign measurement.' },
-    ];
-
-    const websiteTypes = [
-        { type: 'Landing Pages', desc: 'High-converting pages for paid campaigns and promotions', time: '3-5 days' },
-        { type: 'Product Showcase', desc: 'Feature-rich product catalog and category pages', time: '5-7 days' },
-        { type: 'Brand Story', desc: 'About us, mission, and brand narrative pages', time: '3-5 days' },
-        { type: 'Campaign Microsites', desc: 'Standalone sites for product launches and events', time: '7-10 days' },
-        { type: 'Resource Hubs', desc: 'Blog, guides, and educational content hubs', time: '5-7 days' },
-    ];
-
     const faqs = [
-        { q: 'How long does website development take?', a: 'Landing pages: 3-5 days. Full brand websites: 7-14 days. Complex custom sites: 2-3 weeks.' },
-        { q: 'Do you provide content?', a: 'We provide content structure and recommendations. Copywriting and images can be provided by you or our content team.' },
-        { q: 'Can you integrate with my email marketing?', a: 'Yes. We integrate with Klaviyo, Mailchimp, Omnisend, and other email platforms for lead capture.' },
-        { q: 'Will my website be mobile-friendly?', a: 'Absolutely. All our websites are built mobile-first and tested on all devices and screen sizes.' },
-        { q: 'Do you provide revisions?', a: 'Yes. We provide up to 3 rounds of revisions to ensure the website meets your expectations.' },
-        { q: 'Can you add e-commerce functionality later?', a: 'Yes. We can start with a brand website and add e-commerce functionality as you scale.' },
+        { q: 'How much does Shopify website development cost?', a: 'Our packages start from ₹50,000 for Essential (basic store) up to ₹2,50,000+ for Premium (advanced custom features). Final cost depends on your requirements.' },
+        { q: 'What if I don\'t like the design?', a: 'Growth and Premium packages include 2 rounds of design revisions. We\'ll work with you until you\'re happy with the design.' },
+        { q: 'Do you handle product uploads?', a: 'Yes. Essential package includes up to 20 products. For larger catalogs, we offer bulk upload services at ₹500/product.' },
+        { q: 'Can I see examples of sites you\'ve built?', a: 'Yes, check our Case Studies page or request our portfolio during your consultation call.' },
+        { q: 'How long does website development take?', a: 'Essential: 4 weeks. Growth: 5-6 weeks. Premium: 6-8 weeks.' },
+        { q: 'Do you provide ongoing support?', a: 'Yes. Post-launch support and maintenance packages are available after your website goes live.' },
     ];
 
     const relatedServices = [
@@ -66,7 +50,7 @@ export default function ShopifyWebsiteDevelopmentPage() {
         <>
             <Breadcrumb items={[{ label: 'Services', href: '/services' }, { label: 'Shopify Engine', href: '/services/shopify' }, { label: 'Website Development' }]} />
 
-            {/* Hero Section */}
+            {/* Hero Section with Trust Signals - NO FORM HERE ANYMORE */}
             <section className="bg-gradient-to-b from-[#1C2321] to-[#0F1513] text-white py-16 md:py-20 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_60%_30%,rgba(68,161,148,0.12),transparent)] pointer-events-none"></div>
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8 relative z-10">
@@ -75,86 +59,278 @@ export default function ShopifyWebsiteDevelopmentPage() {
                             <div className="inline-flex items-center gap-2 bg-[rgba(68,161,148,0.12)] border border-[rgba(68,161,148,0.2)] text-[#44A194] text-[0.65rem] font-bold tracking-[0.12em] uppercase px-4 py-1.5 rounded-full mb-5">
                                 Shopify Service
                             </div>
+                            {/* CHANGE 1: Updated H1 Headline */}
                             <h1 className="text-[clamp(2rem,4vw,2.8rem)] font-extrabold tracking-[-0.03em] leading-[1.1] mb-4">
-                                Website Development<br />
-                                <span className="text-[#44A194]">For Shopify</span>
+                                Shopify Website Development<br />
+                                <span className="text-[#44A194]">Services in India</span>
                             </h1>
-                            <p className="text-[0.95rem] font-light text-white/60 leading-relaxed max-w-[520px] mb-8">
-                                Build <strong className="text-white/90 font-medium">fast, responsive, and conversion-focused websites on Shopify</strong>. Landing pages, brand sites, and campaign pages that drive results.
+                            
+                            {/* CHANGE 2: Updated Subheadline */}
+                            <p className="text-[0.95rem] font-light text-white/60 leading-relaxed max-w-[520px] mb-6">
+                                Professional Shopify development for growing brands | Starting from ₹50,000 | 4-6 week delivery
                             </p>
+                            
+                            {/* CHANGE 4: Added SEO Keywords Paragraph */}
+                            <p className="text-[0.85rem] text-white/40 leading-relaxed max-w-[520px] mb-8 border-l-2 border-[#44A194] pl-4">
+                                As a leading Shopify website development company in India, we build custom stores and sites for brands ready to scale. Our Shopify development services include everything from theme customization to payment integration, mobile optimization, and conversion tracking. Whether you need a complete store build or specialized Shopify website design services, we deliver high-performing sites in 4-6 weeks.
+                            </p>
+                            
                             <div className="flex gap-3.5 flex-wrap">
-                                <Link href="/contact" className="bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
-                                    Get Free Quote
+                                {/* CHANGE 3: Updated CTA button */}
+                                <Link href="#contact-form" className="bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
+                                    GET CUSTOM QUOTE
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
-                                <Link href="#included" className="bg-transparent text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all">
-                                    What's Included
+                                <Link href="#pricing" className="bg-transparent text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all">
+                                    View Packages
                                 </Link>
                             </div>
                         </div>
-                        {/* Contact Form */}
-                        <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6">
-                            <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
-                            <ServiceContactForm
-                                preSelectedCategory="Shopify Engine"
-                                preSelectedSubCategory="Store Setup & Migration"
-                            />
+                        
+                        {/* CHANGE 3: Trust Signals replacing the form above the fold */}
+                        <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-6">
+                            <div className="text-center mb-5">
+                                <div className="w-16 h-16 rounded-full bg-[#44A194]/10 flex items-center justify-center mx-auto mb-3">
+                                    <Award className="w-8 h-8 text-[#44A194]" />
+                                </div>
+                                <h3 className="text-white text-lg font-bold mb-1">Why Choose Us?</h3>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                                    <CheckCircle2 className="w-5 h-5 text-[#44A194] flex-shrink-0" />
+                                    <span className="text-white/90 text-sm">✓ Shopify Partner Agency</span>
+                                </div>
+                                <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                                    <CheckCircle2 className="w-5 h-5 text-[#44A194] flex-shrink-0" />
+                                    <span className="text-white/90 text-sm">✓ 85+ Websites Delivered</span>
+                                </div>
+                                <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                                    <CheckCircle2 className="w-5 h-5 text-[#44A194] flex-shrink-0" />
+                                    <span className="text-white/90 text-sm">✓ Average Client Revenue: ₹8.2L/month</span>
+                                </div>
+                                <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                                    <CheckCircle2 className="w-5 h-5 text-[#44A194] flex-shrink-0" />
+                                    <span className="text-white/90 text-sm">✓ Starting Investment: ₹50,000</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Website Types */}
-            <div className="bg-[#1C2321] border-y border-white/10 py-6">
-                <div className="max-w-[1200px] mx-auto px-4 md:px-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                        {websiteTypes.map((type, idx) => (
-                            <div key={idx} className="text-center p-3 bg-white/5 rounded-lg border border-white/10">
-                                <div className="text-white/90 text-sm font-medium mb-1">{type.type}</div>
-                                <div className="text-white/40 text-xs">{type.desc}</div>
-                                <div className="text-[#44A194] text-xs mt-2">{type.time}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* What's Included */}
-            <section className="py-16 md:py-20 bg-[#F4F0E4]" id="included">
+            {/* CHANGE 5: Rewritten Services Section as Pricing Tiers */}
+            <section className="py-16 md:py-20 bg-[#F4F0E4]" id="pricing">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
                     <div className="text-center max-w-[640px] mx-auto mb-12">
                         <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3 justify-center">
                             <span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>
-                            What's Included
+                            Pricing & Packages
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
-                            Complete Website Development<br />
-                            <span className="text-[#44A194]">Package</span>
+                            Choose the Package That Fits<br />
+                            <span className="text-[#44A194]">Your Business Needs</span>
                         </h2>
                         <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed max-w-[580px] mx-auto">
-                            Everything you need for a professional Shopify website.
+                            Transparent pricing with no hidden costs. All packages include post-launch support.
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {includedItems.map((item, index) => {
-                            const IconComponent = item.icon;
-                            return (
-                                <div key={index} className="bg-white border border-[rgba(28,35,33,0.08)] rounded-xl p-7 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">
-                                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3.5 bg-[rgba(68,161,148,0.1)]">
-                                        <IconComponent className="text-[#44A194] w-5 h-5" />
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {/* ESSENTIAL PACKAGE */}
+                        <div className="bg-white rounded-2xl border border-[rgba(28,35,33,0.08)] overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(28,35,33,0.1)] transition-all">
+                            <div className="p-6 border-b border-[rgba(28,35,33,0.05)]">
+                                <h3 className="text-xl font-bold text-[#1C2321] mb-2">ESSENTIAL PACKAGE</h3>
+                                <div className="text-3xl font-extrabold text-[#44A194] mb-1">₹50,000</div>
+                                <p className="text-xs text-[#8a8a82]">One-time setup fee</p>
+                            </div>
+                            <div className="p-6">
+                                <ul className="space-y-3">
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Custom Shopify theme for your brand</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Up to 20 products uploaded</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Payment gateway integration (Razorpay, UPI, COD)</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Mobile-responsive design</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Basic SEO setup (meta tags, sitemap)</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span className="font-semibold text-[#1C2321]">4-week delivery</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* GROWTH PACKAGE */}
+                        <div className="bg-white rounded-2xl border-2 border-[#44A194] overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(68,161,148,0.15)] transition-all relative">
+                            <div className="absolute top-4 right-4 bg-[#44A194] text-white text-[0.65rem] font-bold px-3 py-1 rounded-full">
+                                MOST POPULAR
+                            </div>
+                            <div className="p-6 border-b border-[rgba(28,35,33,0.05)]">
+                                <h3 className="text-xl font-bold text-[#1C2321] mb-2">GROWTH PACKAGE</h3>
+                                <div className="text-3xl font-extrabold text-[#44A194] mb-1">₹1,20,000</div>
+                                <p className="text-xs text-[#8a8a82]">One-time setup fee</p>
+                            </div>
+                            <div className="p-6">
+                                <ul className="space-y-3">
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Everything in Essential</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Advanced product filters & search</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Wishlist + Quick View features</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Email marketing integration (MailChimp/Klaviyo)</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Google Analytics + Facebook Pixel setup</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>2 rounds of design revisions</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span className="font-semibold text-[#1C2321]">5-6 week delivery</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* PREMIUM PACKAGE */}
+                        <div className="bg-white rounded-2xl border border-[rgba(28,35,33,0.08)] overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(28,35,33,0.1)] transition-all">
+                            <div className="p-6 border-b border-[rgba(28,35,33,0.05)]">
+                                <h3 className="text-xl font-bold text-[#1C2321] mb-2">PREMIUM PACKAGE</h3>
+                                <div className="text-3xl font-extrabold text-[#44A194] mb-1">₹2,50,000+</div>
+                                <p className="text-xs text-[#8a8a82]">Custom pricing based on requirements</p>
+                            </div>
+                            <div className="p-6">
+                                <ul className="space-y-3">
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Everything in Growth</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Custom app integrations (CRM, ERP, inventory)</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Advanced checkout customization</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Subscription/membership functionality</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Multi-currency + multi-language support</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span>Dedicated project manager</span>
+                                    </li>
+                                    <li className="flex gap-2.5 text-[0.85rem] text-[#8a8a82]">
+                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                        <span className="font-semibold text-[#1C2321]">6-8 week delivery</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="text-center mt-10">
+                        <Link href="#contact-form" className="inline-flex items-center gap-2 bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold hover:bg-[#38857a] transition-all">
+                            GET CUSTOM QUOTE
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* CHANGE 3: Contact Form Section - MOVED BELOW THE FOLD (after pricing section) */}
+            <section className="py-16 md:py-20 bg-white" id="contact-form">
+                <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+                    <div className="grid md:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3">
+                                <span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>
+                                Get Started
+                            </div>
+                            <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-4 text-[#1C2321]">
+                                Ready to Build Your<br />
+                                <span className="text-[#44A194]">Shopify Website?</span>
+                            </h2>
+                            <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed mb-6">
+                                Fill out the form and our team will get back to you within 24 hours with a detailed proposal.
+                            </p>
+                            <div className="space-y-3">
+                                <div className="flex gap-3 items-center">
+                                    <div className="w-10 h-10 rounded-full bg-[#44A194]/10 flex items-center justify-center">
+                                        <CheckCircle2 className="w-5 h-5 text-[#44A194]" />
                                     </div>
-                                    <h3 className="text-[0.92rem] font-bold text-[#1C2321] mb-1.5">{item.title}</h3>
-                                    <p className="text-[0.82rem] font-light text-[#8a8a82] leading-relaxed">{item.description}</p>
+                                    <div>
+                                        <p className="text-[0.85rem] font-semibold text-[#1C2321]">Free Consultation</p>
+                                        <p className="text-[0.75rem] text-[#8a8a82]">Discuss your project requirements</p>
+                                    </div>
                                 </div>
-                            );
-                        })}
+                                <div className="flex gap-3 items-center">
+                                    <div className="w-10 h-10 rounded-full bg-[#44A194]/10 flex items-center justify-center">
+                                        <CheckCircle2 className="w-5 h-5 text-[#44A194]" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[0.85rem] font-semibold text-[#1C2321]">Custom Quote</p>
+                                        <p className="text-[0.75rem] text-[#8a8a82]">Get pricing based on your needs</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 items-center">
+                                    <div className="w-10 h-10 rounded-full bg-[#44A194]/10 flex items-center justify-center">
+                                        <CheckCircle2 className="w-5 h-5 text-[#44A194]" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[0.85rem] font-semibold text-[#1C2321]">4-6 Week Delivery</p>
+                                        <p className="text-[0.75rem] text-[#8a8a82]">Launch your site on time</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-[#1C2321] rounded-2xl p-6 border border-white/15">
+                            <h3 className="text-white text-lg font-semibold mb-4">Request a Custom Quote</h3>
+                            <ServiceContactForm
+                                preSelectedCategory="Shopify Engine"
+                                preSelectedSubCategory="Store Setup & Migration"
+                                // showBudgetField={true}
+                            />
+                            <p className="text-[0.7rem] text-white/40 text-center mt-4">
+                                We respect your privacy. Your information is safe with us.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* Who Is This For */}
-            <section className="py-16 md:py-20 bg-white">
+            <section className="py-16 md:py-20 bg-[#F4F0E4]">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
                     <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
                         <div>
@@ -204,7 +380,7 @@ export default function ShopifyWebsiteDevelopmentPage() {
             </section>
 
             {/* Process */}
-            <section className="py-16 md:py-20 bg-[#F4F0E4]">
+            <section className="py-16 md:py-20 bg-white">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
                     <div className="max-w-[600px] mb-12">
                         <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3">
@@ -224,7 +400,7 @@ export default function ShopifyWebsiteDevelopmentPage() {
                             { step: '03', title: 'Development', desc: 'We build your website with clean, optimized code.' },
                             { step: '04', title: 'Launch & Support', desc: 'We deploy your site and provide post-launch support.' },
                         ].map((step, idx) => (
-                            <div key={idx} className="text-center p-6 bg-white rounded-xl border border-[rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">
+                            <div key={idx} className="text-center p-6 bg-[#F4F0E4] rounded-xl border border-[rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">
                                 <div className="w-12 h-12 rounded-full bg-[#44A194] text-white flex items-center justify-center text-lg font-bold mx-auto mb-3">{step.step}</div>
                                 <h3 className="text-base font-bold text-[#1C2321] mb-1">{step.title}</h3>
                                 <p className="text-xs text-[#8a8a82] leading-relaxed">{step.desc}</p>
@@ -234,8 +410,8 @@ export default function ShopifyWebsiteDevelopmentPage() {
                 </div>
             </section>
 
-            {/* FAQ */}
-            <section className="py-16 md:py-20 bg-white">
+            {/* CHANGE 7: Updated FAQ Section */}
+            <section className="py-16 md:py-20 bg-[#F4F0E4]">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
                     <div className="text-center max-w-[600px] mx-auto mb-12">
                         <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3 justify-center">
@@ -244,7 +420,7 @@ export default function ShopifyWebsiteDevelopmentPage() {
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
                             Common Questions About<br />
-                            <span className="text-[#44A194]">Website Development</span>
+                            <span className="text-[#44A194]">Shopify Website Development</span>
                         </h2>
                     </div>
                     <div className="max-w-[800px] mx-auto">
@@ -262,7 +438,7 @@ export default function ShopifyWebsiteDevelopmentPage() {
             </section>
 
             {/* Related Services */}
-            <section className="py-16 md:py-20 bg-[#F4F0E4]">
+            <section className="py-16 md:py-20 bg-white">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
                     <div className="text-center max-w-[600px] mx-auto mb-10">
                         <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3 justify-center">
@@ -276,7 +452,7 @@ export default function ShopifyWebsiteDevelopmentPage() {
                     </div>
                     <div className="grid md:grid-cols-3 gap-5">
                         {relatedServices.map((service, index) => (
-                            <div key={index} className="bg-white border border-[rgba(28,35,33,0.08)] rounded-xl p-7 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">
+                            <div key={index} className="bg-[#F4F0E4] border border-[rgba(28,35,33,0.08)] rounded-xl p-7 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">
                                 <h3 className="text-[0.9rem] font-bold text-[#1C2321] mb-1.5">{service.title}</h3>
                                 <p className="text-[0.78rem] font-light text-[#8a8a82] leading-relaxed mb-3">{service.description}</p>
                                 <Link href={service.href} className="inline-flex items-center gap-1 text-[0.75rem] font-semibold text-[#44A194] hover:gap-2 transition-all">

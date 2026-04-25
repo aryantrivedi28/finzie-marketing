@@ -102,6 +102,7 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
       name: 'Shopify Engine',
       path: '/services/shopify',
       subcategories: [
+        { name: 'Shopify Store Development', path: '/services/shopify/store-development' },
         { name: 'Store Setup & Migration', path: '/services/shopify/store-setup' },
         { name: 'Theme Development', path: '/services/shopify/theme-development' },
         { name: 'Conversion Rate Optimization', path: '/services/shopify/cro' },
@@ -110,7 +111,6 @@ const Header = ({ activePage: propActivePage, onNavClick }: HeaderProps) => {
         { name: 'Liquid Development', path: '/services/shopify/liquid-development' },
         { name: 'Checkout Optimization', path: '/services/shopify/checkout-optimization' },
         { name: 'AOV Strategy', path: '/services/shopify/aov-strategy' },
-        { name: 'Shopify Store Development', path: '/services/shopify/store-development' },
         // { name: 'Website Development', path: '/services/shopify/website-development' },
 
       ]

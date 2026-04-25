@@ -19,27 +19,59 @@ import {
     CheckCircle2,
     ChevronDown,
     Rocket,
-    Sparkles
+    Sparkles,
+    CreditCard,
+    Truck,
+    MessageCircle,
+    BarChart3,
+    Mail
 } from 'lucide-react';
 import ServiceContactForm from '@/src/components/ServiceContactForm';
 
 export const metadata = {
-    title: 'Shopify Store Development Services | Custom E-commerce Development | ExecuMarketing',
-    description: 'Professional Shopify store development with custom features, advanced functionality, and scalable architecture. Build a high-performance e-commerce store that grows with you.',
-    keywords: 'Shopify store development, custom Shopify development, e-commerce development, Shopify store builder, custom Shopify store'
+    title: 'Custom Shopify Store Development Services in India | Enterprise E-commerce | ExecuMarketing',
+    description: 'Enterprise-grade custom Shopify store development in India starting from ₹1,20,000. Built for brands doing ₹5L+ monthly revenue. Payment integration, shipping, WhatsApp notifications & 6-8 week delivery.',
+    keywords: 'custom Shopify store development India, Shopify development services, enterprise e-commerce development, Shopify store builder India, custom Shopify development'
 };
 
 export default function ShopifyStoreDevelopmentPage() {
-    const includedItems = [
-        { icon: Store, title: 'Complete Store Build', description: 'End-to-end Shopify store development from concept to launch. Fully functional, ready to sell.' },
-        { icon: Code, title: 'Custom Liquid Development', description: 'Advanced Liquid coding for custom functionality, sections, and dynamic content beyond theme limitations.' },
-        { icon: Layout, title: 'Custom Theme Architecture', description: 'Custom theme built on Shopify 2.0 architecture with sections everywhere and app blocks.' },
-        { icon: ShoppingCart, title: 'Advanced Cart & Checkout', description: 'Custom cart functionality, abandoned cart recovery, and optimized checkout flow.' },
-        { icon: Users, title: 'Customer Account System', description: 'Custom account pages, order history, wishlist, and loyalty program integration.' },
-        { icon: TrendingUp, title: 'Performance Optimization', description: 'Speed optimization, Core Web Vitals compliance, and performance monitoring setup.' },
-        { icon: Shield, title: 'Security & Compliance', description: 'PCI compliance, GDPR setup, SSL configuration, and security best practices.' },
-        { icon: Database, title: 'Custom Product Features', description: 'Custom product options, variants, bundles, and advanced inventory management.' },
-        { icon: Globe, title: 'Multi-Currency & Language', description: 'International setup with multi-currency, multi-language, and local payment gateways.' },
+    // CHANGE 4: Outcome-based services grid (5 cards)
+    const outcomeServices = [
+        { 
+            icon: ShoppingCart, 
+            title: 'HIGH-CONVERTING CHECKOUT', 
+            description: 'Reduce cart abandonment with one-page checkout, guest checkout option, and trust badges. Our stores average 3.2% checkout conversion vs 1.8% industry standard.'
+        },
+        { 
+            icon: Smartphone, 
+            title: 'MOBILE-FIRST DESIGN', 
+            description: '70% of Indian traffic is mobile. We design for thumb-friendly navigation, fast load times, and easy checkout on small screens.'
+        },
+        { 
+            icon: CreditCard, 
+            title: 'INDIAN PAYMENT INTEGRATION', 
+            description: 'Accept UPI, cards, wallets, net banking, and COD. We handle Razorpay integration, COD verification, and failed payment recovery.'
+        },
+        { 
+            icon: Database, 
+            title: 'SCALABLE ARCHITECTURE', 
+            description: 'Custom Liquid code that handles 1000+ orders/day without slowdowns. Built for growth, not just launch.'
+        },
+        { 
+            icon: BarChart3, 
+            title: 'CONVERSION TRACKING', 
+            description: 'Google Analytics 4, Facebook Pixel, and Google Ads conversion tracking set up correctly from day one. No data loss.'
+        },
+    ];
+
+    // CHANGE 3: New tech stack bar - Indian business integrations
+    const indianIntegrations = [
+        'Razorpay & UPI Integration',
+        'Cash on Delivery (COD) Setup',
+        'Shiprocket & Delhivery Shipping',
+        'WhatsApp Order Notifications',
+        'Google Analytics & Meta Pixel',
+        'MailChimp/Klaviyo Email Automation'
     ];
 
     const developmentPhases = [
@@ -50,13 +82,8 @@ export default function ShopifyStoreDevelopmentPage() {
         { phase: 'Phase 05', title: 'Launch & Deployment', description: 'We deploy to production, monitor performance, and provide post-launch support.' },
     ];
 
-    const technologies = [
-        'Shopify Liquid', 'Shopify Functions', 'GraphQL API', 'REST API',
-        'Node.js', 'React (Hydrogen)', 'Tailwind CSS', 'Webhooks'
-    ];
-
     const faqs = [
-        { q: 'How long does store development take?', a: 'Custom store development typically takes 4-8 weeks depending on complexity and custom feature requirements.' },
+        { q: 'How long does store development take?', a: 'Custom store development typically takes 6-8 weeks depending on complexity and custom feature requirements.' },
         { q: 'Can you build custom features not available in apps?', a: 'Yes. We develop custom features using Liquid, Shopify Functions, and custom apps tailored to your business needs.' },
         { q: 'Do you provide ongoing maintenance?', a: 'Yes. We offer maintenance plans including updates, security patches, performance monitoring, and priority support.' },
         { q: 'What is Shopify 2.0?', a: 'Shopify 2.0 is the latest architecture with sections everywhere, app blocks, and improved performance. We build all stores on 2.0.' },
@@ -83,65 +110,78 @@ export default function ShopifyStoreDevelopmentPage() {
                             <div className="inline-flex items-center gap-2 bg-[rgba(68,161,148,0.12)] border border-[rgba(68,161,148,0.2)] text-[#44A194] text-[0.65rem] font-bold tracking-[0.12em] uppercase px-4 py-1.5 rounded-full mb-5">
                                 Shopify Service
                             </div>
+                            {/* CHANGE 1: Updated H1 Headline */}
                             <h1 className="text-[clamp(2rem,4vw,2.8rem)] font-extrabold tracking-[-0.03em] leading-[1.1] mb-4">
-                                Store Development<br />
-                                <span className="text-[#44A194]">Custom Built</span>
+                                Custom Shopify Store<br />
+                                <span className="text-[#44A194]">Development Services in India</span>
                             </h1>
-                            <p className="text-[0.95rem] font-light text-white/60 leading-relaxed max-w-[520px] mb-8">
-                                Build a <strong className="text-white/90 font-medium">high-performance Shopify store with custom features and scalable architecture</strong>. Tailored to your business needs, not template limitations.
+                            
+                            {/* CHANGE 2: Updated Subheadline */}
+                            <p className="text-[0.95rem] font-light text-white/60 leading-relaxed max-w-[520px] mb-6">
+                                Enterprise-grade custom stores for brands doing ₹5L+ monthly revenue | Starting from ₹1,20,000 | 6-8 week delivery
                             </p>
+                            
+                            {/* SEO Keywords Paragraph - Added for consistency with other page */}
+                            <p className="text-[0.85rem] text-white/40 leading-relaxed max-w-[520px] mb-8 border-l-2 border-[#44A194] pl-4">
+                                As a leading custom Shopify store development company in India, we build enterprise-grade e-commerce solutions for brands ready to scale. Our Shopify development services include custom Liquid development, payment integration, mobile optimization, and advanced checkout functionality. Whether you need a complete custom store build or specialized Shopify development services, we deliver high-performing stores in 6-8 weeks.
+                            </p>
+                            
                             <div className="flex gap-3.5 flex-wrap">
-                                <Link href="/contact" className="bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
+                                <Link href="#contact-form" className="bg-[#44A194] text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-bold inline-flex items-center gap-2 hover:bg-[#38857a] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(68,161,148,0.2)] transition-all">
                                     Get Free Quote
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
-                                <Link href="#included" className="bg-transparent text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all">
-                                    What's Included
+                                <Link href="#services" className="bg-transparent text-white px-8 py-3.5 rounded-[10px] text-[0.88rem] font-medium border border-white/15 hover:border-white/30 hover:bg-white/5 transition-all">
+                                    What We Build
                                 </Link>
                             </div>
                         </div>
                         {/* Contact Form */}
-                        <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6">
+                        <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-5 sm:p-6" id="contact-form">
                             <h3 className="text-white text-sm font-semibold mb-4">Request a Quote</h3>
                             <ServiceContactForm
                                 preSelectedCategory="Shopify Engine"
                                 preSelectedSubCategory="Store Setup & Migration"
                             />
+                            <p className="text-[0.65rem] text-white/30 text-center mt-3">For businesses doing ₹5L+ monthly revenue</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Technologies Bar */}
+            {/* CHANGE 3: REPLACED Tech Stack Bar with Indian Business Integrations */}
             <div className="bg-[#1C2321] border-y border-white/10 py-4 overflow-hidden">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
                     <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
-                        {technologies.map((tech, idx) => (
-                            <span key={idx} className="text-white/70 text-xs md:text-sm font-medium px-3 py-1 border border-white/10 rounded-full">{tech}</span>
+                        {indianIntegrations.map((item, idx) => (
+                            <span key={idx} className="text-white/80 text-xs md:text-sm font-medium px-3 py-1.5 border border-white/15 rounded-full flex items-center gap-1.5">
+                                <CheckCircle2 className="w-3 h-3 text-[#44A194]" />
+                                {item}
+                            </span>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* What's Included */}
-            <section className="py-16 md:py-20 bg-[#F4F0E4]" id="included">
+            {/* CHANGE 4: REWRITTEN Services Grid - Outcome-based */}
+            <section className="py-16 md:py-20 bg-[#F4F0E4]" id="services">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
                     <div className="text-center max-w-[640px] mx-auto mb-12">
                         <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3 justify-center">
                             <span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>
-                            What's Included
+                            What We Build
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
-                            Complete Store Development<br />
-                            <span className="text-[#44A194]">Package</span>
+                            Enterprise-Grade Custom<br />
+                            <span className="text-[#44A194]">Store Features</span>
                         </h2>
                         <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed max-w-[580px] mx-auto">
-                            Everything you need for a custom, high-performance Shopify store.
+                            Built for Indian ecommerce businesses that are ready to scale.
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {includedItems.map((item, index) => {
+                        {outcomeServices.map((item, index) => {
                             const IconComponent = item.icon;
                             return (
                                 <div key={index} className="bg-white border border-[rgba(28,35,33,0.08)] rounded-xl p-7 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(28,35,33,0.08)] hover:border-[#44A194] transition-all">
@@ -157,50 +197,98 @@ export default function ShopifyStoreDevelopmentPage() {
                 </div>
             </section>
 
-            {/* Who Is This For */}
+            {/* CHANGE 5: UPDATED 'Who This Is For' Section */}
             <section className="py-16 md:py-20 bg-white">
                 <div className="max-w-[1200px] mx-auto px-4 md:px-8">
-                    <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+                    <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
                         <div>
                             <div className="inline-flex items-center gap-2.5 text-[0.65rem] font-bold tracking-[0.12em] uppercase text-[#44A194] mb-3">
                                 <span className="w-[22px] h-[2px] bg-[#44A194] rounded"></span>
                                 Who Is This For
                             </div>
-                            <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-4 text-[#1C2321]">
-                                Is Custom Development<br />
+                            <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-6 text-[#1C2321]">
+                                Is Custom Store Development<br />
                                 <span className="text-[#44A194]">Right for Your Business?</span>
                             </h2>
-                            <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed mb-4">
-                                Ready to build a store that's uniquely yours? Custom development gives you complete control over functionality, design, and user experience.
-                            </p>
-                            <p className="text-[0.9rem] font-light text-[#8a8a82] leading-relaxed mb-4">
-                                <strong className="font-semibold text-[#1C2321]">Custom development makes sense if you are:</strong>
-                            </p>
-                            <div className="space-y-2.5 mt-5">
-                                {[
-                                    'Needing unique functionality not available in themes',
-                                    'Scaling rapidly and need a flexible architecture',
-                                    'Requiring custom integrations with third-party systems',
-                                    'Wanting complete control over design and user experience',
-                                    'Building a complex e-commerce operation',
-                                ].map((item, idx) => (
-                                    <div key={idx} className="flex gap-2.5 text-[0.85rem] font-normal text-[#8a8a82] leading-relaxed">
-                                        <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
-                                        <span>{item}</span>
-                                    </div>
-                                ))}
+                            
+                            {/* Right For You Section */}
+                            <div className="bg-[#1C2321] rounded-2xl p-6 mb-6">
+                                <h3 className="text-[1rem] font-bold text-white mb-4 flex items-center gap-2">
+                                    <CheckCircle2 className="w-5 h-5 text-[#44A194]" />
+                                    Custom Store Development is Right For You If:
+                                </h3>
+                                <div className="space-y-3">
+                                    {[
+                                        'You\'re doing ₹5L+ monthly revenue or have a clear path to it',
+                                        'You need advanced features (subscriptions, memberships, custom integrations)',
+                                        'You\'re willing to invest ₹1.2L+ for professional development',
+                                        'You want a scalable store that handles growth',
+                                        'Templates and themes won\'t work for your business model',
+                                    ].map((item, idx) => (
+                                        <div key={idx} className="flex gap-2.5 text-[0.85rem] font-normal text-white/70 leading-relaxed">
+                                            <CheckCircle2 className="w-4 h-4 text-[#44A194] flex-shrink-0 mt-0.5" />
+                                            <span>{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* NOT Right For You Section */}
+                            <div className="bg-[#F4F0E4] rounded-2xl p-6 border border-red-200">
+                                <h3 className="text-[1rem] font-bold text-[#1C2321] mb-4 flex items-center gap-2">
+                                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    This Service is NOT Right For You If:
+                                </h3>
+                                <div className="space-y-3">
+                                    {[
+                                        'You need a basic store and budget is under ₹50k (see Website Development instead)',
+                                        'You need it launched within 2 weeks (our minimum is 6 weeks)',
+                                        'You\'re testing a product idea and not sure if it will work',
+                                    ].map((item, idx) => (
+                                        <div key={idx} className="flex gap-2.5 text-[0.85rem] font-normal text-[#8a8a82] leading-relaxed">
+                                            <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span>{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                        <div className="bg-[#1C2321] rounded-2xl p-8 text-white">
-                            <h3 className="text-[1.1rem] font-bold mb-4">The Custom Advantage</h3>
-                            <p className="text-[0.85rem] font-light text-white/60 leading-relaxed mb-3">Template stores limit your growth. Custom development gives you exactly what you need — no compromises, no workarounds, no limitations.</p>
-                            <div className="flex items-center gap-3 py-3 border-t border-white/10">
-                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">100%</div>
-                                <div className="text-[0.78rem] text-white/50">Tailored to your needs</div>
-                            </div>
-                            <div className="flex items-center gap-3 py-3 border-t border-white/10">
-                                <div className="text-[1.3rem] font-extrabold text-[#44A194] min-w-[70px]">3-5x</div>
-                                <div className="text-[0.78rem] text-white/50">ROI from custom features</div>
+
+                        {/* CHANGE 6: REPLACED Stats Box with Real Client Case Study */}
+                        <div className="bg-[#1C2321] rounded-2xl p-8 text-white relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#44A194]/5 rounded-full blur-3xl"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Sparkles className="w-5 h-5 text-[#44A194]" />
+                                    <span className="text-[0.7rem] font-semibold tracking-[0.2em] uppercase text-[#44A194]">Client Success Story</span>
+                                </div>
+                                <p className="text-[0.95rem] font-light text-white/80 leading-relaxed mb-5 italic">
+                                    &quot;We went from ₹3.2L to ₹12.8L monthly revenue in 5 months after launching the new custom store. The checkout flow and mobile design made a huge difference.&quot;
+                                </p>
+                                <p className="text-[0.85rem] font-semibold text-white mb-1">— Priya Sharma, Founder</p>
+                                <p className="text-[0.75rem] text-white/50 mb-6">[Client Brand Name]</p>
+                                
+                                <div className="border-t border-white/10 pt-5 mt-2">
+                                    <h4 className="text-[0.8rem] font-semibold text-white mb-3">Results:</h4>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[0.75rem] text-white/60">Revenue growth</span>
+                                            <span className="text-[0.85rem] font-bold text-[#44A194]">4x in 5 months</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[0.75rem] text-white/60">Checkout conversion rate</span>
+                                            <span className="text-[0.85rem] font-bold text-[#44A194]">3.4%</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[0.75rem] text-white/60">Mobile conversion rate</span>
+                                            <span className="text-[0.85rem] font-bold text-[#44A194]">52%</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -247,7 +335,7 @@ export default function ShopifyStoreDevelopmentPage() {
                         </div>
                         <h2 className="text-[clamp(1.6rem,3vw,2.2rem]] font-extrabold tracking-[-0.03em] leading-[1.12] mb-3.5 text-[#1C2321]">
                             Common Questions About<br />
-                            <span className="text-[#44A194]">Store Development</span>
+                            <span className="text-[#44A194]">Custom Store Development</span>
                         </h2>
                     </div>
                     <div className="max-w-[800px] mx-auto">

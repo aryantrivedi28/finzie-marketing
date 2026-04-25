@@ -52,7 +52,7 @@ const CTABand = ({
           </div>
 
           {/* Video Section */}
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-xl mx-auto">
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                 <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
