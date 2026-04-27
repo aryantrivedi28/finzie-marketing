@@ -3,13 +3,11 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
 import { supabase } from '@/src/lib/SupabaseAuthClient';
-import * as brevo from '@getbrevo/brevo';
 
-// Brevo Configuration
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const BREVO_SENDER_EMAIL = 'aryan@execumarketing.com';
-const BREVO_SENDER_NAME = 'ExecuMarketing';
-const BREVO_TEMPLATE_ID = parseInt('21'); // Your template ID
+const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || 'aryan@execumarketing.com';
+const BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || 'ExecuMarketing Team';
+const BREVO_TEMPLATE_ID = parseInt(process.env.BREVO_TEMPLATE_ID || '21');
 
 export async function POST(request: Request) {
   try {
@@ -59,13 +57,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Send thank you email via Brevo
+    // Send thank you email via Brevo API directly
     let emailSent = false;
     try {
       if (BREVO_API_KEY && BREVO_TEMPLATE_ID) {
-        emailSent = await sendThankYouEmail(email, full_name);
+        emailSent = await sendThankYouEmailViaFetch(email, full_name);
         
-        // Update email sent status
         if (emailSent) {
           await supabase
             .from('client_requests')
@@ -78,7 +75,6 @@ export async function POST(request: Request) {
       }
     } catch (emailError) {
       console.error('Email error (non-blocking):', emailError);
-      // Don't fail the request if email fails
     }
 
     return NextResponse.json({
@@ -97,29 +93,47 @@ export async function POST(request: Request) {
   }
 }
 
-// Function to send thank you email using Brevo
-async function sendThankYouEmail(toEmail: string, toName: string): Promise<boolean> {
+// Function to send email using fetch API directly (No SDK required)
+async function sendThankYouEmailViaFetch(toEmail: string, toName: string): Promise<boolean> {
   try {
-    const apiInstance = new brevo.TransactionalEmailsApi();
-    apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, BREVO_API_KEY!);
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'api-key': BREVO_API_KEY!,
+      },
+      body: JSON.stringify({
+        sender: {
+          name: BREVO_SENDER_NAME,
+          email: BREVO_SENDER_EMAIL,
+        },
+        to: [
+          {
+            email: toEmail,
+            name: toName,
+          },
+        ],
+        subject: 'Thank you for reaching out to ExecuMarketing',
+        templateId: BREVO_TEMPLATE_ID,
+        params: {
+          full_name: toName,
+          website_url: process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://execumarketing.com',
+        },
+      }),
+    });
 
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
-    sendSmtpEmail.to = [{ email: toEmail, name: toName }];
-    sendSmtpEmail.sender = { email: BREVO_SENDER_EMAIL, name: BREVO_SENDER_NAME };
-    sendSmtpEmail.subject = `Thank you for reaching out to ExecuMarketing`;
-    sendSmtpEmail.templateId = BREVO_TEMPLATE_ID;
+    const result = await response.json();
     
-    // Simple params - just the name if needed in template
-    sendSmtpEmail.params = {
-      full_name: toName,
-    };
-
-    const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log('Thank you email sent:', response);
-    return true;
-
+    if (response.ok) {
+      console.log('Email sent successfully:', result);
+      return true;
+    } else {
+      console.error('Brevo API error:', result);
+      return false;
+    }
   } catch (error) {
-    console.error('Brevo error:', error);
+    console.error('Fetch error:', error);
     return false;
   }
 }

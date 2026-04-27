@@ -26,7 +26,7 @@ import ServiceContactForm from '@/src/components/ServiceContactForm';
 import ServiceQuoteForm from '@/src/components/ServiceQuoteForm';
 
 export const metadata = {
-    title: 'Shopify Website Development Services in India | Professional Shopify Developers | ExecuMarketing',
+    title: 'Shopify Website Development Services | Professional Shopify Developers | ExecuMarketing',
     description: 'Professional Shopify website development services in India starting from ₹50,000. Custom Shopify stores, theme customization, payment integration & 4-6 week delivery.',
     keywords: 'Shopify website development company India, Shopify development services, Shopify website design services, custom Shopify store, Shopify developers India'
 };

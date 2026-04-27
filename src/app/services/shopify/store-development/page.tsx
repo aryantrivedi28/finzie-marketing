@@ -271,7 +271,7 @@ export default function ShopifyStoreDevelopmentPage() {
                                 <p className="text-[0.95rem] font-light text-white/80 leading-relaxed mb-5 italic">
                                     &quot;We went from ₹3.2L to ₹12.8L monthly revenue in 5 months after launching the new custom store. The checkout flow and mobile design made a huge difference.&quot;
                                 </p>
-                                <p className="text-[0.85rem] font-semibold text-white mb-1">— Deepti TiWari, Founder</p>
+                                <p className="text-[0.85rem] font-semibold text-white mb-1">— Deepti Tiwari, Founder</p>
                                 <p className="text-[0.75rem] text-white/50 mb-6">Soma Sutra</p>
 
                                 <div className="border-t border-white/10 pt-5 mt-2">
