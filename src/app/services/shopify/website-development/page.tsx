@@ -89,7 +89,7 @@ export default function ShopifyWebsiteDevelopmentPage() {
                         </div>
 
                         {/* CHANGE 3: Trust Signals replacing the form above the fold */}
-                        <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-6">
+                        {/* <div className="bg-white/5 backdrop-blur-sm border border-white/15 rounded-2xl p-6">
                             <div className="text-center mb-5">
                                 <div className="w-16 h-16 rounded-full bg-[#44A194]/10 flex items-center justify-center mx-auto mb-3">
                                     <Award className="w-8 h-8 text-[#44A194]" />
@@ -114,7 +114,14 @@ export default function ShopifyWebsiteDevelopmentPage() {
                                     <span className="text-white/90 text-sm">✓ Starting Investment: ₹50,000</span>
                                 </div>
                             </div>
-                        </div>
+
+                        </div>*/}
+
+                        <ServiceQuoteForm
+                            title="Request a Quote"
+                            subtitle="Fill out the form and our team will get back to you within 24 hours."
+                            buttonText="Submit →"
+                        />
                     </div>
                 </div>
             </section>
