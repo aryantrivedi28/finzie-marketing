@@ -1,13 +1,16 @@
 // app/layout.tsx
-import type { Metadata } from 'next'
-import './globals.css'
-import  ClientLayoutWrapper  from "../components/layout/ClientLayoutWrapper"
+import type { Metadata } from 'next';
+import './globals.css';
+import ClientLayoutWrapper from "../components/layout/ClientLayoutWrapper";
 
-// Metadata for SEO
+// Simplified Metadata for SEO - Fixed for SEMrush visibility
 export const metadata: Metadata = {
-  title: 'ExecuMarketing — Marketing Execution for Growing Businesses',
-  description: 'ExecuMarketing is a full-service marketing agency that fixes conversion gaps and scales revenue. Paid media, SEO, content, social, and CRM — managed end to end.',
-  keywords: 'marketing agency, paid media, SEO, content marketing, social media management, CRM, marketing execution, ecommerce marketing, CRO',
+  title: {
+    default: 'ExecuMarketing - Marketing Execution Agency for Growing Businesses',
+    template: '%s | ExecuMarketing'
+  },
+  description: 'Full-service marketing agency fixing conversion gaps and scaling revenue. Paid media, SEO, content, social media, and CRM - managed end to end.',
+  keywords: ['marketing agency', 'paid media', 'SEO services', 'content marketing', 'social media management', 'CRM', 'ecommerce marketing', 'CRO', 'marketing execution'],
   authors: [{ name: 'ExecuMarketing' }],
   creator: 'ExecuMarketing',
   publisher: 'ExecuMarketing',
@@ -23,10 +26,12 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'ExecuMarketing — Marketing Execution for Growing Businesses',
-    description: 'We fix what\'s leaking, build what\'s missing, and scale what works — managed end to end.',
+    title: 'ExecuMarketing - Marketing Execution for Growing Businesses',
+    description: 'We fix what\'s leaking, build what\'s missing, and scale what works - managed end to end.',
     url: 'https://execumarketing.com',
     siteName: 'ExecuMarketing',
+    locale: 'en_US',
+    type: 'website',
     images: [
       {
         url: '/og-image.jpg',
@@ -35,61 +40,46 @@ export const metadata: Metadata = {
         alt: 'ExecuMarketing - Marketing Execution Agency',
       },
     ],
-    locale: 'en_US',
-    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ExecuMarketing — Marketing Execution for Growing Businesses',
-    description: 'We fix what\'s leaking, build what\'s missing, and scale what works — managed end to end.',
+    title: 'ExecuMarketing - Marketing Execution for Growing Businesses',
+    description: 'We fix what\'s leaking, build what\'s missing, and scale what works - managed end to end.',
     images: ['/twitter-image.jpg'],
-    creator: '@execumarketing',
   },
   icons: {
-    icon: [
-      { url: '/exeicon.png', sizes: 'any' },
-      { url: '/exeicon.png', sizes: '16x16', type: 'image/png' },
-      { url: '/exeicon.png', sizes: '32x32', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/exeicon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    other: [
-      {
-        rel: 'mask-icon',
-        url: '/safari-pinned-tab.svg',
-        color: '#44A194',
-      },
-    ],
+    icon: '/exeicon.png',
+    shortcut: '/exeicon.png',
+    apple: '/exeicon.png',
   },
   verification: {
-    google: 'your-google-verification-code', // Add your Google Search Console verification code
+    google: 'your-google-verification-code',
   },
   alternates: {
     canonical: 'https://execumarketing.com',
   },
-}
+  category: 'marketing',
+};
 
-// You need to create a client component wrapper for the interactive parts
-// Since metadata requires server component, separate the client logic
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <head>
-        {/* Preconnect for performance */}
+        {/* Performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
-        {/* Additional meta tags */}
+        {/* Viewport - Critical for mobile SEO */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="theme-color" content="#44A194" />
-        <meta name="msapplication-TileColor" content="#44A194" />
         
-        {/* RSS feed if needed */}
+        {/* Theme Colors */}
+        <meta name="theme-color" content="#44A194" />
+        
+        {/* RSS Feed */}
         <link rel="alternate" type="application/rss+xml" title="ExecuMarketing Blog" href="/feed.xml" />
       </head>
       <body>
@@ -98,5 +88,5 @@ export default function RootLayout({
         </ClientLayoutWrapper>
       </body>
     </html>
-  )
+  );
 }
