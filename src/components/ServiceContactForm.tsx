@@ -10,6 +10,7 @@ import {
 
 const SERVICE_CATEGORIES = {
     'Shopify Engine': [
+        'Store Development',
         'Store Setup',
         'Store Migration',
         'Theme Development',
@@ -19,7 +20,7 @@ const SERVICE_CATEGORIES = {
         'Liquid Development',
         'Checkout Optimization',
         'AOV Strategy',
-        'Store Development'
+        
     ],
     'Paid Ads Engine': [
         'Meta Ads',
