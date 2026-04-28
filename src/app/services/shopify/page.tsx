@@ -48,13 +48,13 @@ export default function ShopifyCategoryPage() {
       timeline: '3-5 days',
       icon: Store,
     },
-    {
-      id: 'website-development',
-      name: 'Website Development',
-      description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
-      timeline: '3-5 days',
-      icon: Store,
-    },
+    // {
+    //   id: 'website-development',
+    //   name: 'Website Development',
+    //   description: 'Full Shopify store setup, product migration, and data transfer from any platform.',
+    //   timeline: '3-5 days',
+    //   icon: Store,
+    // },
     {
       id: 'theme-development',
       name: 'Theme Development',
