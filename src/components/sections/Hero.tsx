@@ -1,25 +1,20 @@
 // components/sections/Hero.tsx
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle2, TrendingUp, Search, Users, ShoppingBag, Settings, Zap } from 'lucide-react'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
 
 const Hero = () => {
   const monthTrackRef = useRef<HTMLDivElement>(null)
+  const [animatedBars, setAnimatedBars] = useState(false)
 
   useEffect(() => {
-    // Animate growth bars when hero right enters view
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const bars = entry.target.querySelectorAll('.mr-bar')
-            bars.forEach((bar, i) => {
-              setTimeout(() => {
-                bar.classList.add('animate')
-              }, i * 150 + 400)
-            })
+          if (entry.isIntersecting && !animatedBars) {
+            setAnimatedBars(true)
             observer.unobserve(entry.target)
           }
         })
@@ -32,7 +27,7 @@ const Hero = () => {
     }
 
     return () => observer.disconnect()
-  }, [])
+  }, [animatedBars])
 
   const monthRows = [
     { month: 'Month 1', value: 8, label: 'Setup', isPeak: false },
@@ -134,9 +129,11 @@ const Hero = () => {
                 <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-white/40">{row.month}</span>
                 <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <div
-                    className="mr-bar h-full bg-gradient-to-r from-teal to-teal/70 rounded-full transition-all duration-[1.2s] ease-[cubic-bezier(0.4,0,0.2,1)]"
-                    style={{ width: '0%' }}
-                    data-width={row.value}
+                    className="h-full bg-gradient-to-r from-teal to-teal/70 rounded-full transition-all duration-[1.2s] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                    style={{ 
+                      width: animatedBars ? `${row.value}%` : '0%',
+                      transitionDelay: `${idx * 150}ms`
+                    }}
                   />
                 </div>
                 <span className={`font-display text-[15px] font-normal text-right ${row.isPeak ? 'text-teal' : 'text-white/60'}`}>
@@ -164,7 +161,7 @@ const Hero = () => {
         </div>
 
         {/* Bottom Bar - Plan Preview */}
-        <div className="border-t border-white/10 p-5 xl:p-[24px_48px] bg-white/5 flex items-center justify-between gap-5 animate-fade-up animation-delay-500">
+        <div className="border-t border-white/10 p-5 xl:p-[24px_48px] bg-white/5 flex items-center justify-between gap-5">
           <div>
             <strong className="text-white font-medium block text-sm">Growth Plan · ₹59,999/mo</strong>
             <span className="text-[12px] text-white/50">3 channels · Senior PM · Fixed scope</span>
@@ -178,12 +175,66 @@ const Hero = () => {
         </div>
       </div>
 
-      <style jsx>{`
-        .mr-bar.animate {
-          width: ${monthRows.map(row => row.value).join('%')};
+      {/* Global Animations */}
+      <style jsx global>{`
+        @keyframes fadeUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
-        .mr-bar.animate[data-width] {
-          width: attr(data-width);
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes pulseRing {
+          0%, 100% {
+            box-shadow: 0 0 0 2px rgba(68, 161, 148, 0.2);
+          }
+          50% {
+            box-shadow: 0 0 0 6px rgba(68, 161, 148, 0.08);
+          }
+        }
+
+        .animate-fade-up {
+          opacity: 0;
+          animation: fadeUp 0.7s ease forwards;
+        }
+
+        .animation-delay-100 {
+          animation-delay: 0.1s;
+        }
+
+        .animation-delay-200 {
+          animation-delay: 0.2s;
+        }
+
+        .animation-delay-300 {
+          animation-delay: 0.3s;
+        }
+
+        .animation-delay-400 {
+          animation-delay: 0.4s;
+        }
+
+        .animation-delay-500 {
+          animation-delay: 0.5s;
+        }
+
+        .animate-pulse-ring {
+          animation: pulseRing 2.5s ease-in-out infinite;
         }
       `}</style>
     </section>
