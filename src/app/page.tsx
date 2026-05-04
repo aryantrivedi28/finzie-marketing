@@ -7,6 +7,9 @@ import ClientRequestForm from '../components/client-request'
 // Import all sections
 import Hero from '../components/sections/Hero'
 import LogoStrip from '../components/sections/LogoStrip'
+import PricingSection from '../components/sections/PricingSection'
+import BrandGrowthSection from '../components/sections/BrandGrowthSection'
+import ProcessSection2 from '../components/sections/ProcessSection2'
 import ProblemSection from '../components/sections/ProblemSection'
 import ProcessSection from '../components/sections/ProcessSection'
 import ServicesSection from '../components/sections/ServicesSection'
@@ -160,23 +163,26 @@ const HomePage = ({ showChat = false }: HomePageProps) => {
 
       <Hero />
       <LogoStrip />
-      <ProblemSection />
+      <PricingSection />
+      <BrandGrowthSection />
+      <ProcessSection2 />
+      {/* <ProblemSection /> */}
       <ProcessSection />
       <ServicesSection />
-      <TestimonialsSection />
+      {/* <TestimonialsSection /> */}
       {/* Client Request Form Section - Your Existing Form */}
       <div className="py-12 md:py-16 px-5 sm:px-6 md:px-8 lg:px-12 border-t border-[rgba(28,35,33,0.08)]">
         <div className="max-w-7xl mx-auto">
           <ClientRequestForm />
         </div>
       </div>
-      <WhyUsSection />
+      {/* <WhyUsSection /> */}
 
       
 
       <CTABand
-        title="Start Growing Today"
-        description="Scale your business with our systems"
+        title="Ready to see what your brand looks like in 6 months?"
+        description="Pick a plan, Your team is live in 48 hours. Try it free for 7 days no card, no pitch, no obligation."
         primaryText="Get Started"
         primaryHref="/contact"
       />

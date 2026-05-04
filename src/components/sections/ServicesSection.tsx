@@ -1,7 +1,9 @@
+// components/sections/ServicesSection.tsx
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { ArrowRight, TrendingUp, Search, Users, ShoppingBag, Settings } from 'lucide-react'
 
 const ServicesSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -24,23 +26,8 @@ const ServicesSection = () => {
       observer.observe(sectionRef.current)
     }
 
-    const checkVisibility = () => {
-      if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect()
-        if (rect.top < window.innerHeight - 100) {
-          setIsVisible(true)
-        }
-      }
-    }
-    
-    checkVisibility()
-    window.addEventListener('scroll', checkVisibility)
-    window.addEventListener('resize', checkVisibility)
-
     return () => {
       observer.disconnect()
-      window.removeEventListener('scroll', checkVisibility)
-      window.removeEventListener('resize', checkVisibility)
     }
   }, [])
 
@@ -51,7 +38,8 @@ const ServicesSection = () => {
       title: 'Paid Advertising', 
       desc: 'Meta, Google, TikTok — managed end to end. Strategy, creative, live campaigns, and monthly optimisation. You don\'t touch the dashboard unless you want to.', 
       tags: ['Meta Ads', 'Google Ads', 'TikTok Ads', 'Creative'], 
-      href: '/services/ads' 
+      href: '/services/ads',
+      icon: TrendingUp
     },
     { 
       num: '02', 
@@ -59,7 +47,8 @@ const ServicesSection = () => {
       title: 'SEO & Content', 
       desc: 'Keyword strategy, content briefs, on-page execution — on a fixed monthly cadence. Compounding organic growth you\'ll feel in 90 days.', 
       tags: ['Keyword Strategy', 'On-page SEO', 'Content Briefs', 'Link Building'], 
-      href: '/services/seo' 
+      href: '/services/seo',
+      icon: Search
     },
     { 
       num: '03', 
@@ -67,7 +56,8 @@ const ServicesSection = () => {
       title: 'Social Media Management', 
       desc: 'Content, community, and strategy — across the channels your audience actually lives on. Briefed once, published consistently, tracked monthly.', 
       tags: ['Instagram', 'LinkedIn', 'TikTok', 'Community'], 
-      href: '/services/social' 
+      href: '/services/social',
+      icon: Users
     },
     { 
       num: '04', 
@@ -75,90 +65,96 @@ const ServicesSection = () => {
       title: 'E-commerce & CRO', 
       desc: 'Fix conversion leaks, improve AOV, clean up tracking. We audit your store, identify the gaps, and execute the fixes — before you spend another rupee on traffic.', 
       tags: ['Shopify', 'CRO', 'Landing Pages', 'AOV'], 
-      href: '/services/shopify' 
+      href: '/services/shopify',
+      icon: ShoppingBag
+    },
+    { 
+      num: '05', 
+      category: 'Retention',
+      title: 'CRM & Automation', 
+      desc: 'Setup, migration, and workflow builds — for businesses that want to stop losing revenue between the first purchase and the second. Email flows, lifecycle sequences, and automation that runs while you sleep.', 
+      tags: ['CRM Setup', 'Email Flows', 'Automations', 'Lifecycle', 'Retention'], 
+      href: '/services/content',
+      icon: Settings
     }
   ]
 
   return (
-    <section ref={sectionRef} className="py-[120px] px-5 sm:px-6 md:px-8 lg:px-12 border-b border-[rgba(28,35,33,0.09)]">
-      <div className="max-w-[1240px] mx-auto">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-16">
-          <h2 className="font-['Cormorant_Garamond',serif] text-[clamp(36px,4vw,56px)] font-light leading-[1.1] tracking-[-0.01em] text-[#1C2321] max-w-[520px]">
-            Every channel.<br />
-            One <em className="italic text-[#44A194] not-italic">accountable</em> team.
-          </h2>
-          <p className="text-[15px] text-[#7a7a72] leading-[1.8] max-w-[360px] lg:text-right mt-4 lg:mt-0">
-            We cover every major marketing function — and we connect them so your paid, organic, and retention efforts actually work together.
-          </p>
+    <section 
+      ref={sectionRef} 
+      className={`py-16 sm:py-20 md:py-24 px-5 sm:px-6 md:px-8 lg:px-12 border-b border-[rgba(28,35,33,0.09)] bg-cream transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Section Header */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-10 md:mb-16">
+          <div className="w-full lg:max-w-[520px]">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-light leading-[1.1] tracking-[-0.015em] text-night">
+              Five channels.<br />
+              One <em className="italic text-teal not-italic">accountable team.</em>
+            </h2>
+          </div>
+          <div className="mt-4 lg:mt-0 max-w-xs">
+            <p className="text-sm sm:text-[14px] text-stone leading-relaxed lg:text-right">
+              Every plan draws from the same pool — matched to your brief, managed by your PM.
+            </p>
+          </div>
         </div>
 
-        {/* Services Grid - 2x2 layout for first 4 services */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[rgba(28,35,33,0.09)]">
-          {services.map((service, idx) => (
-            <Link 
-              key={service.num} 
-              href={service.href} 
-              className="bg-[#F4F0E4] p-12 md:p-11 xl:p-12 relative overflow-hidden no-underline transition-all duration-300 hover:bg-white group"
-            >
-              <div className="absolute left-0 bottom-0 top-0 w-[3px] bg-[#44A194] scale-y-0 origin-bottom transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-y-100" />
-              <span className="text-[9px] tracking-[0.26em] uppercase text-[#44A194] mb-5 block font-medium">
-                {service.num} — {service.category}
-              </span>
-              <div className="font-['Cormorant_Garamond',serif] text-[28px] font-normal text-[#1C2321] mb-3.5 leading-[1.2]">
-                {service.title}
-              </div>
-              <p className="text-sm leading-[1.85] text-[#7a7a72] mb-6">
-                {service.desc}
-              </p>
-              <div className="flex gap-1.5 flex-wrap mb-6">
-                {service.tags.map(tag => (
-                  <span key={tag} className="text-[10px] tracking-[0.14em] uppercase text-[#44A194] border border-[rgba(68,161,148,0.25)] py-1 px-3">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.16em] uppercase text-[#7a7a72] font-medium transition-colors duration-300 group-hover:text-[#44A194]">
-                Learn more
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform duration-300 group-hover:translate-x-1">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {/* Services Grid - 5 cards in a row on desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-px bg-[rgba(28,35,33,0.09)] rounded-xl overflow-hidden">
+          {services.map((service, idx) => {
+            const Icon = service.icon
+            return (
+              <Link
+                key={service.num}
+                href={service.href}
+                className="bg-cream p-6 sm:p-7 md:p-8 relative overflow-hidden transition-all duration-300 hover:bg-white group"
+              >
+                {/* Top Border on Hover */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-teal to-teal/60 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
 
-        {/* Wide card - CRM (5th service) - Full width at bottom */}
-        <div className="mt-px bg-[rgba(28,35,33,0.09)]">
-          <Link 
-            href="/services/crm-automation" 
-            className="bg-[#F4F0E4] p-12 md:p-11 xl:p-12 relative overflow-hidden no-underline transition-all duration-300 hover:bg-white group flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10"
-          >
-            <div className="absolute left-0 bottom-0 top-0 w-[3px] bg-[#44A194] scale-y-0 origin-bottom transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-y-100" />
-            <div className="max-w-[560px]">
-              <span className="text-[9px] tracking-[0.26em] uppercase text-[#44A194] mb-5 block font-medium">
-                05 — Retention
-              </span>
-              <div className="font-['Cormorant_Garamond',serif] text-[28px] font-normal text-[#1C2321] mb-3.5 leading-[1.2]">
-                CRM & Marketing Automation
-              </div>
-              <p className="text-sm leading-[1.85] text-[#7a7a72] mb-6">
-                Setup, migration, and workflow builds — for businesses that want to stop losing revenue between the first purchase and the second. Email flows, lifecycle sequences, and automation that runs while you sleep.
-              </p>
-              <div className="flex gap-1.5 flex-wrap">
-                {['CRM Setup', 'Email Flows', 'Automations', 'Lifecycle', 'Retention'].map(tag => (
-                  <span key={tag} className="text-[10px] tracking-[0.14em] uppercase text-[#44A194] border border-[rgba(68,161,148,0.25)] py-1 px-3">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.16em] uppercase text-[#7a7a72] font-medium transition-colors duration-300 group-hover:text-[#44A194] flex-shrink-0">
-              Learn more
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform duration-300 group-hover:translate-x-1">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </Link>
+                {/* Service Number */}
+                <span className="text-[9px] font-semibold tracking-[0.22em] uppercase text-teal block mb-4">
+                  {service.num}
+                </span>
+
+                {/* Icon */}
+                <div className="w-10 h-10 rounded-lg bg-teal-10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200">
+                  <Icon className="w-5 h-5 text-teal" />
+                </div>
+
+                {/* Title */}
+                <h3 className="font-display text-xl sm:text-[20px] font-light text-night mb-2 leading-tight">
+                  {service.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-xs sm:text-[12px] text-stone leading-relaxed mb-4 line-clamp-3">
+                  {service.desc}
+                </p>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {service.tags.slice(0, 3).map((tag, tIdx) => (
+                    <span
+                      key={tIdx}
+                      className="text-[9px] tracking-[0.12em] uppercase text-teal border border-teal/25 rounded-full px-2.5 py-1"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Learn More Link */}
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium tracking-[0.15em] uppercase text-stone transition-all duration-300 group-hover:text-teal group-hover:gap-2">
+                  Learn more
+                  <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+              </Link>
+            )
+          })}
         </div>
       </div>
     </section>
