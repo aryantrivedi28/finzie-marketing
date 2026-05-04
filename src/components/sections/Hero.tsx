@@ -49,11 +49,9 @@ const Hero = () => {
   const channelTags = ['Paid Media', 'SEO', 'Social', 'CRM', 'E-commerce']
 
   return (
-    <section className="min-h-[calc(100vh-68px)] grid grid-cols-1 lg:grid-cols-2 border-b border-[rgba(28,35,33,0.09)] overflow-hidden">
+    <section className="min-h-screen grid grid-cols-1 border-b border-[rgba(28,35,33,0.09)] overflow-hidden">
       {/* Left Column - Agency Positioning */}
-      <div className="px-5 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 lg:py-[100px] flex flex-col justify-center relative bg-cream">
-        <div className="hidden lg:block absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-[rgba(28,35,33,0.09)] to-transparent" />
-
+      <div className="px-5 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 flex flex-col justify-center bg-cream">
         {/* Pill Badge */}
         <div className="inline-flex items-center gap-2 bg-teal-10 border border-teal/28 rounded-full px-3 py-1.5 mb-6 animate-fade-up">
           <span className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse-ring" />
@@ -61,14 +59,14 @@ const Hero = () => {
         </div>
 
         {/* Heading */}
-        <h1 className="font-display text-[clamp(48px,5.5vw,76px)] font-light leading-[1.08] tracking-[-0.01em] text-night mb-6 animate-fade-up animation-delay-100">
+        <h1 className="font-display text-[clamp(42px,8vw,76px)] font-light leading-[1.08] tracking-[-0.01em] text-night mb-6 animate-fade-up animation-delay-100">
           An agency<br />
           that works like<br />
           a <em className="italic text-teal not-italic">product.</em>
         </h1>
 
         {/* Description */}
-        <p className="text-[17px] font-light leading-[1.85] text-stone max-w-[460px] mb-8 animate-fade-up animation-delay-200">
+        <p className="text-[16px] sm:text-[17px] font-light leading-[1.85] text-stone max-w-[460px] mb-8 animate-fade-up animation-delay-200">
           Pick a plan. Get a dedicated team.
           <strong className="text-mid font-medium"> No retainer negotiations, no vague scopes, no chasing updates.</strong>
           Transparent pricing, defined deliverables, and a team that's accountable for results — every month.
@@ -78,7 +76,7 @@ const Hero = () => {
         <div className="flex items-center gap-4 flex-wrap mb-10 animate-fade-up animation-delay-300">
           <Link
             href="#pricing"
-            className="inline-flex items-center gap-2.5 bg-night text-white font-body text-xs font-medium tracking-[0.18em] uppercase py-4 px-8 relative overflow-hidden group cursor-pointer"
+            className="inline-flex items-center gap-2.5 bg-night text-white font-body text-xs font-medium tracking-[0.18em] uppercase py-3.5 sm:py-4 px-6 sm:px-8 relative overflow-hidden group cursor-pointer"
           >
             <span className="absolute inset-0 bg-teal -translate-x-full group-hover:translate-x-0 transition-transform duration-[0.35s] ease-[cubic-bezier(0.4,0,0.2,1)]" />
             <span className="relative z-10">See Plans & Pricing</span>
@@ -86,20 +84,20 @@ const Hero = () => {
           </Link>
           <Link
             href="/how-it-works"
-            className="inline-flex items-center gap-2.5 bg-transparent text-night font-body text-xs font-medium tracking-[0.18em] uppercase py-[15px] px-8 border border-night/25 transition-all duration-300 hover:border-teal hover:text-teal"
+            className="inline-flex items-center gap-2.5 bg-transparent text-night font-body text-xs font-medium tracking-[0.18em] uppercase py-3 sm:py-[15px] px-6 sm:px-8 border border-night/25 transition-all duration-300 hover:border-teal hover:text-teal"
           >
             How It Works
           </Link>
         </div>
 
         {/* Trust Facts */}
-        <div className="space-y-2.5 animate-fade-up animation-delay-400 border-t border-[rgba(28,35,33,0.09)] pt-8">
+        <div className="space-y-2.5 animate-fade-up animation-delay-400 border-t border-[rgba(28,35,33,0.09)] pt-6 sm:pt-8">
           {trustFacts.map((fact, idx) => (
             <div key={idx} className="flex items-center gap-3">
-              <div className="w-5 h-5 rounded-full bg-teal-10 border border-teal/20 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-teal-10 border border-teal/20 flex items-center justify-center flex-shrink-0">
                 <CheckCircle2 className="w-3 h-3 text-teal" />
               </div>
-              <span className="text-[13px] text-stone">
+              <span className="text-[12px] sm:text-[13px] text-stone">
                 <strong className="text-mid font-medium">{fact.text}</strong> — {fact.desc}
               </span>
             </div>
@@ -107,16 +105,16 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Right Column - SaaS-like Product Feel */}
-      <div className="hidden lg:flex flex-col bg-night relative overflow-hidden">
+      {/* Right Column - SaaS-like Product Feel (Now visible on all devices) */}
+      <div className="flex flex-col bg-night relative overflow-hidden mt-8 md:mt-0">
         {/* Watermark */}
-        <div className="absolute bottom-[-24px] right-[-20px] font-display text-[200px] font-semibold text-white/3 tracking-[-0.04em] leading-none pointer-events-none select-none">
+        <div className="absolute bottom-[-24px] right-[-20px] font-display text-[150px] sm:text-[200px] font-semibold text-white/3 tracking-[-0.04em] leading-none pointer-events-none select-none">
           EXECUTE
         </div>
 
-        <div className="flex-1 p-10 xl:p-[52px_48px] relative">
+        <div className="p-6 sm:p-8 md:p-10 xl:p-[52px_48px] relative">
           {/* Decorative Radial */}
-          <div className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(68,161,148,0.09),transparent_65%)] pointer-events-none" />
+          <div className="absolute top-[-80px] right-[-80px] w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] rounded-full bg-[radial-gradient(circle,rgba(68,161,148,0.09),transparent_65%)] pointer-events-none" />
 
           <span className="text-[9.5px] font-medium tracking-[0.26em] uppercase text-white/30 relative z-10">
             Brand growth — month by month
@@ -125,8 +123,8 @@ const Hero = () => {
           {/* Growth Tracker */}
           <div className="mt-6 space-y-3.5 relative z-10" ref={monthTrackRef}>
             {monthRows.map((row, idx) => (
-              <div key={idx} className="grid grid-cols-[52px_1fr_56px] gap-3.5 items-center">
-                <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-white/40">{row.month}</span>
+              <div key={idx} className="grid grid-cols-[45px_1fr_50px] sm:grid-cols-[52px_1fr_56px] gap-3 sm:gap-3.5 items-center">
+                <span className="text-[9px] sm:text-[10px] font-medium tracking-[0.12em] uppercase text-white/40">{row.month}</span>
                 <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-teal to-teal/70 rounded-full transition-all duration-[1.2s] ease-[cubic-bezier(0.4,0,0.2,1)]"
@@ -136,7 +134,7 @@ const Hero = () => {
                     }}
                   />
                 </div>
-                <span className={`font-display text-[15px] font-normal text-right ${row.isPeak ? 'text-teal' : 'text-white/60'}`}>
+                <span className={`font-display text-[13px] sm:text-[15px] font-normal text-right ${row.isPeak ? 'text-teal' : 'text-white/60'}`}>
                   {row.label}
                 </span>
               </div>
@@ -148,7 +146,7 @@ const Hero = () => {
             {channelTags.map((tag, idx) => (
               <span
                 key={idx}
-                className={`text-[9.5px] font-medium tracking-[0.12em] uppercase px-3 py-1.5 rounded-full border transition-all duration-250 cursor-default ${
+                className={`text-[8px] sm:text-[9.5px] font-medium tracking-[0.12em] uppercase px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border transition-all duration-250 cursor-default ${
                   idx < 3
                     ? 'text-teal border-teal/30 bg-teal-10'
                     : 'text-white/40 border-white/10 hover:text-teal hover:border-teal/30'
@@ -161,14 +159,14 @@ const Hero = () => {
         </div>
 
         {/* Bottom Bar - Plan Preview */}
-        <div className="border-t border-white/10 p-5 xl:p-[24px_48px] bg-white/5 flex items-center justify-between gap-5">
+        <div className="border-t border-white/10 p-4 sm:p-5 xl:p-[24px_48px] bg-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-5">
           <div>
-            <strong className="text-white font-medium block text-sm">Growth Plan · ₹59,999/mo</strong>
-            <span className="text-[12px] text-white/50">3 channels · Senior PM · Fixed scope</span>
+            <strong className="text-white font-medium block text-sm sm:text-base">Growth Plan · ₹59,999/mo</strong>
+            <span className="text-[11px] sm:text-[12px] text-white/50">3 channels · Senior PM · Fixed scope</span>
           </div>
           <Link
             href="#pricing"
-            className="text-[11px] font-medium tracking-[0.16em] uppercase text-teal border border-teal/30 px-4 py-2.5 whitespace-nowrap transition-all duration-250 hover:bg-teal-10"
+            className="text-[10px] sm:text-[11px] font-medium tracking-[0.16em] uppercase text-teal border border-teal/30 px-3 sm:px-4 py-1.5 sm:py-2.5 whitespace-nowrap transition-all duration-250 hover:bg-teal-10 inline-block"
           >
             See all plans →
           </Link>
@@ -185,17 +183,6 @@ const Hero = () => {
           to {
             opacity: 1;
             transform: translateY(0);
-          }
-        }
-
-        @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
           }
         }
 
