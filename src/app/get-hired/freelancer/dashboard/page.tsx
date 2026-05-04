@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import useSWR from "swr"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,6 +24,10 @@ import {
   ArrowRight,
   Menu,
   X,
+  Sparkles,
+  Shield,
+  Award,
+  Zap
 } from "lucide-react"
 
 const fetcher = (url: string) => fetch(url, { credentials: "include" }).then((res) => res.json())
@@ -45,8 +50,6 @@ export default function FreelancerDashboardPage() {
   const freelancer = meData?.freelancer
   const submissions = submissionsData?.submissions || []
   const availableForms = formsData?.forms || []
-
-  console.log("form data available:", availableForms)
 
   const stats = {
     totalApplications: submissions.length,
@@ -71,411 +74,304 @@ export default function FreelancerDashboardPage() {
     router.push("/get-hired/freelancer")
   }
 
-  // Button hover handler
-  const handleButtonHover = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const target = e.currentTarget
-    target.style.transform = 'scale(1.03)'
-    target.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease'
-    target.style.boxShadow = '0 4px 12px rgba(36, 28, 21, 0.1)'
-  }
-
-  const handleButtonLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const target = e.currentTarget
-    target.style.transform = 'scale(1)'
-    target.style.boxShadow = '0 2px 6px rgba(36, 28, 21, 0.05)'
-  }
-
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#faf4e5" }}>
-      {/* Professional Header - Fully Responsive */}
-      <header className="bg-[#f0eadd]" style={{ borderBottom: "2px solid #f7af00" }}>
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
-          <div className="flex items-center justify-between h-16 md:h-20 lg:h-24">
+    <div className="min-h-screen bg-cream">
+      {/* Header */}
+      <header className="bg-white border-b border-teal/10 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo and Brand */}
-            <div className="flex items-center space-x-3 lg:space-x-4">
-              <div className="flex items-center space-x-2 lg:space-x-3">
-                <div
-                  className="p-2 rounded-lg transition-all duration-200"
-                  style={{ backgroundColor: "#f7af00" }}
-                >
-                  <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 xl:h-8 xl:w-8" style={{ color: "#050504" }} />
-                </div>
-                <div>
-                  <h1 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold" style={{ color: "#050504" }}>
-                    Freelancer Dashboard
-                  </h1>
-                  <p className="text-xs sm:text-sm lg:text-base hidden sm:block" style={{ color: "#31302f" }}>
-                    {freelancer?.name || freelancer?.email}
-                  </p>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-teal/10">
+                <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-teal" />
+              </div>
+              <div>
+                <h1 className="text-lg sm:text-xl font-light text-night">Freelancer Dashboard</h1>
+                <p className="text-xs text-stone hidden sm:block">{freelancer?.name || freelancer?.email}</p>
               </div>
             </div>
 
-            {/* Desktop Navigation - Show on lg screens and up */}
-            <div className="hidden lg:flex items-center space-x-3 xl:space-x-4">
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-2">
               <Link href="/get-hired/freelancer/applications">
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  className="flex items-center space-x-2 transition-all hover:bg-f0eadd rounded-lg text-sm xl:text-base"
-                  style={{ color: "#31302f" }}
-                  onMouseEnter={handleButtonHover}
-                  onMouseLeave={handleButtonLeave}
-                >
-                  <FileText className="h-4 w-4 xl:h-5 xl:w-5" style={{ color: "#31302f" }} />
-                  <span>Applications</span>
+                <Button variant="ghost" size="default" className="text-carbon hover:text-teal hover:bg-teal/5">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Applications
                 </Button>
               </Link>
               <Link href="/get-hired/freelancer/profile">
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  className="flex items-center space-x-2 transition-all hover:bg-f0eadd rounded-lg text-sm xl:text-base"
-                  style={{ color: "#31302f" }}
-                  onMouseEnter={handleButtonHover}
-                  onMouseLeave={handleButtonLeave}
-                >
-                  <User className="h-4 w-4 xl:h-5 xl:w-5" style={{ color: "#31302f" }} />
-                  <span>Profile</span>
+                <Button variant="ghost" size="default" className="text-carbon hover:text-teal hover:bg-teal/5">
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
                 </Button>
               </Link>
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={handleLogout}
-                className="flex items-center space-x-2 transition-all hover:bg-faf4e5 rounded-lg text-sm xl:text-base"
-                style={{ color: "#31302f" }}
-                onMouseEnter={handleButtonHover}
-                onMouseLeave={handleButtonLeave}
-              >
-                <LogOut className="h-3 w-3 xl:h-4 xl:w-4" style={{ color: "#31302f" }} />
-                <span>Logout</span>
+              <Button variant="ghost" size="default" onClick={handleLogout} className="text-carbon hover:text-coral hover:bg-coral/5">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
             </div>
 
-            {/* Tablet Navigation - Show on md screens, hide on lg and up */}
-            <div className="hidden md:flex lg:hidden items-center space-x-2">
-              <Link href="/get-hired/freelancer/applications">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center space-x-1 transition-all hover:bg-faf4e5 rounded-lg p-2"
-                  style={{ color: "#31302f" }}
-                  onMouseEnter={handleButtonHover}
-                  onMouseLeave={handleButtonLeave}
-                >
-                  <FileText className="h-4 w-4" style={{ color: "#31302f" }} />
-                </Button>
-              </Link>
-              <Link href="/get-hired/freelancer/profile">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center space-x-1 transition-all hover:bg-faf4e5 rounded-lg p-2"
-                  style={{ color: "#31302f" }}
-                  onMouseEnter={handleButtonHover}
-                  onMouseLeave={handleButtonLeave}
-                >
-                  <User className="h-4 w-4" style={{ color: "#31302f" }} />
-                </Button>
-              </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="flex items-center space-x-1 transition-all hover:bg-faf4e5 rounded-lg p-2"
-                style={{ color: "#31302f" }}
-                onMouseEnter={handleButtonHover}
-                onMouseLeave={handleButtonLeave}
-              >
-                <LogOut className="h-4 w-4" style={{ color: "#31302f" }} />
-              </Button>
-            </div>
-
-            {/* Mobile Menu Button - Show on small screens only */}
-            <div className="flex md:hidden">
+            {/* Mobile Menu Button */}
+            <div className="flex lg:hidden">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-lg"
-                style={{ color: "#31302f" }}
-                onMouseEnter={handleButtonHover}
-                onMouseLeave={handleButtonLeave}
+                className="p-2 text-carbon"
               >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
           </div>
 
-          {/* Mobile Navigation - Show on small screens only */}
+          {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden py-4 border-t" style={{ borderColor: "#f7af00" }}>
-              <div className="flex flex-col space-y-3">
-                <Link href="/get-hired/freelancer/applications">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start space-x-3 text-base rounded-lg"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    style={{ color: "#31302f" }}
-                    onMouseEnter={handleButtonHover}
-                    onMouseLeave={handleButtonLeave}
-                  >
-                    <FileText className="h-4 w-4" style={{ color: "#31302f" }} />
-                    <span>Applications</span>
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden py-4 border-t border-teal/10"
+            >
+              <div className="flex flex-col gap-2">
+                <Link href="/get-hired/freelancer/applications" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start text-carbon">
+                    <FileText className="h-4 w-4 mr-3" />
+                    Applications
                   </Button>
                 </Link>
-                <Link href="/get-hired/freelancer/profile">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start space-x-3 text-base rounded-lg"
-                    style={{ color: "#31302f" }}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    onMouseEnter={handleButtonHover}
-                    onMouseLeave={handleButtonLeave}
-                  >
-                    <User className="h-4 w-4" style={{ color: "#31302f" }} />
-                    <span>Profile</span>
+                <Link href="/get-hired/freelancer/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start text-carbon">
+                    <User className="h-4 w-4 mr-3" />
+                    Profile
                   </Button>
                 </Link>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start space-x-3 text-base rounded-lg"
-                  style={{ color: "#31302f" }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false)
-                    handleLogout()
-                  }}
-                  onMouseEnter={handleButtonHover}
-                  onMouseLeave={handleButtonLeave}
-                >
-                  <LogOut className="h-4 w-4" style={{ color: "#31302f" }} />
-                  <span>Logout</span>
+                <Button variant="ghost" onClick={handleLogout} className="w-full justify-start text-coral">
+                  <LogOut className="h-4 w-4 mr-3" />
+                  Logout
                 </Button>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </header>
 
-      {/* Main Content - Responsive Layout */}
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8">
-        {/* Stats Grid - Responsive */}
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-6 sm:mb-8">
-          <Card
-            className="border shadow-sm rounded-xl hover:shadow-md transition-shadow duration-200"
-            style={{ backgroundColor: "#faf4e5", borderColor: "#241C15" }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium" style={{ color: "#31302f" }}>Total Applications</CardTitle>
-              <div className="p-1.5 sm:p-2 rounded-md" style={{ backgroundColor: "#f7af00" }}>
-                <FileText className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: "#050504" }} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1" style={{ color: "#050504" }}>{stats.totalApplications}</div>
-              <p className="text-xs" style={{ color: "#31302f" }}>All-time submissions</p>
-            </CardContent>
-          </Card>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
+        {/* Welcome Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal/5 rounded-full mb-4 border border-teal/20">
+            <Sparkles className="w-4 h-4 text-teal" />
+            <span className="text-xs font-medium text-night tracking-wide">Welcome back</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-light text-night">
+            Hello, {freelancer?.name?.split(' ')[0] || 'Freelancer'}!
+          </h1>
+          <p className="text-carbon mt-1">Here's an overview of your freelance journey</p>
+        </motion.div>
 
-          <Card
-            className="border shadow-sm rounded-xl hover:shadow-md transition-shadow duration-200"
-            style={{ backgroundColor: "#faf4e5", borderColor: "#241C15" }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium" style={{ color: "#31302f" }}>Pending Review</CardTitle>
-              <div className="p-1.5 sm:p-2 rounded-md" style={{ backgroundColor: "#f7af00" }}>
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: "#050504" }} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1" style={{ color: "#050504" }}>{stats.pendingReview}</div>
-              <p className="text-xs" style={{ color: "#31302f" }}>Awaiting decision</p>
-            </CardContent>
-          </Card>
-
-          <Card
-            className="border shadow-sm rounded-xl hover:shadow-md transition-shadow duration-200"
-            style={{ backgroundColor: "#faf4e5", borderColor: "#241C15" }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium" style={{ color: "#31302f" }}>Accepted</CardTitle>
-              <div className="p-1.5 sm:p-2 rounded-md" style={{ backgroundColor: "#f7af00" }}>
-                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: "#050504" }} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1" style={{ color: "#050504" }}>{stats.accepted}</div>
-              <p className="text-xs" style={{ color: "#31302f" }}>Successful applications</p>
-            </CardContent>
-          </Card>
-
-          <Card
-            className="border shadow-sm rounded-xl hover:shadow-md transition-shadow duration-200"
-            style={{ backgroundColor: "#faf4e5", borderColor: "#241C15" }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium" style={{ color: "#31302f" }}>Open Opportunities</CardTitle>
-              <div className="p-1.5 sm:p-2 rounded-md" style={{ backgroundColor: "#f7af00" }}>
-                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: "#050504" }} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1" style={{ color: "#050504" }}>{stats.availableOpportunities}</div>
-              <p className="text-xs" style={{ color: "#31302f" }}>Available positions</p>
-            </CardContent>
-          </Card>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <StatCard
+            title="Total Applications"
+            value={stats.totalApplications}
+            subtitle="All-time submissions"
+            icon={FileText}
+            delay={0.1}
+          />
+          <StatCard
+            title="Pending Review"
+            value={stats.pendingReview}
+            subtitle="Awaiting decision"
+            icon={Clock}
+            delay={0.2}
+          />
+          <StatCard
+            title="Accepted"
+            value={stats.accepted}
+            subtitle="Successful applications"
+            icon={CheckCircle}
+            delay={0.3}
+          />
+          <StatCard
+            title="Open Opportunities"
+            value={stats.availableOpportunities}
+            subtitle="Available positions"
+            icon={TrendingUp}
+            delay={0.4}
+          />
         </div>
 
-        {/* Available Opportunities - Responsive Layout */}
-        <Card className="border shadow-sm rounded-xl" style={{ backgroundColor: "#faf4e5", borderColor: "#241C15" }}>
-          <CardHeader className="border-b pb-4" style={{ borderBottomColor: "#f7af00" }}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex-1">
-                <CardTitle className="text-base sm:text-lg lg:text-xl font-bold flex items-center space-x-2" style={{ color: "#050504" }}>
-                  <Briefcase className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: "#f7af00" }} />
-                  <span>Available Opportunities</span>
-                </CardTitle>
-                <CardDescription className="mt-1 text-xs sm:text-sm lg:text-base" style={{ color: "#31302f" }}>
-                  Browse and apply to opportunities that match your skills
-                </CardDescription>
-              </div>
-              <Badge
-                variant="outline"
-                className="text-xs sm:text-sm font-medium px-3 py-1 border rounded-full w-fit"
-                style={{ borderColor: "#f7af00", color: "#241C15", backgroundColor: "#f0eadd" }}
-              >
-                {availableForms.length} positions
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-5 lg:p-6">
-            <div className="space-y-4">
-              {formsLoading ? (
-                Array.from({ length: 3 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="p-4 sm:p-5 border rounded-lg animate-pulse"
-                    style={{ borderColor: "#241C15", backgroundColor: "#faf4e5" }}
-                  >
-                    <div className="flex space-x-3 sm:space-x-4">
-                      <Skeleton className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg" style={{ backgroundColor: "#f0eadd" }} />
-                      <div className="space-y-2 flex-1">
-                        <Skeleton className="h-5 w-2/3" style={{ backgroundColor: "#f0eadd" }} />
-                        <Skeleton className="h-4 w-1/2" style={{ backgroundColor: "#f0eadd" }} />
-                        <Skeleton className="h-4 w-3/4" style={{ backgroundColor: "#f0eadd" }} />
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : availableForms.length === 0 ? (
-                <div className="text-center py-8 sm:py-12 lg:py-16">
-                  <div className="inline-flex p-3 sm:p-4 rounded-full mb-4" style={{ backgroundColor: "#f0eadd" }}>
-                    <Briefcase className="h-6 w-6 sm:h-8 sm:w-8 lg:h-12 lg:w-12" style={{ color: "#f7af00" }} />
-                  </div>
-                  <h3 className="text-sm sm:text-base lg:text-lg font-medium mb-2" style={{ color: "#050504" }}>
-                    No opportunities available
-                  </h3>
-                  <p className="text-xs sm:text-sm max-w-md mx-auto" style={{ color: "#31302f" }}>
-                    Check back later for new job opportunities that match your profile.
-                  </p>
+        {/* Available Opportunities */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <Card className="border border-teal/10 shadow-sm rounded-2xl bg-white">
+            <CardHeader className="border-b border-teal/10 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <CardTitle className="text-xl font-light text-night flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-teal" />
+                    Available Opportunities
+                  </CardTitle>
+                  <CardDescription className="text-stone mt-1">
+                    Browse and apply to opportunities that match your skills
+                  </CardDescription>
                 </div>
-              ) : (
-                availableForms.map((form: any) => (
-                  <Card
-                    key={form.id}
-                    className="border hover:shadow-md transition-all duration-200 group rounded-xl"
-                    style={{ backgroundColor: "#faf4e5", borderColor: "#241C15" }}
-                  >
-                    <CardContent className="p-4 sm:p-5">
-                      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-                        <div className="flex gap-3 sm:gap-4 flex-1">
-                          {/* Company Logo */}
-                          <div
-                            className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-lg flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: "#f7af00" }}
-                          >
-                            <Building2 className="h-4 w-4 sm:h-5 sm:w-5 lg:h-7 lg:w-7" style={{ color: "#050504" }} />
-                          </div>
+                <Badge 
+                  variant="outline" 
+                  className="border-teal/20 text-teal bg-teal/5 px-3 py-1 rounded-full"
+                >
+                  {availableForms.length} positions
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6">
+              <div className="space-y-4">
+                {formsLoading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <OpportunitySkeleton key={i} />
+                  ))
+                ) : availableForms.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="inline-flex p-4 rounded-full bg-teal/5 mb-4">
+                      <Briefcase className="w-12 h-12 text-teal/30" />
+                    </div>
+                    <h3 className="text-lg font-light text-night mb-2">No opportunities available</h3>
+                    <p className="text-stone max-w-md mx-auto">
+                      Check back later for new job opportunities that match your profile.
+                    </p>
+                  </div>
+                ) : (
+                  availableForms.map((form: any, index: number) => (
+                    <OpportunityCard key={form.id} form={form} formatDate={formatDate} index={index} />
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-                          {/* Job Details */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
-                              <h3 className="font-bold text-sm sm:text-base lg:text-lg leading-tight" style={{ color: "#050504" }}>
-                                {form.form_name}
-                              </h3>
-                              <Badge 
-                                variant="secondary" 
-                                className="text-xs font-medium px-2 py-1 w-fit mt-1 sm:mt-0 rounded-full"
-                                style={{ backgroundColor: "#f0eadd", color: "#241C15" }}
-                              >
-                                {form.category}
-                              </Badge>
-                            </div>
-                            <p className="text-xs sm:text-sm leading-relaxed mb-2 line-clamp-2" style={{ color: "#31302f" }}>
-                              {form.form_description}
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                              <p className="text-xs sm:text-sm font-medium" style={{ color: "#050504" }}>
-                                {form.client_table?.company_name}
-                              </p>
-                              <p className="text-xs sm:text-sm" style={{ color: "#31302f" }}>
-                                {form.client_table?.industry}
-                              </p>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm mb-3">
-                              <div className="flex items-center gap-1" style={{ color: "#31302f" }}>
-                                <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" style={{ color: "#31302f" }} />
-                                <span>{form.location || "Remote"}</span>
-                              </div>
-                              {form.budget && (
-                                <div className="flex items-center gap-1" style={{ color: "#31302f" }}>
-                                  <DollarSign className="h-3 w-3 sm:h-3.5 sm:w-3.5" style={{ color: "#31302f" }} />
-                                  <span>{form.budget}</span>
-                                </div>
-                              )}
-                              {form.deadline && (
-                                <div className="flex items-center gap-1" style={{ color: "#31302f" }}>
-                                  <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" style={{ color: "#31302f" }} />
-                                  <span>Due {formatDate(form.deadline)}</span>
-                                </div>
-                              )}
-                              <div className="flex items-center gap-1" style={{ color: "#31302f" }}>
-                                <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" style={{ color: "#31302f" }} />
-                                <span>Posted {formatDate(form.created_at)}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Apply Button */}
-                        <Link href={`/form/${form.id}`} className="flex-shrink-0 self-start lg:self-center">
-                          <Button
-                            size="sm"
-                            className="font-medium transition-all duration-200 hover:shadow-md group-hover:translate-x-1 flex items-center gap-2 w-full lg:w-auto text-xs sm:text-sm rounded-lg"
-                            style={{
-                              backgroundColor: "#f7af00",
-                              color: "#050504",
-                              boxShadow: "0 2px 6px rgba(36, 28, 21, 0.05)"
-                            }}
-                            onMouseEnter={handleButtonHover}
-                            onMouseLeave={handleButtonLeave}
-                          >
-                            Apply Now
-                            <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Finzie subsidiary line */}
+        <div className="mt-8 text-center">
+          <span className="text-[10px] tracking-[0.2em] text-stone uppercase">
+            A Finzie Company
+          </span>
+        </div>
       </main>
     </div>
+  )
+}
+
+// Stat Card Component
+function StatCard({ title, value, subtitle, icon: Icon, delay }: any) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay }}
+    >
+      <Card className="border border-teal/10 shadow-sm rounded-2xl bg-white hover:shadow-md transition-all">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4">
+          <CardTitle className="text-sm font-medium text-carbon">{title}</CardTitle>
+          <div className="p-1.5 rounded-lg bg-teal/5">
+            <Icon className="h-4 w-4 text-teal" />
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <div className="text-2xl font-light text-night">{value}</div>
+          <p className="text-xs text-stone mt-1">{subtitle}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}
+
+// Opportunity Skeleton
+function OpportunitySkeleton() {
+  return (
+    <div className="p-4 border border-stone/10 rounded-xl animate-pulse">
+      <div className="flex gap-4">
+        <div className="w-12 h-12 rounded-lg bg-stone/10" />
+        <div className="flex-1 space-y-2">
+          <div className="h-5 w-2/3 bg-stone/10 rounded" />
+          <div className="h-4 w-1/2 bg-stone/10 rounded" />
+          <div className="h-4 w-3/4 bg-stone/10 rounded" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Opportunity Card Component
+function OpportunityCard({ form, formatDate, index }: any) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.1 * index }}
+    >
+      <Card className="border border-stone/10 hover:border-teal/30 hover:shadow-md transition-all duration-300 group rounded-xl bg-white">
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+            <div className="flex gap-3 sm:gap-4 flex-1">
+              {/* Icon */}
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-teal/5 flex items-center justify-center flex-shrink-0">
+                <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-teal" />
+              </div>
+
+              {/* Details */}
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
+                  <h3 className="font-light text-base sm:text-lg text-night group-hover:text-teal transition-colors">
+                    {form.form_name}
+                  </h3>
+                  <Badge 
+                    variant="secondary" 
+                    className="text-xs font-medium px-2 py-0.5 rounded-full bg-teal/5 text-teal border border-teal/20 w-fit"
+                  >
+                    {form.category || "General"}
+                  </Badge>
+                </div>
+                
+                <p className="text-sm text-carbon leading-relaxed mb-3 line-clamp-2">
+                  {form.form_description || "No description provided."}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3 text-xs text-stone">
+                  {form.client_table?.company_name && (
+                    <span className="flex items-center gap-1">
+                      <Building2 className="w-3 h-3" />
+                      {form.client_table.company_name}
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    Posted {formatDate(form.created_at)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Apply Button */}
+            <Link href={`/form/${form.form_id || form.id}`} className="flex-shrink-0 self-start lg:self-center">
+              <Button
+                size="sm"
+                className="bg-teal hover:bg-teal/90 text-white font-medium rounded-lg group/btn"
+              >
+                Apply Now
+                <ArrowRight className="ml-2 h-3.5 w-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
