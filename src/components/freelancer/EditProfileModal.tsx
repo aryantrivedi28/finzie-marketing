@@ -1,5 +1,5 @@
+import { supabase } from '@/src/lib/SupabaseAuthClient'
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
 interface EditProfileModalProps {
   profile: any
@@ -16,7 +16,6 @@ export function EditProfileModal({ profile, onClose, onUpdate }: EditProfileModa
     bio: profile.bio
   })
   const [loading, setLoading] = useState(false)
-  const supabase = createClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
