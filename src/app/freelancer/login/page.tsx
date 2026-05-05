@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useFreelancerAuth } from '../hooks/useFreelancerAuth'
 
-export default function FreelancerLogin() {
+// Create a separate component that uses useSearchParams
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -16,10 +17,10 @@ export default function FreelancerLogin() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (searchParams.get('registered')) {
+    if (searchParams?.get('registered')) {
       setSuccess('Registration successful! Please wait for admin approval.')
     }
-  }, [])
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -105,5 +106,41 @@ export default function FreelancerLogin() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Loading fallback component
+function LoginFormLoading() {
+  return (
+    <div className="min-h-screen bg-[#F4F0E4] flex items-center justify-center py-12 px-4">
+      <div className="max-w-md w-full">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center mb-8">
+            <div className="h-8 bg-gray-200 rounded w-48 mx-auto mb-2 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-64 mx-auto animate-pulse"></div>
+          </div>
+          <div className="space-y-6">
+            <div>
+              <div className="h-4 bg-gray-200 rounded w-16 mb-2 animate-pulse"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div>
+              <div className="h-4 bg-gray-200 rounded w-16 mb-2 animate-pulse"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div className="h-12 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Main export with Suspense boundary
+export default function FreelancerLogin() {
+  return (
+    <Suspense fallback={<LoginFormLoading />}>
+      <LoginForm />
+    </Suspense>
   )
 }
