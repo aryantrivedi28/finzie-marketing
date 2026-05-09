@@ -6,24 +6,27 @@ import Link from 'next/link'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 
 const Hero = () => {
-  const monthTrackRef = useRef<HTMLDivElement>(null)
+  const desktopTrackRef = useRef<HTMLDivElement>(null)
+  const mobileTrackRef = useRef<HTMLDivElement>(null)
   const [animatedBars, setAnimatedBars] = useState(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !animatedBars) {
-            setAnimatedBars(true)
-            observer.unobserve(entry.target)
-          }
-        })
-      },
-      { threshold: 0.3 }
-    )
+    // Create separate observers for desktop and mobile
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !animatedBars) {
+          setAnimatedBars(true)
+        }
+      })
+    }
 
-    if (monthTrackRef.current) {
-      observer.observe(monthTrackRef.current)
+    const observer = new IntersectionObserver(observerCallback, { threshold: 0.3 })
+
+    if (desktopTrackRef.current) {
+      observer.observe(desktopTrackRef.current)
+    }
+    if (mobileTrackRef.current) {
+      observer.observe(mobileTrackRef.current)
     }
 
     return () => observer.disconnect()
@@ -117,7 +120,7 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Right Column - SaaS-like Product Feel */}
+        {/* Right Column - Desktop Version (SaaS-like Product Feel) */}
         <div className="hidden lg:flex flex-col bg-night relative overflow-hidden min-h-[500px]">
           {/* Watermark */}
           <div className="absolute bottom-[-24px] right-[-20px] font-display text-[180px] xl:text-[200px] font-semibold text-white/3 tracking-[-0.04em] leading-none pointer-events-none select-none">
@@ -125,7 +128,6 @@ const Hero = () => {
           </div>
 
           <div className="flex-1 p-6 sm:p-8 md:p-10 lg:p-8 xl:p-[52px_48px] relative">
-            {/* Decorative Radial */}
             <div className="absolute top-[-80px] right-[-80px] w-[300px] md:w-[400px] h-[300px] md:h-[400px] rounded-full bg-[radial-gradient(circle,rgba(68,161,148,0.09),transparent_65%)] pointer-events-none" />
 
             <div className="relative z-10">
@@ -133,8 +135,7 @@ const Hero = () => {
                 Brand growth — month by month
               </span>
 
-              {/* Growth Tracker */}
-              <div className="mt-6 space-y-3 sm:space-y-4" ref={monthTrackRef}>
+              <div className="mt-6 space-y-3 sm:space-y-4" ref={desktopTrackRef}>
                 {monthRows.map((row, idx) => (
                   <div key={idx} className="grid grid-cols-[52px_1fr_56px] gap-2 sm:gap-3.5 items-center">
                     <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-white/40">
@@ -156,7 +157,6 @@ const Hero = () => {
                 ))}
               </div>
 
-              {/* Channel Tags */}
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-6 sm:mt-7">
                 {channelTags.map((tag, idx) => (
                   <span
@@ -174,7 +174,6 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Bottom Bar - Plan Preview */}
           <div className="border-t border-white/10 p-4 sm:p-5 xl:p-[24px_48px] bg-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-5">
             <div>
               <strong className="text-white font-medium block text-sm sm:text-base">
@@ -193,10 +192,9 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Mobile/Tablet Version of Right Column */}
+        {/* Right Column - Mobile/Tablet Version */}
         <div className="lg:hidden bg-night relative overflow-hidden mt-8 mx-5 sm:mx-8 rounded-2xl">
           <div className="p-6 sm:p-8 relative">
-            {/* Decorative Radial */}
             <div className="absolute top-[-80px] right-[-80px] w-[300px] h-[300px] rounded-full bg-[radial-gradient(circle,rgba(68,161,148,0.09),transparent_65%)] pointer-events-none" />
 
             <div className="relative z-10">
@@ -204,8 +202,7 @@ const Hero = () => {
                 Brand growth — month by month
               </span>
 
-              {/* Growth Tracker */}
-              <div className="mt-6 space-y-3" ref={monthTrackRef}>
+              <div className="mt-6 space-y-3" ref={mobileTrackRef}>
                 {monthRows.map((row, idx) => (
                   <div key={idx} className="grid grid-cols-[52px_1fr_56px] gap-2 items-center">
                     <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-white/40">
@@ -227,7 +224,6 @@ const Hero = () => {
                 ))}
               </div>
 
-              {/* Channel Tags */}
               <div className="flex flex-wrap gap-1.5 mt-6">
                 {channelTags.map((tag, idx) => (
                   <span
@@ -245,7 +241,6 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Bottom Bar - Plan Preview */}
           <div className="border-t border-white/10 p-5 bg-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <strong className="text-white font-medium block text-sm">
